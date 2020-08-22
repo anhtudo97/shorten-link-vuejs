@@ -1,0 +1,47 @@
+{
+    "name": "shorten-link-web",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "nuxt",
+        "build": "nuxt build",
+        "start": "nuxt start",
+        "generate": "nuxt generate"
+    },
+    "lint-staged": {
+        "*.{js,vue}": "eslint"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged",
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+        }
+    },
+    "dependencies": {
+        "date-fns": "^2.15.0",
+        "lodash.get": "^4.4.2",
+        "nuxt": "^2.14.0"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^8.3.5",
+        "@commitlint/config-conventional": "^8.3.4",
+        "@nuxtjs/bootstrap-vue": "^2.0.4",
+        "@nuxtjs/eslint-config": "^2.0.0",
+        "@nuxtjs/eslint-module": "^1.0.0",
+        "@nuxtjs/style-resources": "^1.0.0",
+        "@nuxtjs/stylelint-module": "^4.0.0",
+        "@nuxtjs/svg": "^0.1.11",
+        "@nuxtjs/vuetify": "^2.0.0-beta.2",
+        "babel-eslint": "^10.0.1",
+        "eslint": "^6.1.0",
+        "eslint-config-prettier": "^6.10.0",
+        "eslint-plugin-nuxt": ">=0.4.2",
+        "eslint-plugin-prettier": "^3.1.2",
+        "husky": "^4.0.0",
+        "lint-staged": "^10.0.0",
+        "nuxt-webfontloader": "^1.1.0",
+        "prettier": "^1.19.1",
+        "sass": "^1.26.10",
+        "sass-loader": "^8.0.2"
+    }
+}
