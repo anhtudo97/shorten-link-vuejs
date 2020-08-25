@@ -2,9 +2,11 @@
   <div class="mx-auto py-3">
     <div class="display-small-hidden mx-md-6 mx-lg-8 mx-xl-10 mx-0">
       <div class="header d-flex absolute align-center">
-        <div class="header__logo">
-          <img src="~/assets/logo.png" />
-        </div>
+        <nuxt-link to="/">
+          <div class="header__logo">
+            <img src="~/assets/logo.png" />
+          </div>
+        </nuxt-link>
         <v-spacer></v-spacer>
         <ul>
           <li v-for="item in menu" :key="item.id">
@@ -44,7 +46,7 @@ export default {
         {
           id: 1,
           name: 'Links',
-          route: '/',
+          route: '/links',
         },
         {
           id: 2,
