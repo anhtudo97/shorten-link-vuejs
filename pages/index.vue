@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <v-row class="home__hero mx-0 mb-8">
-      <v-col cols="8" class="mx-auto">
+      <v-col cols="10" md="8" class="mx-auto">
         <v-row class="hero-banner align-center">
           <v-col cols="12" md="8">
             <div class="hero-banner__title">Create Click-Worthy Links</div>
@@ -20,7 +20,7 @@
     <v-row class="home__shorten mb-8 mx-0">
       <v-col cols="8" class="mx-auto">
         <v-row>
-          <v-col cols="12" md="8" class="pb-0">
+          <v-col cols="12" md="8" class="pb-0 pa-small-hidden">
             <v-text-field
               background-color="white"
               class="shorten-input"
@@ -29,18 +29,18 @@
               clearable
             ></v-text-field>
           </v-col>
-          <v-col cols="12" md="4" class="mb-8 ma-md-0">
-            <div class="shorten-button">
-              <div class="button-text">Shorten</div>
+          <v-col cols="12" md="4" class="mb-8 ma-md-0 pa-small-hidden">
+            <div class="shorten-button" @click="isShorten = !isShorten">
+              <div class="button-text">{{isShorten ? 'Copy':'Shorten'}}</div>
             </div>
           </v-col>
         </v-row>
-        <!-- <div class="text-center">
+        <div class="text-center shorten-policy" v-if="!isShorten">
           By clicking shorten, you agree to God Group’s
-          <strong>Terms</strong> &
-          <strong>Conditions and Privacy Policy</strong>
-        </div>-->
-        <v-row class="shortened justify-space-between">
+          <strong class="text-underline">Terms</strong> &
+          <strong class="text-underline">Conditions and Privacy Policy</strong>
+        </div>
+        <v-row class="shortened justify-space-between mb-0 mb-md-3" v-else>
           <v-col cols="12" md="7" lg="8" xl="9" class="shortened__shortened-link">
             <div class="link-text">https://vuetifyjs.com/en/components/buttons/#buttons</div>
           </v-col>
@@ -62,8 +62,8 @@
       <div
         class="business-description text-center my-5"
       >We help the world’s leading organizations follow their shipping</div>
-      <v-row>
-        <v-col cols="8" class="mx-auto mt-5">
+      <v-row class="mx-0">
+        <v-col cols="12" md="8" class="mx-auto my-5">
           <v-row>
             <v-col cols="12" md="4" class="text-center business-options">
               <div>
@@ -76,7 +76,7 @@
             </v-col>
             <v-col cols="12" md="4" class="text-center business-options">
               <div>
-                <img src="@/assets/svg/link.svg" alt srcset />
+                <img src="@/assets/svg/domain.svg" alt srcset />
               </div>
               <div class="business-options__title">Links management</div>
               <div
@@ -85,7 +85,7 @@
             </v-col>
             <v-col cols="12" md="4" class="text-center business-options">
               <div>
-                <img src="@/assets/svg/link.svg" alt srcset />
+                <img src="@/assets/svg/workspace.svg" alt srcset />
               </div>
               <div class="business-options__title">Links management</div>
               <div
@@ -102,6 +102,11 @@
 <script>
 export default {
   layout: 'home',
+  data() {
+    return {
+      isShorten: false,
+    };
+  },
 };
 </script>
 
@@ -182,10 +187,6 @@ export default {
         font-size: 12px;
         line-height: 18px;
       }
-      @media (max-width: 600px) {
-        font-size: 10px;
-        line-height: 16px;
-      }
     }
     .shorten-button {
       cursor: pointer;
@@ -203,22 +204,34 @@ export default {
         background-color: #2a5bd7;
       }
       @media (max-width: 1366px) {
+        padding: 12px 0;
         .button-text {
           font-size: 14px;
           line-height: 20px;
         }
       }
       @media (max-width: 960px) {
+        padding: 10px 0;
         .button-text {
           font-size: 12px;
           line-height: 18px;
         }
       }
+    }
+    .shorten-policy {
+      color: white;
+      .text-underline {
+        cursor: pointer;
+        text-decoration: underline;
+      }
+      @media (max-width: 1366px) {
+        font-size: 15px;
+      }
+      @media (max-width: 960px) {
+        font-size: 14px;
+      }
       @media (max-width: 600px) {
-        .button-text {
-          font-size: 10px;
-          line-height: 16px;
-        }
+        font-size: 12px;
       }
     }
     .shortened {
@@ -317,6 +330,7 @@ export default {
       color: #737b7d;
     }
     .business-options {
+      padding: 20px;
       &__title {
         font-weight: bold;
         font-size: 18px;
@@ -331,6 +345,41 @@ export default {
         letter-spacing: 0.2px;
         color: #373f41;
       }
+    }
+    @media (max-width: 1366px) {
+      .business-title {
+        font-size: 28px;
+        line-height: 36px;
+      }
+      .business-description {
+        font-size: 14px;
+        line-height: 20px;
+      }
+    }
+    @media (max-width: 960px) {
+      .business-title {
+        font-size: 26px;
+        line-height: 34px;
+      }
+      .business-description {
+        font-size: 13px;
+        line-height: 18px;
+      }
+    }
+    @media (max-width: 600px) {
+      .business-title {
+        font-size: 24px;
+        line-height: 32px;
+      }
+      .business-description {
+        font-size: 12px;
+        line-height: 16px;
+      }
+    }
+  }
+  .pa-small-hidden {
+    @media (max-width: 1366px) {
+      padding: 0 12px;
     }
   }
 }

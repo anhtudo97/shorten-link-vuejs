@@ -4,14 +4,17 @@
       <Header class="header-fixed" />
     </div>
     <nuxt />
+    <Footer />
   </v-app>
 </template>
 
 <script>
 import Header from '@/components/shares/Header';
+import Footer from '@/components/shares/Footer';
 export default {
   components: {
     Header,
+    Footer,
   },
 };
 </script>
