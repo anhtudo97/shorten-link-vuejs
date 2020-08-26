@@ -85,7 +85,7 @@ export default {
   &__logo {
     img {
       object-fit: cover;
-      width: 50px;
+      width: 60px;
       height: auto;
     }
   }

@@ -35,26 +35,28 @@
             </div>
           </v-col>
         </v-row>
-        <div v-if="!isShorten" class="text-center shorten-policy">
-          By clicking shorten, you agree to God Group’s
-          <strong class="text-underline">Terms</strong> &
-          <strong class="text-underline">Conditions and Privacy Policy</strong>
-        </div>
-        <v-row v-else class="shortened justify-space-between mb-0 mb-md-3">
-          <v-col cols="12" md="7" lg="8" xl="9" class="shortened__shortened-link">
-            <div class="link-text">https://vuetifyjs.com/en/components/buttons/#buttons</div>
-          </v-col>
-          <v-col cols="12" md="5" lg="4" xl="3" class="shortened__shortened-service">
-            <div class="d-flex flex-wrap justify-space-between">
-              <div class="shortened-link align-self-center">
-                <a href="https://bit.ly/3hC00TH">https://bit.ly/3hC00TH</a>
+        <slide-fade-transition mode="out-in">
+          <div v-if="!isShorten" key="false" class="text-center shorten-policy">
+            By clicking shorten, you agree to God Group’s
+            <strong class="text-underline">Terms</strong> &
+            <strong class="text-underline">Conditions and Privacy Policy</strong>
+          </div>
+          <v-row v-else key="true" class="shortened justify-space-between mb-0 mb-md-3">
+            <v-col cols="12" md="7" lg="8" class="shortened__shortened-link">
+              <div class="link-text">https://vuetifyjs.com/en/components/buttons/#buttons</div>
+            </v-col>
+            <v-col cols="12" md="5" lg="4" class="shortened__shortened-service">
+              <div class="d-flex flex-wrap justify-space-between">
+                <div class="shortened-link align-self-center">
+                  <a href="https://bit.ly/3hC00TH">https://bit.ly/3hC00TH</a>
+                </div>
+                <div class="shortened-button">
+                  <div class="shortened-text">Copy</div>
+                </div>
               </div>
-              <div class="shortened-button">
-                <div class="shortened-text">Copy</div>
-              </div>
-            </div>
-          </v-col>
-        </v-row>
+            </v-col>
+          </v-row>
+        </slide-fade-transition>
       </v-col>
     </v-row>
     <Business />
@@ -63,13 +65,16 @@
 
 <script>
 import Business from '@/components/home/HomeBusiness';
+import SlideFadeTransition from '@/components/shares/SlideFadeTransition';
 export default {
   components: {
     Business,
+    SlideFadeTransition,
   },
   data() {
     return {
       isShorten: false,
+      view: 'v-a',
     };
   },
 };
