@@ -1,32 +1,40 @@
 <template>
   <div>
     <v-row id="login" no-gutters class="login overflow-hidden">
-      <v-col class="hidden-sm-and-down login__image" md="7" lg="8">
+      <v-col class="login__image" cols="12" md="7" lg="8">
         <v-img
           src="https://freelancer-free.johnleider.com/img/aboutme.f240a572.png"
           class="grey darken-4 image"
         ></v-img>
       </v-col>
-      <v-col class="pa-md-10 pa-16 align-self-center login__form-login" cols="12" md="5" lg="4">
+      <v-col
+        class="pa-sm-10 pa-5 d-flex flex-column align-self-center login__form-login"
+        cols="12"
+        md="5"
+        lg="4"
+      >
         <div class="login-image text-center">
           <img src="~/assets/logo.png" />
         </div>
         <div class="text-center login-title">Login to your dashboard</div>
         <v-sheet>
           <form action>
-            <v-text-field label="Your Email" outlined></v-text-field>
-            <v-text-field label="Your Password" outlined></v-text-field>
+            <v-text-field class="login-email" label="Your Email" outlined solo></v-text-field>
+
+            <v-text-field class="login-password" label="Your Password" outlined solo></v-text-field>
             <v-btn class="login-button">
               <div class="button-text my-3">Login</div>
             </v-btn>
           </form>
         </v-sheet>
-        <div class="text-center mt-3">
+        <div class="an-account text-center mt-3">
           Don't have an account ?
           <strong class="account-signup">Sign up</strong>
         </div>
         <nuxt-link to="/">
-          <div class="text-center account-signup account-signup mt-1">Forgot password</div>
+          <div
+            class="forgot-password text-center account-signup account-signup mt-1"
+          >Forgot password</div>
         </nuxt-link>
       </v-col>
     </v-row>
@@ -39,7 +47,8 @@ export default {};
 
 <style lang="scss" scoped>
 .login {
-  font-family: Montserrat-Regular, sans-serif;
+  height: 100%;
+  font-family: Montserrat, sans-serif;
   &__image {
     .image {
       min-height: 100vh;
@@ -75,6 +84,114 @@ export default {};
     .account-signup {
       font-weight: 600;
       color: #3c64b1;
+    }
+  }
+  @media (max-width: 1366px) {
+    &__form-login {
+      .login-image {
+        img {
+          width: 120px;
+        }
+      }
+      .login-title {
+        font-size: 22px;
+        line-height: 34px;
+        margin-bottom: 30px;
+      }
+      .login-email,
+      .login-password {
+        font-size: 15px;
+      }
+      .login-button {
+        width: 100%;
+        height: 45px !important;
+        background: #3c64b1 !important;
+        border-radius: 10px;
+        .button-text {
+          font-weight: 600;
+          font-size: 18px;
+          line-height: 26px;
+          color: white;
+        }
+      }
+      .an-account,
+      .forgot-password {
+        font-size: 15px;
+      }
+    }
+  }
+  @media (max-width: 960px) {
+    &__image {
+      .image {
+        min-height: 40vh;
+        max-height: 40vh;
+      }
+    }
+    &__form-login {
+      .login-image {
+        img {
+          width: 110px;
+        }
+      }
+      .login-title {
+        font-size: 20px;
+        line-height: 32px;
+        margin-bottom: 25px;
+      }
+      .login-email,
+      .login-password {
+        font-size: 15px;
+      }
+      .login-button {
+        width: 100%;
+        height: 42px !important;
+        background: #3c64b1 !important;
+        border-radius: 10px;
+        .button-text {
+          font-weight: 600;
+          font-size: 16px;
+          line-height: 24px;
+          color: white;
+        }
+      }
+      .an-account,
+      .forgot-password {
+        font-size: 14px;
+      }
+    }
+  }
+  @media (max-width: 600px) {
+    &__form-login {
+      .login-image {
+        img {
+          width: 110px;
+        }
+      }
+      .login-title {
+        font-size: 18px;
+        line-height: 30px;
+        margin-bottom: 22px;
+      }
+      .login-email,
+      .login-password {
+        font-size: 14px;
+      }
+      .login-button {
+        width: 100%;
+        height: 40px !important;
+        background: #3c64b1 !important;
+        border-radius: 10px;
+        .button-text {
+          font-weight: 600;
+          font-size: 14px;
+          line-height: 22px;
+          color: white;
+        }
+      }
+      .an-account,
+      .forgot-password {
+        font-size: 14px;
+      }
     }
   }
 }
