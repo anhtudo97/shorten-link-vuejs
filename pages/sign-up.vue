@@ -1,38 +1,40 @@
 <template>
   <div>
-    <v-row id="login" no-gutters class="login overflow-hidden">
-      <v-col class="pa-md-10 pa-16 align-self-center login__form-login" cols="12" md="5" lg="4">
-        <div class="login-image text-center">
+    <v-row id="signup" no-gutters class="signup overflow-hidden">
+      <v-col
+        class="px-5 px-md-7 py-sm-10 py-5 d-flex flex-column align-self-center signup__form-signup order-last order-sm-first"
+        cols="12"
+        sm="5"
+        lg="4"
+      >
+        <div class="signup-image text-center">
           <img src="~/assets/logo.png" />
         </div>
-        <div class="text-center login-title">Create a new account</div>
+        <div class="text-center signup-title">Create a new account</div>
         <v-sheet>
           <form action>
             <v-text-field label="Your name or company name" outlined></v-text-field>
             <v-text-field label="Your business email" outlined></v-text-field>
             <v-text-field label="Your Password" outlined type="password"></v-text-field>
-            <v-btn class="login-button">
+            <v-btn class="signup-button">
               <div class="button-text my-3">Create account</div>
             </v-btn>
           </form>
         </v-sheet>
-        <div class="text-center mt-3 px-10">
+        <div class="an-account text-center mt-3 px-2 px-md-4 px-lg-10">
           By creating an account you agree to our
           <strong class="account-signup">terms</strong> and
           <strong class="account-signup">privacy policy</strong>
         </div>
-        <div class="text-center mt-1">
+        <div class="signup-an-account text-center mt-1">
           Already have an account?
           <nuxt-link to="/">
-            <strong class="account-signup">Login</strong>
+            <strong class="account-signup">signup</strong>
           </nuxt-link>
         </div>
       </v-col>
-      <v-col class="hidden-sm-and-down login__image" md="7" lg="8">
-        <v-img
-          src="https://freelancer-free.johnleider.com/img/aboutme.f240a572.png"
-          class="grey darken-4 image"
-        ></v-img>
+      <v-col class="signup__image order-first order-sm-last" cols="12" sm="7" lg="8">
+        <div class="image"></div>
       </v-col>
     </v-row>
   </div>
@@ -43,28 +45,31 @@ export default {};
 </script>
 
 <style lang="scss" scoped>
-.login {
-  font-family: Montserrat-Regular, sans-serif;
+.signup {
+  font-family: Montserrat, sans-serif;
   &__image {
-    .image {
-      min-height: 100vh;
-      max-height: 100vh;
-    }
+    background-image: url('https://freelancer-free.johnleider.com/img/aboutme.f240a572.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
   }
-  &__form-login {
-    .login-image {
+  &__form-signup {
+    .signup-image {
       img {
         object-fit: cover;
         width: 150px;
         height: auto;
       }
     }
-    .login-title {
+    .signup-title {
       font-size: 24px;
       line-height: 36px;
       margin-bottom: 35px;
     }
-    .login-button {
+    .signup-button {
       width: 100%;
       height: 50px !important;
       background: #3c64b1 !important;
@@ -80,6 +85,107 @@ export default {};
     .account-signup {
       font-weight: 600;
       color: #3c64b1;
+    }
+  }
+  @media (max-width: 1366px) {
+    &__form-signup {
+      .signup-image {
+        img {
+          object-fit: cover;
+          width: 130px;
+          height: auto;
+        }
+      }
+      .signup-title {
+        font-size: 22px;
+        line-height: 34px;
+        margin-bottom: 30px;
+      }
+      .signup-button {
+        height: 45px !important;
+        border-radius: 10px;
+        .button-text {
+          font-weight: 600;
+          font-size: 16px;
+          line-height: 24px;
+          color: white;
+        }
+      }
+      .an-account,
+      .signup-an-account {
+        font-size: 14px;
+      }
+      .account-signup {
+        font-weight: 600;
+        color: #3c64b1;
+      }
+    }
+  }
+  @media (max-width: 960px) {
+    &__form-signup {
+      .signup-image {
+        img {
+          object-fit: cover;
+          width: 110px;
+          height: auto;
+        }
+      }
+      .signup-title {
+        font-size: 20px;
+        line-height: 32px;
+        margin-bottom: 25px;
+      }
+      .signup-button {
+        height: 40px !important;
+        .button-text {
+          font-weight: 600;
+          font-size: 14px;
+          line-height: 22px;
+        }
+      }
+      .an-account,
+      .signup-an-account {
+        font-size: 13px;
+      }
+      .account-signup {
+        font-weight: 600;
+        color: #3c64b1;
+      }
+    }
+  }
+  @media (max-width: 600px) {
+    &__image {
+      min-height: 40vh;
+    }
+    &__form-signup {
+      .signup-image {
+        img {
+          object-fit: cover;
+          width: 100px;
+          height: auto;
+        }
+      }
+      .signup-title {
+        font-size: 18px;
+        line-height: 30px;
+        margin-bottom: 20px;
+      }
+      .signup-button {
+        height: 40px !important;
+        .button-text {
+          font-weight: 600;
+          font-size: 12px;
+          line-height: 20px;
+        }
+      }
+      .an-account,
+      .signup-an-account {
+        font-size: 12px;
+      }
+      .account-signup {
+        font-weight: 600;
+        color: #3c64b1;
+      }
     }
   }
 }

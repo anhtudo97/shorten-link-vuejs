@@ -1,16 +1,13 @@
 <template>
   <div>
     <v-row id="login" no-gutters class="login overflow-hidden">
-      <v-col class="login__image" cols="12" md="7" lg="8">
-        <v-img
-          src="https://freelancer-free.johnleider.com/img/aboutme.f240a572.png"
-          class="grey darken-4 image"
-        ></v-img>
+      <v-col class="login__image" cols="12" sm="7" lg="8">
+        <div class="image"></div>
       </v-col>
       <v-col
         class="pa-sm-10 pa-5 d-flex flex-column align-self-center login__form-login"
         cols="12"
-        md="5"
+        sm="5"
         lg="4"
       >
         <div class="login-image text-center">
@@ -47,13 +44,15 @@ export default {};
 
 <style lang="scss" scoped>
 .login {
-  height: 100%;
   font-family: Montserrat, sans-serif;
   &__image {
-    .image {
-      min-height: 100vh;
-      max-height: 100vh;
-    }
+    background-image: url('https://freelancer-free.johnleider.com/img/aboutme.f240a572.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
   }
   &__form-login {
     .login-image {
@@ -103,10 +102,7 @@ export default {};
         font-size: 15px;
       }
       .login-button {
-        width: 100%;
         height: 45px !important;
-        background: #3c64b1 !important;
-        border-radius: 10px;
         .button-text {
           font-weight: 600;
           font-size: 18px;
@@ -121,12 +117,6 @@ export default {};
     }
   }
   @media (max-width: 960px) {
-    &__image {
-      .image {
-        min-height: 40vh;
-        max-height: 40vh;
-      }
-    }
     &__form-login {
       .login-image {
         img {
@@ -145,8 +135,6 @@ export default {};
       .login-button {
         width: 100%;
         height: 42px !important;
-        background: #3c64b1 !important;
-        border-radius: 10px;
         .button-text {
           font-weight: 600;
           font-size: 16px;
@@ -161,6 +149,9 @@ export default {};
     }
   }
   @media (max-width: 600px) {
+    &__image {
+      min-height: 40vh;
+    }
     &__form-login {
       .login-image {
         img {
@@ -179,8 +170,6 @@ export default {};
       .login-button {
         width: 100%;
         height: 40px !important;
-        background: #3c64b1 !important;
-        border-radius: 10px;
         .button-text {
           font-weight: 600;
           font-size: 14px;
