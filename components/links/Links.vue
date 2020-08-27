@@ -1,19 +1,18 @@
 <template>
   <div class="link">
-    <div class="link__diviner"></div>
     <v-row class="link__menu mx-0">
-      <v-col cols="11" md="8" class="mx-auto py-0 py-md-3">
+      <v-col cols="11" md="8" class="mx-auto py-3">
         <v-row class="align-center">
           <v-col cols="7" sm="8" lg="10">
             <div class="d-flex align-center">
               <div class="menu-text pr-4">{{links.length}} Link(s)</div>
-              <div v-click-outside="externalClick" class="menu-selection pr-4 d-flex">
-                <div class="d-flex align-center" @click="dialog = !dialog">
+              <div v-click-outside="onClickOutsideStandard" class="menu-selection pr-4 d-flex">
+                <div class="d-flex align-center" @click="models.base = !models.base">
                   <div class="selection-text pr-2">{{keySort}}</div>
                   <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
                 <transition name="slide-fade">
-                  <div v-if="dialog" class="selection-modal">
+                  <div v-if="models.base" class="selection-modal">
                     <div class="modal-option" @click="changeConditions('Lastest')">Lastest</div>
                     <div class="modal-option" @click="changeConditions('A - Z')">Slashtag A - Z</div>
                     <div class="modal-option" @click="changeConditions('Z - A')">Slashtag Z - A</div>
@@ -23,7 +22,7 @@
             </div>
           </v-col>
           <v-col cols="5" sm="4" lg="2">
-            <div class="add-new-link">
+            <div class="add-new-link" @click.stop="models.modal = true">
               <div class="new-link">New Link</div>
             </div>
           </v-col>
@@ -43,33 +42,73 @@
         </li>
       </ul>
     </div>
+
+    <v-dialog v-model="models.modal" class="link__dialog" max-width="700px">
+      <v-list class>
+        <div class="d-flex justify-space-between px-4">
+          <div></div>
+          <div class="dialog-icon" @click="models.modal = false">
+            <img class="ma-2" src="@/assets/svg/close.svg" alt="close" />
+          </div>
+        </div>
+        <div class="modal-mask">
+          <div class="modal-mask__title mb-5">Shorten a new link</div>
+          <v-textarea
+            v-model="destinationUrl"
+            auto-grow
+            label="Destination your URL"
+            hint="Type or paste your URL"
+            outlined
+            rows="1"
+          ></v-textarea>
+          <transition name="slide-fade">
+            <div v-if="validURL(destinationUrl)">
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-select :items="tempDomains" label="Domain" dense outlined></v-select>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field label="Slash tag" outlined dense></v-text-field>
+                </v-col>
+              </v-row>
+              <div class="d-flex justify-space-between">
+                <div></div>
+                <div class="modal-mask__button">Create link</div>
+              </div>
+            </div>
+          </transition>
+        </div>
+      </v-list>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
-import vClickOutside from 'v-click-outside';
-import Link from '@/components/links/Link';
 
+import Link from '@/components/links/Link';
 export default {
   components: {
     Link,
   },
-  directives: {
-    clickOutside: vClickOutside.directive,
-  },
-  data() {
-    return {
-      dialog: false,
-      keySort: 'Sort By',
-    };
-  },
+  data: () => ({
+    keySort: 'Sort By',
+    models: {
+      base: false,
+      modal: false,
+    },
+    destinationUrl: '',
+  }),
   computed: {
     ...mapGetters({
       links: 'links/getLinks',
+      domains: 'domains/getDomains',
     }),
     tempLinks() {
       return this.links.map((x) => x);
+    },
+    tempDomains() {
+      return this.domains.map((x) => x.domain);
     },
   },
   methods: {
@@ -77,9 +116,6 @@ export default {
       this.keySort = value;
       this.dialog = false;
       this.linksSortBy(this.keySort);
-    },
-    externalClick() {
-      this.dialog = false;
     },
     linksSortBy(key) {
       switch (key) {
@@ -111,13 +147,27 @@ export default {
           return this.tempLinks;
       }
     },
+    onClickOutsideStandard() {
+      this.models.base = false;
+    },
+    validURL(str) {
+      const pattern = new RegExp(
+        '^(https?:\\/\\/)?' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+          '(\\#[-a-z\\d_]*)?$',
+        'i'
+      ); // fragment locator
+      return !!pattern.test(str);
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .link {
-  margin-top: 7.1vh;
   font-family: Poppins, sans-serif;
   &__menu {
     .menu-text {
@@ -174,6 +224,14 @@ export default {
       .new-link {
         font-size: 18px;
         line-height: 24px;
+      }
+    }
+    .menu-dialog {
+      padding: 2vh 3vh;
+      font-family: Poppins, sans-serif;
+      .dialog-title {
+        font-size: 24px;
+        font-weight: 500;
       }
     }
     @media (max-width: 1366px) {
@@ -299,6 +357,44 @@ export default {
       &:hover {
         background-color: #eaf6ff;
       }
+    }
+  }
+  &__dialog {
+    position: fixed;
+    z-index: 99999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+}
+.dialog-icon {
+  cursor: pointer;
+  height: 32px;
+  background-color: #f9f9fa;
+  border-radius: 50%;
+  img {
+    object-fit: cover;
+    width: 16px;
+    height: auto;
+  }
+}
+.modal-mask {
+  font-family: Poppins, sans-serif;
+  padding: 4vh 5vh;
+  &__title {
+    font-size: 26px;
+  }
+  &__button {
+    cursor: pointer;
+    color: #fff;
+    font-weight: 500;
+    padding: 10px 60px;
+    border-radius: 10px;
+    background-color: #3c64b1;
+    &:hover {
+      background-color: #2a5bd7;
     }
   }
 }

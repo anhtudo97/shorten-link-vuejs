@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto py-0 py-sm-3">
+  <div id="header" class="mx-auto py-0 py-sm-3">
     <div class="display-small-hidden mx-0 mx-sm-6 mx-lg-8 mx-xl-10">
       <div class="header d-flex absolute align-center">
         <nuxt-link to="/">
@@ -76,6 +76,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#header {
+  border-bottom: 1px solid #c4c4c4;
+}
+
 .header {
   font-family: Montserrat, sans-serif;
   ul {

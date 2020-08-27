@@ -1,6 +1,5 @@
 <template>
   <div class="domain">
-    <div class="domain__diviner"></div>
     <v-row class="domain__menu mx-0">
       <v-col cols="11" md="8" class="mx-auto py-0 py-md-3">
         <v-row class="align-center">
@@ -64,7 +63,6 @@ export default {
 
 <style lang="scss" scoped>
 .domain {
-  margin-top: 70px;
   font-family: Poppins, sans-serif;
   &__menu {
     .domain-count {

@@ -88,7 +88,10 @@ export default {
    ** https://github.com/nuxt-community/vuetify-module
    */
   vuetify: {
-    customVariables: ['~/scss/variables.scss'],
+    font: {
+      family: 'Poppins'
+    },
+    customVariables: ['~/scss/variables.scss', '~/scss/main.scss'],
     theme: {
       dark: true,
       themes: {
