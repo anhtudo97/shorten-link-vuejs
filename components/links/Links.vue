@@ -6,7 +6,7 @@
         <v-row class="align-center">
           <v-col cols="7" sm="8" lg="10">
             <div class="d-flex align-center">
-              <div class="menu-text pr-4">8 Links</div>
+              <div class="menu-text pr-4">{{links.length}} Link(s)</div>
               <div v-click-outside="externalClick" class="menu-selection pr-4 d-flex">
                 <div class="d-flex align-center" @click="dialog = !dialog">
                   <div class="selection-text pr-2">{{keySort}}</div>
@@ -117,8 +117,8 @@ export default {
 
 <style lang="scss" scoped>
 .link {
-  margin-top: 15vh;
-  font-family: Montserrat, sans-serif;
+  margin-top: 7.1vh;
+  font-family: Poppins, sans-serif;
   &__menu {
     .menu-text {
       font-size: 18px;
@@ -162,6 +162,7 @@ export default {
       }
     }
     .add-new-link {
+      cursor: pointer;
       background-color: #3c64b1;
       border: 0.5px solid #dddddd;
       box-sizing: border-box;
@@ -219,7 +220,7 @@ export default {
         line-height: 20px;
       }
       .menu-selection {
-        padding: 3px 20px;
+        padding: 3px 18px;
         .selection-text {
           font-size: 14px;
         }
@@ -257,7 +258,7 @@ export default {
         line-height: 18px;
       }
       .menu-selection {
-        padding: 2px 20px;
+        padding: 2px 12px;
         .selection-text {
           font-size: 12px;
         }
@@ -299,9 +300,6 @@ export default {
         background-color: #eaf6ff;
       }
     }
-  }
-  @media (max-width: 1440px) {
-    margin-top: 20vh;
   }
 }
 </style>

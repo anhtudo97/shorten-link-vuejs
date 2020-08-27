@@ -29,7 +29,7 @@
         <div class="signup-an-account text-center mt-1">
           Already have an account?
           <nuxt-link to="/login">
-            <strong class="account-signup">signup</strong>
+            <strong class="account-signup">login</strong>
           </nuxt-link>
         </div>
       </v-col>
