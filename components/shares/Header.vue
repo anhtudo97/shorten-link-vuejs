@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto py-3">
+  <div class="mx-auto py-0 py-sm-3">
     <div class="display-small-hidden mx-0 mx-sm-6 mx-lg-8 mx-xl-10">
       <div class="header d-flex absolute align-center">
         <nuxt-link to="/">
@@ -31,7 +31,7 @@
       </div>
     </div>
     <div class="display-big-show">
-      <div class="header d-flex absolute align-center mx-7">
+      <div class="header d-flex absolute align-center mx-2 mx-sm-7 py-0">
         <nuxt-link to="/">
           <div class="header__logo">
             <img src="~/assets/logo.png" />

@@ -1,6 +1,6 @@
 <template>
   <v-row class="domain-detail mx-0">
-    <v-col cols="10" md="8" class="mx-auto px-0">
+    <v-col cols="12" sm="10" md="8" class="mx-auto px-0">
       <v-row class="align-center mx-0">
         <v-col cols="12" sm="8" md="9" lg="10">
           <div class="domain">{{domain}}</div>

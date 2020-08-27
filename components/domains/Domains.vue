@@ -64,7 +64,7 @@ export default {
 
 <style lang="scss" scoped>
 .domain {
-  margin-top: 12vh;
+  margin-top: 70px;
   font-family: Poppins, sans-serif;
   &__menu {
     .domain-count {

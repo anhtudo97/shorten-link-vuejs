@@ -117,7 +117,7 @@ export default {
 
 <style lang="scss" scoped>
 .link {
-  margin-top: 12vh;
+  margin-top: 7.1vh;
   font-family: Poppins, sans-serif;
   &__menu {
     .menu-text {
@@ -258,7 +258,7 @@ export default {
         line-height: 18px;
       }
       .menu-selection {
-        padding: 2px 16px;
+        padding: 2px 12px;
         .selection-text {
           font-size: 12px;
         }
