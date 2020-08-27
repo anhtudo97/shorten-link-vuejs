@@ -2,8 +2,6 @@
 [ RESTYLE TAG ]*/
 
 * {
-    margin: 0px;
-    padding: 0px;
     box-sizing: border-box;
 }
 
@@ -37,6 +35,19 @@ a {
 
 {
     transform: translateX(10px);
+    opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity .5s;
+}
+
+.fade-enter,
+.fade-leave-to
+/* .fade-leave-active below version 2.1.8 */
+
+{
     opacity: 0;
 }
 
