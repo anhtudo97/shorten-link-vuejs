@@ -1,5 +1,5 @@
 <template>
-  <v-row class="footer ma-0">
+  <div class="footer ma-0">
     <v-col cols="12" md="8" class="mx-auto py-0 py-md-3">
       <v-row class="justify-space-between">
         <v-col cols="12" sm="6" class="d-flex justify-center justify-md-start">
@@ -14,7 +14,7 @@
         >God Group © Copyright 2020</v-col>
       </v-row>
     </v-col>
-  </v-row>
+  </div>
 </template>
 
 <script>
@@ -24,7 +24,7 @@ export default {};
 <style lang="scss" scoped>
 .footer {
   font-family: Montserrat, sans-serif;
-  padding: 12px 10px;
+  height: 70px;
   background-color: #263849;
   .footer-title {
     color: white;

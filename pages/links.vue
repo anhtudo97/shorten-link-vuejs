@@ -1,14 +1,15 @@
 <template>
   <div>
-    <Login />
+    <Link />
   </div>
 </template>
 
 <script>
-import Login from '@/components/login/Login';
+import Link from '@/components/links/Links';
 export default {
+  layout: 'link',
   components: {
-    Login,
+    Link,
   },
 };
 </script>

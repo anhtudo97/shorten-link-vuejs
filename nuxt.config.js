@@ -37,7 +37,7 @@ export default {
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
    */
-  plugins: [],
+  plugins: [{ src: "@/plugins/clickOutside", ssr: false }],
   /*
    ** Auto import components
    ** See https://nuxtjs.org/api/configuration-components
@@ -46,7 +46,18 @@ export default {
   /*
    ** Nuxt.js dev-modules
    */
-  buildModules: ['@nuxtjs/vuetify'],
+  buildModules: [
+    '@nuxtjs/vuetify',
+    '@nuxtjs/style-resources',
+    '@nuxtjs/fontawesome',
+  ],
+  fontawesome:{
+    components: 'fa',
+    icons:{
+      solid: true,
+      brands: true
+    }
+  },
   /*
    ** Nuxt.js modules
    */
