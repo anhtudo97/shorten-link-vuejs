@@ -155,7 +155,7 @@ export default {};
   }
   @media (max-width: 600px) {
     &__image {
-      min-height: 40vh;
+      min-height: 35vh;
     }
     &__form-signup {
       .signup-image {
