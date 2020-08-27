@@ -18,12 +18,16 @@
           </li>
         </ul>
         <v-spacer></v-spacer>
-        <div class="header__login mr-5">
-          <div>Login</div>
-        </div>
-        <div class="header__signup py-3 px-6">
-          <div class="signup-text">Sign up</div>
-        </div>
+        <nuxt-link to="/login">
+          <div class="header__login mr-5">
+            <div>Login</div>
+          </div>
+        </nuxt-link>
+        <nuxt-link to="/sign-up">
+          <div class="header__signup py-3 px-6">
+            <div class="signup-text">Sign up</div>
+          </div>
+        </nuxt-link>
       </div>
     </div>
     <div class="display-big-show">
