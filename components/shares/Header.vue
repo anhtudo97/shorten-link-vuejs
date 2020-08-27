@@ -1,6 +1,6 @@
 <template>
   <div class="mx-auto py-3">
-    <div class="display-small-hidden mx-md-6 mx-lg-8 mx-xl-10 mx-0">
+    <div class="display-small-hidden mx-0 mx-sm-6 mx-lg-8 mx-xl-10">
       <div class="header d-flex absolute align-center">
         <nuxt-link to="/">
           <div class="header__logo">
@@ -32,9 +32,11 @@
     </div>
     <div class="display-big-show">
       <div class="header d-flex absolute align-center mx-7">
-        <div class="header__logo">
-          <img src="~/assets/logo.png" />
-        </div>
+        <nuxt-link to="/">
+          <div class="header__logo">
+            <img src="~/assets/logo.png" />
+          </div>
+        </nuxt-link>
         <v-spacer></v-spacer>
         <v-app-bar-nav-icon></v-app-bar-nav-icon>
       </div>
@@ -55,7 +57,7 @@ export default {
         {
           id: 2,
           name: 'Domains',
-          route: '/a',
+          route: '/domains',
         },
         {
           id: 3,
@@ -84,6 +86,9 @@ export default {
     }
     li:last-child {
       margin-right: 0;
+    }
+    @media (max-width: 660px) {
+      display: none;
     }
   }
   &__logo {

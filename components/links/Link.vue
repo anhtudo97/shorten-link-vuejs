@@ -111,11 +111,11 @@ export default {
       if (diffTime < 3600 * 1000) {
         return `${Math.ceil(diffTime / (60 * 1000))} min(s) ago`;
       } else if (diffTime < 1000 * 60 * 60 * 24) {
-          return `${Math.ceil(diffTime / (3600 * 1000))} hour(s) ago`;
-        } else {
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-          return `${diffDays} day(s) ago`;
-        }
+        return `${Math.ceil(diffTime / (3600 * 1000))} hour(s) ago`;
+      } else {
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return `${diffDays} day(s) ago`;
+      }
     },
   },
 };
@@ -186,6 +186,13 @@ export default {
     .shortened-date {
       font-size: 15px;
     }
+    .shortened-info {
+      .link-services {
+        img {
+          width: 22px;
+        }
+      }
+    }
   }
   @media (max-width: 960px) {
     .shortened-link {
@@ -199,6 +206,13 @@ export default {
     .shortened-clicks,
     .shortened-date {
       font-size: 14px;
+    }
+    .shortened-info {
+      .link-services {
+        img {
+          width: 20px;
+        }
+      }
     }
   }
   @media (max-width: 600px) {
