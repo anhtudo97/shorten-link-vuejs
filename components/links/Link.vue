@@ -3,7 +3,7 @@
     <v-col cols="10" md="8" class="mx-auto px-0">
       <v-row class="align-center mx-0">
         <v-col cols="12" md="8">
-          <div class="shortened-link">{{slashtag}}</div>
+          <div class="shortened-link" @click.stop="models.isOpen = true">{{slashtag}}</div>
           <div class="origin-link pt-2">{{link}}</div>
         </v-col>
         <v-col cols="12" md="4">
@@ -74,14 +74,25 @@
         </v-col>
       </v-row>
     </v-col>
+    <v-dialog v-model="models.isOpen" class="dialog" max-width="900">
+      <DetailLinkModal @closeModalDetailLink="closeModalDetailLink" :slashtag="slashtag"/>
+    </v-dialog>
   </v-row>
 </template>
 
 <script>
 import { clipboard } from 'vue-clipboards';
-
+import DetailLinkModal from '@/components/links/DetailLinkModal';
 export default {
   directives: { clipboard },
+  components: {
+    DetailLinkModal,
+  },
+  data: () => ({
+    models: {
+      isOpen: false,
+    },
+  }),
   props: {
     link: {
       type: String,
@@ -118,6 +129,11 @@ export default {
       }
     },
   },
+  methods:{
+    closeModalDetailLink(){
+      this.models.isOpen = false;
+    }
+  }
 };
 </script>
 
@@ -149,7 +165,7 @@ export default {
       top: 0;
       right: 0;
       opacity: 0;
-      z-index: 999;
+      z-index: 99;
       img {
         cursor: pointer;
         object-fit: cover;
@@ -229,5 +245,14 @@ export default {
       font-size: 12px;
     }
   }
+}
+.dialog {
+  position: fixed;
+  z-index: 99999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 </style>
