@@ -74,7 +74,7 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-dialog v-model="models.isOpen" class="dialog" max-width="80%">
+    <v-dialog v-model="models.isOpen" class="dialog" max-width="900">
       <DetailLinkModal @closeModalDetailLink="closeModalDetailLink" :slashtag="slashtag"/>
     </v-dialog>
   </v-row>
