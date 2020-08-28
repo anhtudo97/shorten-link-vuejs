@@ -3,12 +3,12 @@
     <v-row class="domain__menu mx-0">
       <v-col cols="11" md="8" class="mx-auto py-0 py-md-3">
         <v-row class="align-center">
-          <v-col cols="6" sm="8" lg="10">
+          <v-col cols="6" sm="8" lg="9">
             <div class="d-flex align-center">
               <div class="domain-count pr-4">{{domains.length}} Links</div>
             </div>
           </v-col>
-          <v-col cols="6" sm="4" lg="2">
+          <v-col cols="6" sm="4" lg="3">
             <div class="add-new-domain">
               <div class="new-domain">New domain</div>
             </div>
@@ -79,9 +79,9 @@ export default {
       text-align: center;
       color: #fff;
       font-weight: 600;
-      padding: 5px 0;
+      padding: 7px 15px;
       .new-domain {
-        font-size: 18px;
+        font-size: 16px;
         line-height: 24px;
       }
     }
@@ -93,7 +93,7 @@ export default {
       .add-new-domain {
         padding: 4px 0;
         .new-domain {
-          font-size: 17px;
+          font-size: 15px;
           line-height: 22px;
         }
       }
@@ -106,7 +106,7 @@ export default {
       .add-new-domain {
         padding: 3px 0;
         .new-domain {
-          font-size: 16px;
+          font-size: 14px;
           line-height: 20px;
         }
       }
@@ -119,7 +119,7 @@ export default {
 
       .add-new-domain {
         .new-domain {
-          font-size: 14px;
+          font-size: 12px;
           line-height: 20px;
         }
       }

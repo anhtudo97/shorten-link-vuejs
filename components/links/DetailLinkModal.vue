@@ -2,8 +2,8 @@
   <v-list class="modal-detail-link py-5">
     <div class="d-flex justify-space-between px-4">
       <div></div>
-      <div class="modal-detail-link__dialog-icon" @click="$emit('closeModalDetailLink')">
-        <img class="ma-2" src="@/assets/svg/close.svg" alt="close" />
+      <div class="modal-detail-link__dialog-icon pa-2" @click="$emit('closeModalDetailLink')">
+        <img src="@/assets/svg/close.svg" alt="close" />
       </div>
     </div>
     <v-row class="mx-0">
@@ -79,8 +79,8 @@
               class="mb-6"
             >If you trash this link it won't redirect to the destination URL anymore and any stats will be lost forever. This is a permanent action and cannot be undone.</div>
             <div class="d-flex">
-              <div class="dialog-cancel-button mr-5" @click="isRemoveModal = false">Cancel</div>
-              <div class="dialog-delete-button" @click="removeLink">Delete</div>
+              <div class="dialog-button dialog-cancel-button mr-5" @click="isRemoveModal = false">Cancel</div>
+              <div class="dialog-button dialog-delete-button" @click="removeLink">Delete</div>
             </div>
           </v-col>
         </v-row>

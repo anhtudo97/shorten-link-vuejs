@@ -2,7 +2,7 @@
   <v-row class="domain-detail mx-0">
     <v-col cols="12" sm="10" md="8" class="mx-auto px-0">
       <v-row class="align-center mx-0">
-        <v-col cols="12" sm="8" md="9" lg="10">
+        <v-col cols="12" sm="8" md="9" lg="10" @click.stop="models.isOpen = true">
           <div class="domain">{{domain}}</div>
         </v-col>
         <v-col cols="12" sm="4" md="3" lg="2">
@@ -10,12 +10,24 @@
         </v-col>
       </v-row>
     </v-col>
+    <v-dialog v-model="models.isOpen" class="dialog" max-width="900">
+      <DetailDomainModal @closeModalDetailLink="closeModalDetailDomain" />
+    </v-dialog>
   </v-row>
 </template>
 
 <script>
 import { format } from 'date-fns';
+import DetailDomainModal from '@/components/domains/DetailDomainModal';
 export default {
+  data: () => ({
+    models: {
+      isOpen: false,
+    },
+  }),
+  components: {
+    DetailDomainModal,
+  },
   props: {
     domain: {
       type: String,
@@ -28,7 +40,12 @@ export default {
   },
   computed: {
     date() {
-      return format(new Date(this.added), 'MMMM dd, yyyy')
+      return format(new Date(this.added), 'MMMM dd, yyyy');
+    },
+  },
+  methods: {
+    closeModalDetailDomain() {
+      this.models.isOpen = false;
     },
   },
 };
@@ -74,5 +91,14 @@ export default {
       font-size: 12px;
     }
   }
+}
+.dialog {
+  position: fixed;
+  z-index: 99999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 </style>
