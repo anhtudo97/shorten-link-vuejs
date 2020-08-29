@@ -1,5 +1,5 @@
 <template>
-  <div class="workspace mb-5">
+  <div class="workspace mb-5" @click.stop="openModalDetailModal = true">
     <v-row class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0">
       <v-col cols="7" sm="8" md="9" class="workspace__name">
         <div class="d-flex">
@@ -17,6 +17,17 @@
           <img src="@/assets/svg/trash.svg" alt="trash" class="ml-4" />
         </div>
       </v-col>
+      <v-dialog v-model="openModalDetailModal" class="dialog" max-width="900">
+        <v-list class="dialog-detail-workspace">
+          <div class="d-flex dialog-detail-workspace__name">
+            <img
+              class="img"
+              src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
+            />
+            <div class="name-text px-5">Main Workspace</div>
+          </div>
+        </v-list>
+      </v-dialog>
     </v-row>
   </div>
 </template>
@@ -34,6 +45,9 @@ export default {
       default: '',
     },
   },
+  data: () => ({
+    openModalDetailModal: false,
+  }),
   computed: {
     createdDate() {
       return format(new Date(this.date), 'MMM dd, yyyy');
@@ -167,6 +181,16 @@ export default {
           height: auto;
         }
       }
+    }
+  }
+}
+.dialog-detail-workspace {
+  padding: 3vh 4vh;
+  &__name {
+    img {
+      object-fit: cover;
+      width: 24px;
+      height: auto;
     }
   }
 }
