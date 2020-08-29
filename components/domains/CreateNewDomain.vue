@@ -118,17 +118,17 @@ export default {
       font-size: 20px;
     }
     &__description {
-      font-size: 12px;
+      font-size: 10px;
     }
     &__input {
-      font-size: 14px;
+      font-size: 12px;
     }
     &__select {
-      font-size: 14px;
+      font-size: 12px;
     }
     &__button {
       padding: 5px 35px;
-      font-size: 14px;
+      font-size: 12px;
     }
   }
 }
