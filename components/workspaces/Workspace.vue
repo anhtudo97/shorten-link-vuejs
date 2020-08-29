@@ -1,5 +1,5 @@
 <template>
-  <div class="workspace mb-11">
+  <div class="workspace mb-5">
     <v-row class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0">
       <v-col cols="7" sm="8" md="9" class="workspace__name">
         <div class="d-flex">
@@ -99,8 +99,14 @@ export default {
         width: 24px;
         height: auto;
       }
+      .name-text {
+        font-size: 15px;
+      }
     }
     &__content {
+      .date {
+        font-size: 15px;
+      }
       .modify {
         img {
           opacity: 0.6;
@@ -118,14 +124,46 @@ export default {
         width: 24px;
         height: auto;
       }
+      .name-text {
+        font-size: 14px;
+      }
     }
     &__content {
+      .date {
+        font-size: 14px;
+      }
       .modify {
+        width: 80%;
         img {
           margin-top: 2px;
           opacity: 0.6;
           object-fit: cover;
           width: 30px;
+          height: auto;
+        }
+      }
+    }
+  }
+  @media (max-width: 600px) {
+    &__name {
+      img {
+        object-fit: cover;
+        width: auto;
+        height: 20px;
+      }
+      .name-text {
+        font-size: 12px;
+      }
+    }
+    &__content {
+      .date {
+        font-size: 12px;
+      }
+      .modify {
+        width: 80%;
+        img {
+          margin-top: 5px;
+          width: 20px;
           height: auto;
         }
       }

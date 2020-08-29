@@ -112,7 +112,7 @@ export default {
       }
       .menu-button {
         font-size: 12px;
-        padding: 4px 28px;
+        padding: 4px 25px;
       }
     }
   }
