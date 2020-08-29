@@ -1,7 +1,7 @@
 <template>
   <div class="link">
     <v-row class="link__menu mx-0">
-      <v-col cols="11" md="8" class="mx-auto py-3">
+      <v-col cols="12" sm="10" md="8" class="mx-auto py-3">
         <v-row class="align-center">
           <v-col cols="7" sm="8" lg="10">
             <div class="d-flex align-center">
@@ -14,24 +14,23 @@
                 <transition name="slide-fade">
                   <div v-if="models.base" class="selection-modal">
                     <div class="modal-option" @click="changeConditions('Lastest')">Lastest</div>
-                    <div class="modal-option" @click="changeConditions('A - Z')">Slashtag A - Z</div>
-                    <div class="modal-option" @click="changeConditions('Z - A')">Slashtag Z - A</div>
+                    <div class="modal-option" @click="changeConditions('Slashtag A - Z')">Slashtag A - Z</div>
+                    <div class="modal-option" @click="changeConditions('Slashtag Z - A')">Slashtag Z - A</div>
                   </div>
                 </transition>
               </div>
             </div>
           </v-col>
-          <v-col cols="5" sm="4" lg="2">
-            <div class="add-new-link" @click.stop="models.modal = true">
+          <v-col cols="5" sm="4" lg="2" class="text-right">
+            <button class="add-new-link" @click.stop="models.modal = true">
               <div class="new-link">New Link</div>
-            </div>
+            </button>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
-    <div class="link__diviner"></div>
     <div class="link__management">
-      <ul class="pa-0">
+      <transition-group name="list" tag="ul" class="pa-0">
         <li v-for="link in tempLinks" :key="link.id">
           <Link
             :link="link.link"
@@ -40,10 +39,10 @@
             :date="link.date"
           />
         </li>
-      </ul>
+      </transition-group>
     </div>
     <v-dialog v-model="models.modal" class="link__dialog" max-width="80%">
-      <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink"/>
+      <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
   </div>
 </template>
@@ -81,7 +80,7 @@ export default {
   methods: {
     changeConditions(value) {
       this.keySort = value;
-      this.dialog = false;
+      this.models.base = false;
       this.linksSortBy(this.keySort);
     },
     linksSortBy(key) {
@@ -90,7 +89,7 @@ export default {
           return this.tempLinks.sort(function(a, b) {
             return new Date(b.date) - new Date(a.date);
           });
-        case 'Z - A':
+        case 'Slashtag Z - A':
           return this.tempLinks.sort(function(a, b) {
             if (a.slashtag < b.slashtag) {
               return 1;
@@ -100,7 +99,7 @@ export default {
             }
             return 0;
           });
-        case 'A - Z':
+        case 'Slashtag A - Z':
           return this.tempLinks.sort(function(a, b) {
             if (a.slashtag < b.slashtag) {
               return -1;
@@ -129,9 +128,9 @@ export default {
       ); // fragment locator
       return !!pattern.test(str);
     },
-    closeModalAddNewLink(){
+    closeModalAddNewLink() {
       this.models.modal = false;
-    }
+    },
   },
 };
 </script>
@@ -187,12 +186,14 @@ export default {
       border: 0.5px solid #dddddd;
       box-sizing: border-box;
       border-radius: 10px;
-      text-align: center;
       color: #fff;
       font-weight: 600;
-      padding: 5px 0;
+      padding: 7px 35px;
       .new-link {
-        font-size: 18px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 16px;
         line-height: 24px;
       }
     }
@@ -206,13 +207,13 @@ export default {
     }
     @media (max-width: 1366px) {
       .menu-text {
-        font-size: 17px;
+        font-size: 16px;
         line-height: 22px;
       }
       .menu-selection {
         padding: 4px 20px;
         .selection-text {
-          font-size: 15px;
+          font-size: 14px;
         }
         img {
           align-self: center;
@@ -223,9 +224,9 @@ export default {
         }
         .selection-modal {
           top: 40px;
-          padding: 10px 25px;
+          padding: 7px 15px;
           .modal-title {
-            font-size: 18px;
+            font-size: 16px;
             line-height: 24px;
           }
           .modal-option {
@@ -235,16 +236,15 @@ export default {
         }
       }
       .add-new-link {
-        padding: 4px 0;
         .new-link {
-          font-size: 17px;
+          font-size: 16px;
           line-height: 22px;
         }
       }
     }
     @media (max-width: 960px) {
       .menu-text {
-        font-size: 16px;
+        font-size: 15px;
         line-height: 20px;
       }
       .menu-selection {
@@ -253,29 +253,26 @@ export default {
           font-size: 14px;
         }
         img {
-          align-self: center;
-          object-fit: cover;
           width: 10px;
-          height: auto;
           opacity: 0.7;
         }
         .selection-modal {
           top: 35px;
-          padding: 10px 20px;
+          padding: 7px 15px;
           .modal-title {
-            font-size: 16px;
+            font-size: 15px;
             line-height: 22px;
           }
           .modal-option {
-            font-size: 14px;
+            font-size: 13px;
             line-height: 20px;
           }
         }
       }
       .add-new-link {
-        padding: 3px 0;
+         padding: 5px 30px;
         .new-link {
-          font-size: 16px;
+          font-size: 15px;
           line-height: 20px;
         }
       }
@@ -319,14 +316,6 @@ export default {
   &__management {
     ul {
       list-style: none;
-    }
-    li:nth-child(even) {
-      background: #f9f9fa;
-    }
-    li {
-      &:hover {
-        background-color: #eaf6ff;
-      }
     }
   }
   &__dialog {

@@ -1,9 +1,15 @@
 <template>
-  <v-row class="link-detail mx-0">
-    <v-col cols="10" md="8" class="mx-auto px-0">
+  <v-row class="link-detail mx-3">
+    <v-col
+      cols="12"
+      sm="10"
+      md="8"
+      class="mx-auto px-0 border-radius-10"
+      @click.stop="models.isOpen = true"
+    >
       <v-row class="align-center mx-0">
         <v-col cols="12" md="8">
-          <div class="shortened-link" @click.stop="models.isOpen = true">{{slashtag}}</div>
+          <div class="shortened-link">{{slashtag}}</div>
           <div class="origin-link pt-2">{{link}}</div>
         </v-col>
         <v-col cols="12" md="4">
@@ -18,7 +24,7 @@
                       <img
                         :src="require('@/assets/icons/route-solid.svg')"
                         alt="route"
-                        class="mr-5"
+                        class="ml-5"
                         v-bind="attrs"
                         v-on="on"
                       />
@@ -32,7 +38,7 @@
                       <img
                         :src="require('@/assets/icons/clone-solid.svg')"
                         alt="route"
-                        class="mr-5"
+                        class="ml-5"
                         v-bind="attrs"
                         v-on="on"
                       />
@@ -46,7 +52,7 @@
                       <img
                         :src="require('@/assets/icons/edit-solid.svg')"
                         alt="route"
-                        class="mr-5"
+                        class="ml-5"
                         v-bind="attrs"
                         v-on="on"
                       />
@@ -60,7 +66,7 @@
                       <img
                         :src="require('@/assets/icons/trash-solid.svg')"
                         alt="route"
-                        class="mr-5"
+                        class="ml-5"
                         v-bind="attrs"
                         v-on="on"
                       />
@@ -75,7 +81,7 @@
       </v-row>
     </v-col>
     <v-dialog v-model="models.isOpen" class="dialog" max-width="900">
-      <DetailLinkModal @closeModalDetailLink="closeModalDetailLink" :slashtag="slashtag"/>
+      <DetailLinkModal @closeModalDetailLink="closeModalDetailLink" :slashtag="slashtag" />
     </v-dialog>
   </v-row>
 </template>
@@ -129,22 +135,42 @@ export default {
       }
     },
   },
-  methods:{
-    closeModalDetailLink(){
+  methods: {
+    closeModalDetailLink() {
       this.models.isOpen = false;
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 .link-detail {
+  cursor: pointer;
+  margin-bottom: 20px;
+  .border-radius-10 {
+    border: 1px solid #e8e9ea;
+    border-radius: 10px;
+    transition: box-shadow 0.3s ease-in-out;
+    &:hover {
+      background-color: #eaf6ff;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      .shortened-info {
+        .link-services {
+          transition-duration: 0.5s;
+          transition-timing-function: linear;
+          opacity: 1;
+        }
+        .shortened-date {
+          opacity: 0;
+        }
+      }
+    }
+  }
   .shortened-link {
     font-weight: 600;
     font-size: 20px;
     line-height: 28px;
     color: #212732;
-    cursor: pointer;
     text-overflow: ellipsis;
     &:hover {
       color: #3c64b1;
@@ -174,18 +200,6 @@ export default {
       }
       .tooltip-white {
         background-color: white;
-      }
-    }
-  }
-  &:hover {
-    .shortened-info {
-      .link-services {
-        transition-duration: 0.5s;
-        transition-timing-function: linear;
-        opacity: 1;
-      }
-      .shortened-date {
-        opacity: 0;
       }
     }
   }

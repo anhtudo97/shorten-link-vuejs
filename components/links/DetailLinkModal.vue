@@ -2,8 +2,8 @@
   <v-list class="modal-detail-link py-5">
     <div class="d-flex justify-space-between px-4">
       <div></div>
-      <div class="modal-detail-link__dialog-icon" @click="$emit('closeModalDetailLink')">
-        <img class="ma-2" src="@/assets/svg/close.svg" alt="close" />
+      <div class="modal-detail-link__dialog-icon pa-2" @click="$emit('closeModalDetailLink')">
+        <img src="@/assets/svg/close.svg" alt="close" />
       </div>
     </div>
     <v-row class="mx-0">
@@ -76,11 +76,11 @@
             <img src="@/assets/svg/warning.svg" alt="warning" srcset />
             <div class="dialog-main-title mb-3">Delete this link?</div>
             <div
-              class="mb-6"
+              class="mb-6 dialog-main-des"
             >If you trash this link it won't redirect to the destination URL anymore and any stats will be lost forever. This is a permanent action and cannot be undone.</div>
             <div class="d-flex">
-              <div class="dialog-cancel-button mr-5" @click="isRemoveModal = false">Cancel</div>
-              <div class="dialog-delete-button" @click="removeLink">Delete</div>
+              <div class="dialog-button dialog-cancel-button mr-5" @click="isRemoveModal = false">Cancel</div>
+              <div class="dialog-button dialog-delete-button" @click="removeLink">Delete</div>
             </div>
           </v-col>
         </v-row>
@@ -230,6 +230,9 @@ export default {
         font-size: 22px;
         font-weight: 500;
       }
+      .dialog-main-des{
+        font-size: 15px;
+      }
       .dialog-cancel-button {
         width: 90px;
         padding: 5px;
@@ -276,6 +279,9 @@ export default {
         font-size: 20px;
         font-weight: 500;
       }
+      .dialog-main-des{
+        font-size: 14px;
+      }
       .dialog-cancel-button {
         width: 85px;
         padding: 4px;
@@ -319,8 +325,11 @@ export default {
         width: 30px;
       }
       .dialog-main-title {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 500;
+      }
+      .dialog-main-des{
+        font-size: 12px;
       }
       .dialog-cancel-button {
         width: 80px;

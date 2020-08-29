@@ -1,6 +1,12 @@
 <template>
-  <v-row class="domain-detail mx-0">
-    <v-col cols="12" sm="10" md="8" class="mx-auto px-0">
+  <v-row class="domain-detail mx-3 mt-5 mt-md-0">
+    <v-col
+      cols="12"
+      sm="10"
+      md="8"
+      class="mx-auto px-0 py-0 py-sm-3 border-radius-10"
+      @click.stop="models.isOpen = true"
+    >
       <v-row class="align-center mx-0">
         <v-col cols="12" sm="8" md="9" lg="10">
           <div class="domain">{{domain}}</div>
@@ -10,12 +16,24 @@
         </v-col>
       </v-row>
     </v-col>
+    <v-dialog v-model="models.isOpen" class="dialog" max-width="900">
+      <DetailDomainModal @closeModalDetailDomain="closeModalDetailDomain" />
+    </v-dialog>
   </v-row>
 </template>
 
 <script>
 import { format } from 'date-fns';
+import DetailDomainModal from '@/components/domains/DetailDomainModal';
 export default {
+  data: () => ({
+    models: {
+      isOpen: false,
+    },
+  }),
+  components: {
+    DetailDomainModal,
+  },
   props: {
     domain: {
       type: String,
@@ -28,7 +46,12 @@ export default {
   },
   computed: {
     date() {
-      return format(new Date(this.added), 'MMMM dd, yyyy')
+      return format(new Date(this.added), 'MMMM dd, yyyy');
+    },
+  },
+  methods: {
+    closeModalDetailDomain() {
+      this.models.isOpen = false;
     },
   },
 };
@@ -36,12 +59,24 @@ export default {
 
 <style lang="scss" scoped>
 .domain-detail {
+  margin-bottom: 20px;
+  cursor: pointer;
+  .border-radius-10 {
+    border: 1px solid #e8e9ea;
+    border-radius: 10px;
+    transition: box-shadow 0.3s ease-in-out;
+    &:hover {
+      background-color: #eaf6ff;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+  }
   .domain {
     font-weight: 500;
     font-size: 20px;
     line-height: 28px;
     color: #212732;
-    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
     text-overflow: ellipsis;
     &:hover {
       color: #3c64b1;
@@ -74,5 +109,14 @@ export default {
       font-size: 12px;
     }
   }
+}
+.dialog {
+  position: fixed;
+  z-index: 99999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 </style>
