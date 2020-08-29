@@ -41,7 +41,7 @@
         </li>
       </transition-group>
     </div>
-    <v-dialog v-model="models.modal" class="link__dialog" max-width="80%">
+    <v-dialog v-model="models.modal" class="link__dialog" max-width="900">
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
   </div>

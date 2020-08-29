@@ -14,16 +14,25 @@
         label="Destination your URL"
         hint="Type or paste your URL"
         outlined
+        dense
         rows="1"
       ></v-textarea>
       <transition name="slide-fade">
         <div v-if="validURL(destinationUrl)">
           <v-row>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="6" class="py-0">
               <v-select :items="tempDomains" label="Domain" dense outlined></v-select>
             </v-col>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="6" class="py-0">
               <v-text-field label="Slash tag" outlined dense></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="6" class="py-0">
+              <v-select :items="tempDomains" label="Workspaces" dense outlined></v-select>
+            </v-col>
+            <v-col cols="12" md="6" class="py-0">
+              <v-text-field label="Web title" outlined dense></v-text-field>
             </v-col>
           </v-row>
           <div class="d-flex justify-space-between">
