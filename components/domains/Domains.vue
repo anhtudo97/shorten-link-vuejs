@@ -19,7 +19,7 @@
     <div class="domain__diviner"></div>
     <v-row class="domain__sub-menu mx-0">
       <v-col cols="10" md="8" class="mx-auto py-0">
-        <v-row class="align-center">
+        <v-row class="align-center py-3">
           <v-col cols="7" sm="9" lg="10">
             <div class="domains pr-4">Domain</div>
           </v-col>
@@ -83,14 +83,18 @@ export default {
     }
     .add-new-domain {
       cursor: pointer;
-      background-color: #3c64b1;
-      border: 0.5px solid #dddddd;
+      border: 0.5px solid #3c64b1;
+      border-radius: 4px;
       box-sizing: border-box;
-      border-radius: 10px;
       text-align: center;
-      color: #fff;
-      font-weight: 600;
-      padding: 7px 20px;
+      color: #3c64b1;
+      font-weight: 500;
+      padding: 7px 35px;
+      transition: all 0.3s ease-in-out;
+      &:hover {
+        background-color: #3c64b1;
+        color: white;
+      }
       .new-domain {
         text-overflow: ellipsis;
         overflow: hidden;
@@ -140,7 +144,7 @@ export default {
   &__sub-menu {
     .domains,
     .added {
-      font-weight: 500;
+      font-weight: 600;
       font-size: 12px;
     }
     @media (max-width: 960px) {

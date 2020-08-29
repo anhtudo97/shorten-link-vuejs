@@ -14,8 +14,14 @@
                 <transition name="slide-fade">
                   <div v-if="models.base" class="selection-modal">
                     <div class="modal-option" @click="changeConditions('Lastest')">Lastest</div>
-                    <div class="modal-option" @click="changeConditions('Slashtag A - Z')">Slashtag A - Z</div>
-                    <div class="modal-option" @click="changeConditions('Slashtag Z - A')">Slashtag Z - A</div>
+                    <div
+                      class="modal-option"
+                      @click="changeConditions('Slashtag A - Z')"
+                    >Slashtag A - Z</div>
+                    <div
+                      class="modal-option"
+                      @click="changeConditions('Slashtag Z - A')"
+                    >Slashtag Z - A</div>
                   </div>
                 </transition>
               </div>
@@ -149,7 +155,7 @@ export default {
       background: #ffffff;
       border: 0.5px solid #dddddd;
       box-sizing: border-box;
-      border-radius: 10px;
+      border-radius: 4px;
       padding: 5px 20px;
       cursor: pointer;
       img {
@@ -166,7 +172,7 @@ export default {
         left: 0;
         border: 0.5px solid #dddddd;
         box-sizing: border-box;
-        border-radius: 10px;
+        border-radius: 4px;
         padding: 10px 30px;
         .modal-title {
           font-size: 20px;
@@ -182,13 +188,16 @@ export default {
     }
     .add-new-link {
       cursor: pointer;
-      background-color: #3c64b1;
-      border: 0.5px solid #dddddd;
-      box-sizing: border-box;
-      border-radius: 10px;
-      color: #fff;
-      font-weight: 600;
+      border: 0.5px solid #3c64b1;
+      border-radius: 4px;
+      color: #3c64b1;
+      font-weight: 500;
       padding: 7px 35px;
+      transition: all 0.3s ease-in-out;
+      &:hover {
+        background-color: #3c64b1;
+        color: white;
+      }
       .new-link {
         overflow: hidden;
         white-space: nowrap;
@@ -270,7 +279,7 @@ export default {
         }
       }
       .add-new-link {
-         padding: 5px 30px;
+        padding: 5px 30px;
         .new-link {
           font-size: 15px;
           line-height: 20px;
