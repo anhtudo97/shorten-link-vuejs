@@ -8,10 +8,10 @@
       @click.stop="models.isOpen = true"
     >
       <v-row class="align-center mx-0">
-        <v-col cols="12" sm="8" md="9" lg="10">
+        <v-col cols="12" sm="8" md="8" lg="9">
           <div class="domain">{{domain}}</div>
         </v-col>
-        <v-col cols="12" sm="4" md="3" lg="2">
+        <v-col cols="12" sm="4" md="4" lg="3" class="text-left text-sm-right">
           <div class="added">{{date}}</div>
         </v-col>
       </v-row>
@@ -81,6 +81,11 @@ export default {
     &:hover {
       color: #3c64b1;
     }
+  }
+  .added {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   @media (max-width: 1366px) {
     .domain {

@@ -9,7 +9,7 @@
             </div>
           </v-col>
           <v-col cols="6" sm="3" lg="3" class="text-right">
-            <button class="add-new-domain">
+            <button class="add-new-domain" @click.stop="openModalCreateNewDomain = true">
               <div class="new-domain">New domain</div>
             </button>
           </v-col>
@@ -23,7 +23,7 @@
           <v-col cols="7" sm="9" lg="10">
             <div class="domains pr-4">Domain</div>
           </v-col>
-          <v-col cols="5" sm="3" lg="2">
+          <v-col cols="5" sm="3" lg="2" class="text-center">
             <div class="added">Added on</div>
           </v-col>
         </v-row>
@@ -36,17 +36,24 @@
         </li>
       </transition-group>
     </div>
+    <v-dialog v-model="openModalCreateNewDomain" class="domain__dialog" max-width="900">
+      <CreateNewDomain @closeModalCreateNewDomain="closeModalCreateNewDomain" />
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import Domain from '@/components/domains/Domain';
-
+import CreateNewDomain from '@/components/domains/CreateNewDomain';
 export default {
   components: {
     Domain,
+    CreateNewDomain,
   },
+  data: () => ({
+    openModalCreateNewDomain: false,
+  }),
   computed: {
     ...mapGetters({
       domains: 'domains/getDomains',
@@ -55,6 +62,11 @@ export default {
       return [...this.domains].sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
+    },
+  },
+  methods: {
+    closeModalCreateNewDomain() {
+      this.openModalCreateNewDomain = false;
     },
   },
 };
