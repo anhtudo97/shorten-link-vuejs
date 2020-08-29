@@ -76,7 +76,7 @@
             <img src="@/assets/svg/warning.svg" alt="warning" srcset />
             <div class="dialog-main-title mb-3">Delete this link?</div>
             <div
-              class="mb-6"
+              class="mb-6 dialog-main-des"
             >If you trash this link it won't redirect to the destination URL anymore and any stats will be lost forever. This is a permanent action and cannot be undone.</div>
             <div class="d-flex">
               <div class="dialog-button dialog-cancel-button mr-5" @click="isRemoveModal = false">Cancel</div>
@@ -230,6 +230,9 @@ export default {
         font-size: 22px;
         font-weight: 500;
       }
+      .dialog-main-des{
+        font-size: 15px;
+      }
       .dialog-cancel-button {
         width: 90px;
         padding: 5px;
@@ -276,6 +279,9 @@ export default {
         font-size: 20px;
         font-weight: 500;
       }
+      .dialog-main-des{
+        font-size: 14px;
+      }
       .dialog-cancel-button {
         width: 85px;
         padding: 4px;
@@ -319,8 +325,11 @@ export default {
         width: 30px;
       }
       .dialog-main-title {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 500;
+      }
+      .dialog-main-des{
+        font-size: 12px;
       }
       .dialog-cancel-button {
         width: 80px;

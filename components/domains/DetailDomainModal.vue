@@ -2,7 +2,10 @@
   <v-list class="modal-detail-domain">
     <div class="d-flex justify-space-between">
       <div></div>
-      <div class="modal-detail-domain__dialog-icon pa-2" @click="$emit('closeModalDetailLink')">
+      <div
+        class="modal-detail-domain__dialog-icon pa-2"
+        @click.stop="$emit('closeModalDetailDomain')"
+      >
         <img src="@/assets/svg/close.svg" alt="close" />
       </div>
     </div>
@@ -56,8 +59,11 @@
               class="mb-6"
             >If you trash this link it won't redirect to the destination URL anymore and any stats will be lost forever. This is a permanent action and cannot be undone.</div>
             <div class="d-flex">
-              <div class="dialog-button dialog-cancel-button mr-5" @click="isRemoveModal = false">Cancel</div>
-              <div class="dialog-button dialog-delete-button" @click="removeLink">Delete</div>
+              <div
+                class="dialog-button dialog-cancel-button mr-5"
+                @click="isRemoveModal = false"
+              >Cancel</div>
+              <div class="dialog-button dialog-delete-button" @click="removeDomain">Delete</div>
             </div>
           </v-col>
         </v-row>
@@ -77,6 +83,11 @@ export default {
   data: () => ({
     isRemoveModal: false,
   }),
+  methods: {
+    removeDomain() {
+      console.log('Remove domain');
+    },
+  },
 };
 </script>
 
@@ -99,6 +110,9 @@ export default {
     .domain-url {
       font-size: 24px;
       line-height: 28px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
     .domain-created-at {
       img {
@@ -114,13 +128,8 @@ export default {
     }
   }
   &__services {
-    button{
-      outline: none;
-    }
     .services-title {
       color: #909398;
-    }
-    .services-name {
     }
     .services-button {
       padding: 1vh 4vh;
@@ -139,8 +148,6 @@ export default {
       }
     }
   }
-  &__remove {
-  }
   &__underline {
     border-color: #e8e9ea;
     border-width: 1px;
@@ -157,7 +164,7 @@ export default {
       font-size: 24px;
       font-weight: 500;
     }
-    .dialog-button{
+    .dialog-button {
       cursor: pointer;
       width: 100px;
       padding: 5px;
@@ -170,6 +177,96 @@ export default {
     .dialog-delete-button {
       background-color: #d34547;
       color: white;
+    }
+  }
+  @media (max-width: 1368px) {
+    &__domain {
+      .domain-url {
+        font-size: 23px;
+        line-height: 26px;
+      }
+      .domain-created-at {
+        img {
+          width: 18px;
+          padding-bottom: 5px;
+        }
+        .date {
+          font-size: 12px;
+          color: #595d66;
+        }
+      }
+    }
+    &__services {
+      .services-title,
+      .services-name {
+        font-size: 15px;
+      }
+      .services-button {
+        padding: 1vh 4vh;
+        .button-text {
+          font-size: 15px;
+        }
+      }
+    }
+  }
+  @media (max-width: 960px) {
+    &__domain {
+      .domain-url {
+        font-size: 22px;
+        line-height: 26px;
+      }
+      .domain-created-at {
+        img {
+          width: 18px;
+          padding-bottom: 5px;
+        }
+        .date {
+          font-size: 11px;
+          color: #595d66;
+        }
+      }
+    }
+    &__services {
+      .services-title,
+      .services-name {
+        font-size: 14px;
+      }
+      .services-button {
+        padding: 1vh 4vh;
+        .button-text {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+  @media (max-width: 600px) {
+    &__domain {
+      .domain-url {
+        font-size: 20px;
+        line-height: 24px;
+      }
+      .domain-created-at {
+        img {
+          width: 18px;
+          padding-bottom: 5px;
+        }
+        .date {
+          font-size: 10px;
+          color: #595d66;
+        }
+      }
+    }
+    &__services {
+      .services-title,
+      .services-name {
+        font-size: 12px;
+      }
+      .services-button {
+        padding: 1vh 4vh;
+        .button-text {
+          font-size: 12px;
+        }
+      }
     }
   }
 }

@@ -1,17 +1,17 @@
 <template>
   <div class="domain">
     <v-row class="domain__menu mx-0">
-      <v-col cols="11" md="8" class="mx-auto py-0 py-md-3">
+      <v-col cols="12" sm="10" md="8" class="mx-auto py-0 py-md-3">
         <v-row class="align-center">
-          <v-col cols="6" sm="8" lg="9">
+          <v-col cols="6" sm="9" lg="9">
             <div class="d-flex align-center">
-              <div class="domain-count pr-4">{{domains.length}} Links</div>
+              <div class="domain-count pr-4">{{domains.length}} Domain(s)</div>
             </div>
           </v-col>
-          <v-col cols="6" sm="4" lg="3">
-            <div class="add-new-domain">
+          <v-col cols="6" sm="3" lg="3" class="text-right">
+            <button class="add-new-domain">
               <div class="new-domain">New domain</div>
-            </div>
+            </button>
           </v-col>
         </v-row>
       </v-col>
@@ -24,18 +24,17 @@
             <div class="domains pr-4">Domain</div>
           </v-col>
           <v-col cols="5" sm="3" lg="2">
-            <div class="added">Added</div>
+            <div class="added">Added on</div>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
-    <div class="domain__diviner hidden-on-below-960"></div>
     <div class="domain__management">
-      <ul class="pa-0">
+      <transition-group name="list" tag="ul" class="pa-0">
         <li v-for="domain in tempDomains" :key="domain.id">
           <Domain :domain="domain.domain" :added="domain.createdAt" />
         </li>
-      </ul>
+      </transition-group>
     </div>
   </div>
 </template>
@@ -79,8 +78,11 @@ export default {
       text-align: center;
       color: #fff;
       font-weight: 600;
-      padding: 7px 15px;
+      padding: 7px 20px;
       .new-domain {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
         font-size: 16px;
         line-height: 24px;
       }
@@ -91,7 +93,6 @@ export default {
         line-height: 22px;
       }
       .add-new-domain {
-        padding: 4px 0;
         .new-domain {
           font-size: 15px;
           line-height: 22px;
@@ -104,7 +105,6 @@ export default {
         line-height: 20px;
       }
       .add-new-domain {
-        padding: 3px 0;
         .new-domain {
           font-size: 14px;
           line-height: 20px;
@@ -141,16 +141,8 @@ export default {
     background-color: #c4c4c4;
   }
   &__management {
-    ul {
-      list-style: none;
-    }
-    li:nth-child(even) {
-      background: #f9f9fa;
-    }
     li {
-      &:hover {
-        background-color: #eaf6ff;
-      }
+      list-style: none;
     }
   }
   .hidden-on-below-960 {
