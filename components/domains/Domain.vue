@@ -1,5 +1,5 @@
 <template>
-  <v-row class="domain-detail mx-3 mt-5 mt-md-0">
+  <v-row class="domain-detail mt-5 mt-md-0">
     <v-col
       cols="12"
       sm="10"

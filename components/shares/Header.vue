@@ -62,7 +62,7 @@ export default {
         {
           id: 3,
           name: 'Workspaces',
-          route: '/b',
+          route: '/workspaces',
         },
         {
           id: 4,
