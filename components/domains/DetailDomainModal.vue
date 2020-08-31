@@ -39,7 +39,7 @@
         <div class="services-title">Remove</div>
       </v-col>
       <v-col cols="12" sm="9">
-        <button class="services-button" @click.stop="isRemoveModal = true">
+        <button class="button-warning services-button" @click.stop="isRemoveModal = true">
           <div class="button-text">Remove this domain</div>
         </button>
       </v-col>
@@ -50,24 +50,11 @@
       </v-col>
     </v-row>
     <v-dialog v-model="isRemoveModal" persistent width="500">
-      <v-list class="modal-detail-domain__dialog-remove">
-        <v-row class="mx-0">
-          <v-col cols="11" class="mx-auto">
-            <img src="@/assets/svg/warning.svg" alt="warning" srcset />
-            <div class="dialog-main-title mb-3">Delete this link?</div>
-            <div
-              class="mb-6"
-            >If you trash this link it won't redirect to the destination URL anymore and any stats will be lost forever. This is a permanent action and cannot be undone.</div>
-            <div class="d-flex">
-              <div
-                class="dialog-button dialog-cancel-button mr-5"
-                @click="isRemoveModal = false"
-              >Cancel</div>
-              <div class="dialog-button dialog-delete-button" @click="removeDomain">Delete</div>
-            </div>
-          </v-col>
-        </v-row>
-      </v-list>
+      <RemoveModal
+        name="domain"
+        @removeElement="removeDomain"
+        @closeRemoveModal="closeRemoveModal"
+      />
     </v-dialog>
   </v-list>
 </template>
@@ -75,17 +62,20 @@
 <script>
 import { format } from 'date-fns';
 export default {
+  data: () => ({
+    isRemoveModal: false,
+  }),
   computed: {
     date() {
       return format(new Date(), 'MMMM dd, yyy');
     },
   },
-  data: () => ({
-    isRemoveModal: false,
-  }),
   methods: {
     removeDomain() {
       console.log('Remove domain');
+    },
+    closeRemoveModal() {
+      this.isRemoveModal = false;
     },
   },
 };
@@ -133,51 +123,13 @@ export default {
     }
     .services-button {
       padding: 1vh 4vh;
-      border: 1px solid #d34547;
-      border-radius: 10px;
-      .button-text {
-        font-weight: 500;
-        color: #d34547;
-      }
-      transition: all 0.3s ease-in;
-      &:hover {
-        background-color: #d34547;
-        .button-text {
-          color: #fff;
-        }
-      }
+      font-weight: 500;
     }
   }
   &__underline {
     border-color: #e8e9ea;
     border-width: 1px;
     border-style: solid;
-  }
-  &__dialog-remove {
-    font-family: Poppins, sans-serif;
-    img {
-      object-fit: cover;
-      width: 36px;
-      height: auto;
-    }
-    .dialog-main-title {
-      font-size: 24px;
-      font-weight: 500;
-    }
-    .dialog-button {
-      cursor: pointer;
-      width: 100px;
-      padding: 5px;
-      text-align: center;
-      border-radius: 10px;
-    }
-    .dialog-cancel-button {
-      border: 1px solid #2c96df;
-    }
-    .dialog-delete-button {
-      background-color: #d34547;
-      color: white;
-    }
   }
   @media (max-width: 1368px) {
     &__domain {

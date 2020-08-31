@@ -1,42 +1,96 @@
 <template>
   <div class="workspace mb-5">
     <v-row class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0">
-      <v-col cols="7" sm="8" md="9" class="workspace__name">
+      <v-col
+        cols="7"
+        sm="8"
+        md="9"
+        class="workspace__name"
+        @click.stop="openModalDetailModal = true"
+      >
         <div class="d-flex">
           <img
             class="img"
             src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
           />
-          <div class="name-text px-5">Main Workspace</div>
+          <div class="name-text px-5">{{workspace.name}}</div>
         </div>
       </v-col>
       <v-col cols="5" sm="4" md="3" class="text-md-center text-right workspace__content">
         <div class="date">{{createdDate}}</div>
         <div class="modify d-flex align-center justify-end justify-md-center">
-          <img src="@/assets/svg/member.svg" alt="member" class="ml-4" />
-          <img src="@/assets/svg/trash.svg" alt="trash" class="ml-4" />
+          <img
+            src="@/assets/svg/member.svg"
+            alt="member"
+            class="ml-4"
+            @click.stop="openModalMemberModal=true"
+          />
+          <img
+            src="@/assets/svg/trash.svg"
+            alt="trash"
+            class="ml-4"
+            @click.stop="isRemoveModal = true"
+          />
         </div>
       </v-col>
+      <v-dialog v-model="openModalDetailModal" class="dialog" max-width="1000">
+        <DetailWorkspaceModal
+          :workspace="workspace"
+          @closeModalDetailWorkspace="closeModalDetailWorkspace"
+        />
+      </v-dialog>
+      <v-dialog v-model="openModalMemberModal" class="dialog" max-width="650">
+        <ManagementMemberModal :workspace="workspace" @closeModalMembers="closeModalMembers" />
+      </v-dialog>
+      <v-dialog v-model="isRemoveModal" persistent width="500">
+        <RemoveModal
+          name="workspace"
+          @closeRemoveModal="closeRemoveModal"
+          @removeElement="removeWorkspace"
+        />
+      </v-dialog>
     </v-row>
   </div>
 </template>
 
 <script>
 import { format } from 'date-fns';
+import DetailWorkspaceModal from '@/components/workspaces/DetailWorkspaceModal';
+import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
 export default {
+  components: {
+    DetailWorkspaceModal,
+    ManagementMemberModal,
+  },
   props: {
-    name: {
-      type: String,
-      default: '',
-    },
-    date: {
-      type: String,
-      default: '',
+    workspace: {
+      type: Object,
+      default: () => {},
     },
   },
+  data: () => ({
+    openModalDetailModal: false,
+    openModalMemberModal: false,
+    isRemoveModal: false,
+    items: ['https://passport.yandex.com/', 'https://www.notion.so/'],
+    value: ['https://www.notion.so/'],
+  }),
   computed: {
     createdDate() {
-      return format(new Date(this.date), 'MMM dd, yyyy');
+      return format(new Date(this.workspace.createdAt), 'MMMM dd, yyyy');
+    },
+  },
+  methods: {
+    closeModalDetailWorkspace() {
+      this.openModalDetailModal = false;
+    },
+    closeModalMembers() {
+      this.openModalMemberModal = false;
+    },
+    removeWorkspace() {
+    },
+    closeRemoveModal() {
+      this.isRemoveModal = false;
     },
   },
 };
@@ -59,6 +113,11 @@ export default {
       object-fit: cover;
       width: 24px;
       height: auto;
+    }
+    .name-text{
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
   &__content {

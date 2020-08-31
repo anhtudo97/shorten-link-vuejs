@@ -1,5 +1,5 @@
 <template>
-  <v-row class="domain-detail mt-5 mt-md-0">
+  <v-row class="domain-detail mt-5 mt-md-0 mx-3">
     <v-col
       cols="12"
       sm="10"
@@ -26,11 +26,6 @@
 import { format } from 'date-fns';
 import DetailDomainModal from '@/components/domains/DetailDomainModal';
 export default {
-  data: () => ({
-    models: {
-      isOpen: false,
-    },
-  }),
   components: {
     DetailDomainModal,
   },
@@ -44,6 +39,11 @@ export default {
       default: '',
     },
   },
+  data: () => ({
+    models: {
+      isOpen: false,
+    },
+  }),
   computed: {
     date() {
       return format(new Date(this.added), 'MMMM dd, yyyy');
