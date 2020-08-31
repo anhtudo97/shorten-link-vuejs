@@ -114,6 +114,11 @@ export default {
       width: 24px;
       height: auto;
     }
+    .name-text{
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
   &__content {
     position: relative;

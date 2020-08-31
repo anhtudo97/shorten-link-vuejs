@@ -11,24 +11,13 @@
         <div
           class="d-flex justify-space-between modal-detail-link__dialog-main align-center mb-10 flex-wrap"
         >
-          <div class="main-title">https://www.johnsmilga.com/projects</div>
+          <a
+            href="https://www.johnsmilga.com/projects"
+            class="main-title"
+          >https://www.johnsmilga.com/projects</a>
           <div class="d-flex dialog-link-service align-center">
             <div v-clipboard="slashtag" class="dialog-button-copy mr-3">Copy</div>
-            <button class="dialog-button">Edit</button>
-            <!-- <v-tooltip top nudge-left="10">
-              <template v-slot:activator="{ on, attrs }">
-                <div @click="isRemoveModal = true">
-                  <img
-                    :src="require('@/assets/icons/trash-solid.svg')"
-                    alt="route"
-                    class="mr-5"
-                    v-bind="attrs"
-                    v-on="on"
-                  />
-                </div>
-              </template>
-              <span>Remove</span>
-            </v-tooltip>-->
+            <button class="dialog-button button-normal">Edit</button>
           </div>
         </div>
         <div class="modal-detail-link__dialog-sub">
@@ -58,6 +47,17 @@
               <div
                 class="information-content content-border"
               >https://blog.tqdesign.vn/5-meo-thiet-ke-ux-ung-dung-thuong-mai-dien-tu-thien-voi-nguoi-dung-hon-16661.html</div>
+            </v-col>
+          </v-row>
+          <v-row class="information d-flex align-center">
+            <v-col cols="12" md="3">
+              <div class="information-title">Remove</div>
+            </v-col>
+            <v-col cols="12" md="9">
+              <button
+                @click.stop="isRemoveModal = true"
+                class="remove-button button-warning"
+              >Remove this link</button>
             </v-col>
           </v-row>
         </div>
@@ -121,22 +121,20 @@ export default {
   }
   &__dialog-main {
     .main-title {
+      cursor: pointer;
       font-size: 24px;
       font-weight: 500;
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
+      &:hover {
+        color: #3c64b1;
+      }
     }
     .dialog-link-service {
-      img {
-        margin-top: 10px;
-        cursor: pointer;
-        object-fit: cover;
-        width: 30px;
-        height: auto;
-      }
       .dialog-button-copy {
         cursor: pointer;
+        color: #3c64b1;
         padding: 3px 20px;
         border: 0.5px solid #3c64b1;
         border-radius: 4px;
@@ -152,10 +150,6 @@ export default {
     }
   }
   &__dialog-sub {
-    .link-title,
-    .destination-url {
-      font-size: 15px;
-    }
     .information {
       .information-title {
         color: #909398;
@@ -173,6 +167,9 @@ export default {
         color: #212732;
         border-radius: 10px;
       }
+      .remove-button {
+        padding: 1vh 10vh;
+      }
     }
   }
 
@@ -182,23 +179,31 @@ export default {
         font-size: 22px;
       }
       .dialog-link-service {
-        img {
-          margin-top: 10px;
-          width: 27px;
+        .dialog-button-copy {
+          font-size: 15px;
+          padding: 2px 20px;
+        }
+        .dialog-button {
+          font-size: 15px;
+          padding: 2px 25px;
         }
       }
     }
     &__dialog-sub {
-      .link-title,
-      .destination-url {
-        font-size: 14px;
-      }
-      .calendar {
-        img {
-          width: 15px;
+      .information {
+        .information-title {
+          font-size: 14px;
         }
-        .date {
-          font-size: 13px;
+        .information-content {
+          font-size: 14px;
+        }
+        .content-border {
+          font-size: 14px;
+          padding: 1vh 2vh;
+        }
+        .remove-button {
+          font-size: 14px;
+          padding: 0.5vh 7vh;
         }
       }
     }
@@ -209,23 +214,31 @@ export default {
         font-size: 20px;
       }
       .dialog-link-service {
-        img {
-          margin-top: 10px;
-          width: 25px;
+        .dialog-button-copy {
+          font-size: 14px;
+          padding: 2px 20px;
+        }
+        .dialog-button {
+          font-size: 14px;
+          padding: 2px 25px;
         }
       }
     }
     &__dialog-sub {
-      .link-title,
-      .destination-url {
-        font-size: 13px;
-      }
-      .calendar {
-        img {
-          width: 14px;
+      .information {
+        .information-title {
+          font-size: 13px;
         }
-        .date {
-          font-size: 12px;
+        .information-content {
+          font-size: 13px;
+        }
+        .content-border {
+          font-size: 13px;
+          padding: 1vh 2vh;
+        }
+        .remove-button {
+          font-size: 13px;
+          padding: 0.5vh 7vh;
         }
       }
     }
@@ -236,23 +249,31 @@ export default {
         font-size: 18px;
       }
       .dialog-link-service {
-        img {
-          margin-top: 10px;
-          width: 22px;
+        .dialog-button-copy {
+          font-size: 13px;
+          padding: 2px 20px;
+        }
+        .dialog-button {
+          font-size: 13px;
+          padding: 2px 25px;
         }
       }
     }
     &__dialog-sub {
-      .link-title,
-      .destination-url {
-        font-size: 12px;
-      }
-      .calendar {
-        img {
-          width: 12px;
+      .information {
+        .information-title {
+          font-size: 12px;
         }
-        .date {
-          font-size: 11px;
+        .information-content {
+          font-size: 12px;
+        }
+        .content-border {
+          font-size: 12px;
+          padding: 1vh 2vh;
+        }
+        .remove-button {
+          font-size: 12px;
+          padding: 0.3vh 6vh;
         }
       }
     }

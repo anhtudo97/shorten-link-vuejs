@@ -39,7 +39,7 @@
         <div class="services-title">Remove</div>
       </v-col>
       <v-col cols="12" sm="9">
-        <button class="services-button" @click.stop="isRemoveModal = true">
+        <button class="button-warning services-button" @click.stop="isRemoveModal = true">
           <div class="button-text">Remove this domain</div>
         </button>
       </v-col>
@@ -50,7 +50,11 @@
       </v-col>
     </v-row>
     <v-dialog v-model="isRemoveModal" persistent width="500">
-      <RemoveModal name="domain" @removeElement="removeDomain" @closeRemoveModal="closeRemoveModal" />
+      <RemoveModal
+        name="domain"
+        @removeElement="removeDomain"
+        @closeRemoveModal="closeRemoveModal"
+      />
     </v-dialog>
   </v-list>
 </template>
@@ -119,19 +123,7 @@ export default {
     }
     .services-button {
       padding: 1vh 4vh;
-      border: 1px solid #d34547;
-      border-radius: 10px;
-      .button-text {
-        font-weight: 500;
-        color: #d34547;
-      }
-      transition: all 0.3s ease-in;
-      &:hover {
-        background-color: #d34547;
-        .button-text {
-          color: #fff;
-        }
-      }
+      font-weight: 500;
     }
   }
   &__underline {
@@ -139,7 +131,6 @@ export default {
     border-width: 1px;
     border-style: solid;
   }
-
   @media (max-width: 1368px) {
     &__domain {
       .domain-url {

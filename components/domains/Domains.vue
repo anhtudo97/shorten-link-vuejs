@@ -9,9 +9,10 @@
             </div>
           </v-col>
           <v-col cols="6" sm="3" lg="3" class="text-right">
-            <button class="add-new-domain" @click.stop="openModalCreateNewDomain = true">
-              <div class="new-domain">New domain</div>
-            </button>
+            <button
+              class="button-normal add-new-domain"
+              @click.stop="openModalCreateNewDomain = true"
+            >New domain</button>
           </v-col>
         </v-row>
       </v-col>
@@ -82,26 +83,10 @@ export default {
       letter-spacing: 0.2px;
     }
     .add-new-domain {
-      cursor: pointer;
-      border: 0.5px solid #3c64b1;
-      border-radius: 4px;
-      box-sizing: border-box;
-      text-align: center;
-      color: #3c64b1;
       font-weight: 500;
       padding: 7px 35px;
-      transition: all 0.3s ease-in-out;
-      &:hover {
-        background-color: #3c64b1;
-        color: white;
-      }
-      .new-domain {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-        font-size: 16px;
-        line-height: 24px;
-      }
+      font-size: 16px;
+      line-height: 24px;
     }
     @media (max-width: 1366px) {
       .domain-count {
@@ -109,10 +94,8 @@ export default {
         line-height: 22px;
       }
       .add-new-domain {
-        .new-domain {
-          font-size: 15px;
-          line-height: 22px;
-        }
+        font-size: 15px;
+        line-height: 22px;
       }
     }
     @media (max-width: 960px) {
@@ -121,10 +104,8 @@ export default {
         line-height: 20px;
       }
       .add-new-domain {
-        .new-domain {
-          font-size: 14px;
-          line-height: 20px;
-        }
+        font-size: 14px;
+        line-height: 20px;
       }
     }
     @media (max-width: 600px) {
@@ -134,10 +115,8 @@ export default {
       }
 
       .add-new-domain {
-        .new-domain {
-          font-size: 12px;
-          line-height: 20px;
-        }
+        font-size: 12px;
+        line-height: 20px;
       }
     }
   }

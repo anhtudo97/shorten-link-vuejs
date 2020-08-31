@@ -107,7 +107,7 @@ export default {
       border-bottom: none;
       .menu-text {
         font-size: 12px;
-        padding: 4px 28px;
+        padding: 4px 26px;
       }
       .menu-button {
         font-size: 12px;

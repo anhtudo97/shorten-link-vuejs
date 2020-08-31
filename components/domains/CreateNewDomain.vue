@@ -39,12 +39,11 @@
     </v-row>
     <v-row>
       <v-col cols="12" class="text-right">
-        <button class="dialog-create-new-domain__button">
+        <button class="button-normal dialog-create-new-domain__button">
           <div class="button-text">Create new domain</div>
         </button>
       </v-col>
     </v-row>
-    <div class></div>
   </v-list>
 </template>
 
@@ -81,16 +80,7 @@ export default {
   }
   &__button {
     padding: 10px 40px;
-    border: 0.5px solid #3c64b1;
-    border-radius: 10px;
-    font-size: 18px;
     font-weight: 500;
-    color: #3c64b1;
-    transition: all 0.3s ease-in-out;
-    &:hover {
-      background-color: #3c64b1;
-      color: #fff;
-    }
   }
   @media (max-width: 1368px) {
     &__title {
@@ -110,12 +100,12 @@ export default {
     }
     &__button {
       padding: 7px 35px;
-      font-size: 16px;
+      font-size: 15px;
     }
   }
   @media (max-width: 600px) {
     &__title {
-      font-size: 20px;
+      font-size: 18px;
     }
     &__description {
       font-size: 10px;
@@ -129,6 +119,7 @@ export default {
     &__button {
       padding: 5px 35px;
       font-size: 12px;
+      width: 100%;
     }
   }
 }

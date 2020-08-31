@@ -17,11 +17,33 @@ a {
 
 button {
     outline: none;
+}
+
+.button-normal {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
     border: 0.5px solid #3c64b1;
     border-radius: 4px;
+    color: #3c64b1;
     transition: all 0.2s ease-in-out;
     &:hover {
         background-color: #3c64b1;
+        color: #fff;
+    }
+}
+
+.button-warning {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    border: 0.5px solid #d34547;
+    border-radius: 4px;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+    color: #d34547;
+    &:hover {
+        background-color: #d34547;
         color: #fff;
     }
 }

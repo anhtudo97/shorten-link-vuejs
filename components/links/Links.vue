@@ -28,9 +28,7 @@
             </div>
           </v-col>
           <v-col cols="5" sm="4" lg="2" class="text-right">
-            <button class="add-new-link" @click.stop="models.modal = true">
-              <div class="new-link">New Link</div>
-            </button>
+            <button class="button-normal add-new-link" @click.stop="models.modal = true">New Link</button>
           </v-col>
         </v-row>
       </v-col>
@@ -187,24 +185,10 @@ export default {
       }
     }
     .add-new-link {
-      cursor: pointer;
-      border: 0.5px solid #3c64b1;
-      border-radius: 4px;
-      color: #3c64b1;
       font-weight: 500;
       padding: 7px 35px;
-      transition: all 0.3s ease-in-out;
-      &:hover {
-        background-color: #3c64b1;
-        color: white;
-      }
-      .new-link {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        font-size: 16px;
-        line-height: 24px;
-      }
+      font-size: 16px;
+      line-height: 24px;
     }
     .menu-dialog {
       padding: 2vh 3vh;
@@ -245,10 +229,8 @@ export default {
         }
       }
       .add-new-link {
-        .new-link {
-          font-size: 16px;
-          line-height: 22px;
-        }
+        font-size: 16px;
+        line-height: 22px;
       }
     }
     @media (max-width: 960px) {
@@ -280,10 +262,8 @@ export default {
       }
       .add-new-link {
         padding: 5px 30px;
-        .new-link {
-          font-size: 15px;
-          line-height: 20px;
-        }
+        font-size: 15px;
+        line-height: 20px;
       }
     }
     @media (max-width: 600px) {
@@ -310,10 +290,8 @@ export default {
         }
       }
       .add-new-link {
-        .new-link {
-          font-size: 15px;
-          line-height: 20px;
-        }
+        font-size: 15px;
+        line-height: 20px;
       }
     }
   }

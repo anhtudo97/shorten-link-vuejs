@@ -1,9 +1,9 @@
 <template>
   <v-list class="dialog-member-workspace">
     <div class="d-flex justify-space-between dialog-member-workspace__title">
-      <div class="d-flex align-center">
-        <div class="dialog-title">{{workspace.name}}</div>
-        <button class="ml-4 dialog-button">Save</button>
+      <div class="d-flex align-center flex-wrap">
+        <div class="dialog-title mr-4">{{workspace.name}}</div>
+        <button class="button-normal  dialog-button">Save</button>
       </div>
       <div class="d-flex justify-space-between dialog-icon-block">
         <div></div>
@@ -71,6 +71,51 @@ export default {
   }
   &__member {
     padding: 0 4vh;
+  }
+  @media screen and (max-width: 1368px) {
+    &__title {
+      padding: 2.5vh 3.5vh;
+      .dialog-title {
+        font-size: 20px;
+      }
+      .dialog-button {
+        font-size: 15px;
+        padding: 1px 20px;
+      }
+    }
+    &__member {
+      padding: 0 3.5vh;
+    }
+  }
+  @media screen and (max-width: 960px) {
+    &__title {
+      padding: 2.5vh 3vh;
+      .dialog-title {
+        font-size: 18px;
+      }
+      .dialog-button {
+        font-size: 14px;
+        padding: 1px 20px;
+      }
+    }
+    &__member {
+      padding: 0 3vh;
+    }
+  }
+  @media screen and (max-width: 600px) {
+    &__title {
+      padding: 2.5vh 3vh;
+      .dialog-title {
+        font-size: 16px;
+      }
+      .dialog-button {
+        font-size: 12px;
+        padding: 1px 20px;
+      }
+    }
+    &__member {
+      padding: 0 3vh;
+    }
   }
 }
 </style>

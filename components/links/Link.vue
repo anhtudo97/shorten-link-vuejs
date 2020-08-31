@@ -177,6 +177,8 @@ export default {
     line-height: 28px;
     color: #212732;
     text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
     &:hover {
       color: #3c64b1;
     }
@@ -185,6 +187,9 @@ export default {
     font-size: 15px;
     line-height: 24px;
     color: #595d66;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
   .shortened-info {
     position: relative;
@@ -262,6 +267,13 @@ export default {
     .shortened-clicks,
     .shortened-date {
       font-size: 12px;
+    }
+    .shortened-info {
+      .link-services {
+        img {
+          width: 18px;
+        }
+      }
     }
   }
 }
