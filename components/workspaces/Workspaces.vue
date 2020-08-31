@@ -1,15 +1,16 @@
 <template>
   <div class="workspaces">
     <v-row class="workspaces__menu mx-0">
-      <v-col cols="12" sm="10" md="8" class="mx-auto py-5">
+      <v-col cols="12" sm="10" md="8" class="mx-auto py-2 py-md-3 py-lg-5">
         <v-row class="align-center justify-space-between main-menu">
           <v-col cols class="px-sm-0">
             <button class="menu-text">{{workspaces.length}} Workspace(s)</button>
           </v-col>
           <v-col class="text-right">
-            <button class="menu-button">
-              <div class="button-text">New workspace</div>
-            </button>
+            <button
+              class="button-normal menu-button"
+              @click.stop="openCreateNewWorkspace = true"
+            >New workspace</button>
           </v-col>
         </v-row>
       </v-col>
@@ -29,24 +30,28 @@
     <v-row class="workspaces__management">
       <v-col cols="12" sm="10" md="8" class="mx-auto">
         <transition-group name="list" tag="section" class="pa-0">
-          <Workspace
-            v-for="workspace in workspaces"
-            :key="workspace.id"
-            :workspace="workspace"
-          />
+          <Workspace v-for="workspace in workspaces" :key="workspace.id" :workspace="workspace" />
         </transition-group>
       </v-col>
     </v-row>
+    <v-dialog v-model="openCreateNewWorkspace" max-width="750">
+      <CreateNewWorkspaceModal @closeCreateNewWorkspace="closeCreateNewWorkspace"/>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import Workspace from '@/components/workspaces/Workspace';
+import CreateNewWorkspaceModal from '@/components/workspaces/CreateNewWorkspace'
 export default {
   components: {
     Workspace,
+    CreateNewWorkspaceModal
   },
+  data: () => ({
+    openCreateNewWorkspace: false,
+  }),
   computed: {
     ...mapGetters({
       workspaces: 'workspaces/getWorkspaces',
@@ -57,6 +62,11 @@ export default {
       });
     },
   },
+  methods:{
+    closeCreateNewWorkspace(){
+      this.openCreateNewWorkspace = false;
+    }
+  }
 };
 </script>
 
@@ -71,16 +81,8 @@ export default {
       padding: 7px 35px;
     }
     .menu-button {
-      border: 0.5px solid #3c64b1;
-      border-radius: 4px;
       padding: 7px 35px;
-      color: #3c64b1;
       font-weight: 500;
-      transition: all 0.3s ease-in-out;
-      &:hover {
-        background-color: #3c64b1;
-        color: white;
-      }
     }
     @media (max-width: 1368px) {
       .menu-text {

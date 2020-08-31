@@ -3,7 +3,7 @@
     <div class="d-flex justify-space-between dialog-member-workspace__title">
       <div class="d-flex align-center flex-wrap">
         <div class="dialog-title mr-4">{{workspace.name}}</div>
-        <button class="button-normal  dialog-button">Save</button>
+        <button class="button-normal dialog-button">Save</button>
       </div>
       <div class="d-flex justify-space-between dialog-icon-block">
         <div></div>
@@ -12,8 +12,21 @@
         </div>
       </div>
     </div>
-    <div v-for="item in members" :key="item.id" class="d-flex dialog-member-workspace__member">
-      <v-checkbox v-model="selected" :label="`${item.name}`" :value="item.id"></v-checkbox>
+    <div
+      v-for="item in members_joined"
+      :key="item.id"
+      class="d-flex justify-space-between dialog-member-workspace__member align-center"
+    >
+      <div class="member-name">{{item.name}}</div>
+      <button class="button-warning member-action">Remove</button>
+    </div>
+    <div
+      v-for="item in unjoined"
+      :key="item.id"
+      class="d-flex justify-space-between dialog-member-workspace__member align-center"
+    >
+      <div class="member-name">{{item.name}}</div>
+      <button class="button-normal member-action">Add New</button>
     </div>
   </v-list>
 </template>
@@ -28,7 +41,7 @@ export default {
   },
   data: () => ({
     selected: [1],
-    members: [
+    members_joined: [
       {
         id: 1,
         name: 'tuanh',
@@ -38,7 +51,33 @@ export default {
         name: 'anhtu',
       },
     ],
+    members_unjoined: [
+      {
+        id: 1,
+        name: 'tuanh',
+      },
+      {
+        id: 2,
+        name: 'anhtu',
+      },
+      {
+        id: 3,
+        name: 'Lnacgh',
+      },
+      {
+        id: 4,
+        name: 'Pcbwiqug',
+      },
+    ],
   }),
+  computed: {
+    unjoined() {
+      const names = [...this.members_joined].map((x) => x.name);
+      return this.members_unjoined.filter((x) => {
+        if (!names.includes(x.name)) return x;
+      });
+    },
+  },
 };
 </script>
 
@@ -70,7 +109,15 @@ export default {
     }
   }
   &__member {
-    padding: 0 4vh;
+    margin: 2vh 0;
+    padding: 1vh 4vh;
+    .member-name {
+      color: #909398;
+    }
+    .member-action {
+      font-weight: 500;
+      padding: 3px 25px;
+    }
   }
   @media screen and (max-width: 1368px) {
     &__title {
@@ -84,7 +131,16 @@ export default {
       }
     }
     &__member {
-      padding: 0 3.5vh;
+      margin: 2vh 0;
+      padding: 1vh 3.5vh;
+      .member-name {
+        font-size: 15px;
+        color: #909398;
+      }
+      .member-action {
+        font-size: 15px;
+        padding: 3px 25px;
+      }
     }
   }
   @media screen and (max-width: 960px) {
@@ -99,7 +155,14 @@ export default {
       }
     }
     &__member {
-      padding: 0 3vh;
+      .member-name {
+        font-size: 14px;
+        color: #909398;
+      }
+      .member-action {
+        font-size: 14px;
+        padding: 3px 25px;
+      }
     }
   }
   @media screen and (max-width: 600px) {
@@ -115,6 +178,14 @@ export default {
     }
     &__member {
       padding: 0 3vh;
+      .member-name {
+        font-size: 13px;
+        color: #909398;
+      }
+      .member-action {
+        font-size: 13px;
+        padding: 3px 25px;
+      }
     }
   }
 }

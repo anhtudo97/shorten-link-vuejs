@@ -87,8 +87,7 @@ export default {
     closeModalMembers() {
       this.openModalMemberModal = false;
     },
-    removeWorkspace() {
-    },
+    removeWorkspace() {},
     closeRemoveModal() {
       this.isRemoveModal = false;
     },
@@ -114,7 +113,7 @@ export default {
       width: 24px;
       height: auto;
     }
-    .name-text{
+    .name-text {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
