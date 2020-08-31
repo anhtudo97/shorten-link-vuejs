@@ -1,14 +1,8 @@
 <template>
   <v-row class="link-detail mx-3">
-    <v-col
-      cols="12"
-      sm="10"
-      md="8"
-      class="mx-auto px-0 border-radius-10"
-      @click.stop="models.isOpen = true"
-    >
+    <v-col cols="12" sm="10" md="8" class="mx-auto px-0 border-radius-10">
       <v-row class="align-center mx-0">
-        <v-col cols="12" md="8">
+        <v-col cols="12" md="8" @click.stop="models.isOpen = true">
           <div class="shortened-link">{{slashtag}}</div>
           <div class="origin-link pt-2">{{link}}</div>
         </v-col>
@@ -62,7 +56,7 @@
                 </v-tooltip>
                 <v-tooltip top nudge-left="10">
                   <template v-slot:activator="{ on, attrs }">
-                    <div>
+                    <div @click.stop="isRemoveModal = true">
                       <img
                         :src="require('@/assets/icons/trash-solid.svg')"
                         alt="route"
@@ -81,24 +75,25 @@
       </v-row>
     </v-col>
     <v-dialog v-model="models.isOpen" class="dialog" max-width="900">
-      <DetailLinkModal @closeModalDetailLink="closeModalDetailLink" :slashtag="slashtag" />
+      <DetailLinkModal :slashtag="slashtag" @closeModalDetailLink="closeModalDetailLink" />
+    </v-dialog>
+    <v-dialog v-model="isRemoveModal" persistent width="500">
+      <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
     </v-dialog>
   </v-row>
 </template>
 
 <script>
 import { clipboard } from 'vue-clipboards';
+
 import DetailLinkModal from '@/components/links/DetailLinkModal';
+import RemoveModal from '@/components/shares/RemoveModal';
 export default {
   directives: { clipboard },
   components: {
     DetailLinkModal,
+    RemoveModal,
   },
-  data: () => ({
-    models: {
-      isOpen: false,
-    },
-  }),
   props: {
     link: {
       type: String,
@@ -117,6 +112,12 @@ export default {
       default: '',
     },
   },
+  data: () => ({
+    models: {
+      isOpen: false,
+    },
+    isRemoveModal: false,
+  }),
   computed: {
     createAt() {
       const today = Date.parse(new Date());
@@ -138,6 +139,10 @@ export default {
   methods: {
     closeModalDetailLink() {
       this.models.isOpen = false;
+    },
+    removeLink() {},
+    closeRemoveModal() {
+      this.isRemoveModal = false;
     },
   },
 };

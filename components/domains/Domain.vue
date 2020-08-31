@@ -26,11 +26,6 @@
 import { format } from 'date-fns';
 import DetailDomainModal from '@/components/domains/DetailDomainModal';
 export default {
-  data: () => ({
-    models: {
-      isOpen: false,
-    },
-  }),
   components: {
     DetailDomainModal,
   },
@@ -44,6 +39,11 @@ export default {
       default: '',
     },
   },
+  data: () => ({
+    models: {
+      isOpen: false,
+    },
+  }),
   computed: {
     date() {
       return format(new Date(this.added), 'MMMM dd, yyyy');

@@ -4,7 +4,7 @@
       <v-col cols="12" sm="10" md="8" class="mx-auto py-5">
         <v-row class="align-center justify-space-between main-menu">
           <v-col cols class="px-sm-0">
-            <button class="menu-text">1 Workspace(s)</button>
+            <button class="menu-text">{{workspaces.length}} Workspace(s)</button>
           </v-col>
           <v-col class="text-right">
             <button class="menu-button">
@@ -30,10 +30,9 @@
       <v-col cols="12" sm="10" md="8" class="mx-auto">
         <transition-group name="list" tag="section" class="pa-0">
           <Workspace
-            :name="workspace.name"
-            :date="workspace.createdAt"
             v-for="workspace in workspaces"
             :key="workspace.id"
+            :workspace="workspace"
           />
         </transition-group>
       </v-col>
