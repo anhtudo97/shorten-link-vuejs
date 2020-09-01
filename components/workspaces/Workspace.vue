@@ -20,15 +20,21 @@
         <div class="date">{{createdDate}}</div>
         <div class="modify d-flex align-center justify-end justify-md-center">
           <img
+            src="@/assets/svg/addlink.svg"
+            alt="add link"
+            class="ml-4"
+            @click.stop="openAddLinkDomainModal=true"
+          />
+          <img
             src="@/assets/svg/member.svg"
             alt="member"
-            class="ml-4"
+            class="ml-4 opacity-06"
             @click.stop="openModalMemberModal=true"
           />
           <img
             src="@/assets/svg/trash.svg"
             alt="trash"
-            class="ml-4"
+            class="ml-4 opacity-06"
             @click.stop="isRemoveModal = true"
           />
         </div>
@@ -49,18 +55,27 @@
           @removeElement="removeWorkspace"
         />
       </v-dialog>
+      <v-dialog v-model="openAddLinkDomainModal" width="700">
+        <AddLinksDomainsModal
+          @closeModalAddLinksDomain="closeModalAddLinksDomain"
+        />
+      </v-dialog>
     </v-row>
   </div>
 </template>
 
 <script>
 import { format } from 'date-fns';
+
 import DetailWorkspaceModal from '@/components/workspaces/DetailWorkspaceModal';
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
+import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
+
 export default {
   components: {
     DetailWorkspaceModal,
     ManagementMemberModal,
+    AddLinksDomainsModal,
   },
   props: {
     workspace: {
@@ -71,6 +86,7 @@ export default {
   data: () => ({
     openModalDetailModal: false,
     openModalMemberModal: false,
+    openAddLinkDomainModal: false,
     isRemoveModal: false,
     items: ['https://passport.yandex.com/', 'https://www.notion.so/'],
     value: ['https://www.notion.so/'],
@@ -87,8 +103,10 @@ export default {
     closeModalMembers() {
       this.openModalMemberModal = false;
     },
-    removeWorkspace() {
+    closeModalAddLinksDomain() {
+      this.openAddLinkDomainModal = false;
     },
+    removeWorkspace() {},
     closeRemoveModal() {
       this.isRemoveModal = false;
     },
@@ -114,7 +132,7 @@ export default {
       width: 24px;
       height: auto;
     }
-    .name-text{
+    .name-text {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -134,10 +152,12 @@ export default {
       opacity: 0;
       width: 100%;
       img {
-        opacity: 0.6;
         object-fit: cover;
         width: 30px;
         height: auto;
+      }
+      .opacity-06 {
+        opacity: 0.6;
       }
     }
   }

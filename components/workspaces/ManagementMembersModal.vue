@@ -1,9 +1,8 @@
 <template>
   <v-list class="dialog-member-workspace">
-    <div class="d-flex justify-space-between dialog-member-workspace__title">
+    <div class="d-flex justify-space-between dialog-member-workspace__title border-b">
       <div class="d-flex align-center flex-wrap">
         <div class="dialog-title mr-4">{{workspace.name}}</div>
-        <button class="button-normal  dialog-button">Save</button>
       </div>
       <div class="d-flex justify-space-between dialog-icon-block">
         <div></div>
@@ -12,9 +11,34 @@
         </div>
       </div>
     </div>
-    <div v-for="item in members" :key="item.id" class="d-flex dialog-member-workspace__member">
-      <v-checkbox v-model="selected" :label="`${item.name}`" :value="item.id"></v-checkbox>
+    <div
+      class="dialog-member-workspace__header d-flex py-3 justify-space-between border-b align-center"
+    >
+      <div class="header-name">Name</div>
+      <button class="button-normal dialog-button font-weight-medium px-4">Send the invitations</button>
     </div>
+    <div class="border-b">
+      <transition-group name="fade" mode="in-out">
+        <div
+          v-for="item in joined"
+          :key="item.id"
+          class="d-flex justify-space-between dialog-member-workspace__member align-center"
+        >
+          <div class="member-name">{{item.name}}</div>
+
+          <button class="button-warning member-action" @click="removeFromList(item.id)">Remove</button>
+        </div>
+      </transition-group>
+    </div>
+    <transition-group name="fade" mode="in-out">
+      <div
+        v-for="item in unjoined"
+        :key="item.id"
+        class="d-flex justify-space-between dialog-member-workspace__unmember align-center"
+      >
+        <v-checkbox v-model="selected" class="checkbox-member" :label="item.name"></v-checkbox>
+      </div>
+    </transition-group>
   </v-list>
 </template>
 
@@ -27,8 +51,8 @@ export default {
     },
   },
   data: () => ({
-    selected: [1],
-    members: [
+    selected: [],
+    joined: [
       {
         id: 1,
         name: 'tuanh',
@@ -38,7 +62,33 @@ export default {
         name: 'anhtu',
       },
     ],
+    users: [
+      {
+        id: 1,
+        name: 'tuanh',
+      },
+      {
+        id: 2,
+        name: 'anhtu',
+      },
+      {
+        id: 3,
+        name: 'Lnacgh',
+      },
+      {
+        id: 4,
+        name: 'Pcbwiqug',
+      },
+    ],
   }),
+  computed: {
+    unjoined() {
+      const names = [...this.joined].map((x) => x.name);
+      return [...this.users].filter((x) => {
+        if (!names.includes(x.name)) return x;
+      });
+    },
+  },
 };
 </script>
 
@@ -46,7 +96,6 @@ export default {
 .dialog-member-workspace {
   font-family: Poppins, sans-serif;
   &__title {
-    border-bottom: 1px solid #e8e9ea;
     padding: 3vh 4vh;
     .dialog-title {
       font-size: 22px;
@@ -65,12 +114,40 @@ export default {
         }
       }
     }
+  }
+  &__header {
+    padding: 1vh 4vh;
+    .header-name {
+      color: #909398;
+      font-weight: 500;
+    }
     .dialog-button {
       padding: 1px 20px;
     }
   }
   &__member {
+    margin: 2vh 0;
+    padding: 1vh 4vh;
+    .member-name {
+      color: #909398;
+    }
+    .member-action {
+      font-weight: 500;
+      padding: 3px 25px;
+    }
+  }
+  &__unmember {
     padding: 0 4vh;
+    .member-name {
+      color: #909398;
+    }
+    .member-action {
+      font-weight: 500;
+      padding: 3px 25px;
+    }
+    .checkbox-member::v-deep label {
+      font-size: 15px;
+    }
   }
   @media screen and (max-width: 1368px) {
     &__title {
@@ -78,13 +155,40 @@ export default {
       .dialog-title {
         font-size: 20px;
       }
+    }
+    &__header {
+      padding: 1vh 3.5vh;
+      .header-name {
+        font-size: 15px;
+      }
       .dialog-button {
         font-size: 15px;
         padding: 1px 20px;
       }
     }
     &__member {
+      margin: 2vh 0;
+      padding: 1vh 3.5vh;
+      .member-name {
+        font-size: 15px;
+      }
+      .member-action {
+        font-size: 15px;
+        padding: 3px 25px;
+      }
+    }
+    &__unmember {
       padding: 0 3.5vh;
+      .member-name {
+        font-size: 15px;
+      }
+      .member-action {
+        font-size: 15px;
+        padding: 3px 25px;
+      }
+      .checkbox-member::v-deep label {
+        font-size: 15px;
+      }
     }
   }
   @media screen and (max-width: 960px) {
@@ -93,13 +197,34 @@ export default {
       .dialog-title {
         font-size: 18px;
       }
+    }
+    &__header {
+      padding: 1vh 3vh;
       .dialog-button {
         font-size: 14px;
         padding: 1px 20px;
       }
     }
     &__member {
-      padding: 0 3vh;
+      .member-name {
+        font-size: 14px;
+      }
+      .member-action {
+        font-size: 14px;
+        padding: 3px 25px;
+      }
+    }
+    &__unmember {
+      .member-name {
+        font-size: 14px;
+      }
+      .member-action {
+        font-size: 14px;
+        padding: 3px 25px;
+      }
+      .checkbox-member::v-deep label {
+        font-size: 14px;
+      }
     }
   }
   @media screen and (max-width: 600px) {
@@ -108,13 +233,36 @@ export default {
       .dialog-title {
         font-size: 16px;
       }
+    }
+    &__header {
+      padding: 1vh 3vh;
       .dialog-button {
-        font-size: 12px;
+        font-size: 13px;
         padding: 1px 20px;
       }
     }
     &__member {
       padding: 0 3vh;
+      .member-name {
+        font-size: 13px;
+      }
+      .member-action {
+        font-size: 13px;
+        padding: 3px 25px;
+      }
+    }
+    &__unmember {
+      padding: 0 3vh;
+      .member-name {
+        font-size: 13px;
+      }
+      .member-action {
+        font-size: 13px;
+        padding: 3px 25px;
+      }
+      .checkbox-member::v-deep label {
+        font-size: 13px;
+      }
     }
   }
 }

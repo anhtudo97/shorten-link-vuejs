@@ -48,6 +48,16 @@ button {
     }
 }
 
+.border-b {
+    border-bottom: 1px solid #e8e9ea;
+}
+
+@media sceen and (max-width: 1368px) {
+    label {
+        font-size: 15px;
+    }
+}
+
 
 /* Enter and leave animations can use different */
 

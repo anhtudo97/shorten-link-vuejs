@@ -9,20 +9,19 @@ export const state = () => ({
     },
     {
       id: 2,
-      link: 'https://humanbenchmark.com/dashboard',
+      link: 'https://humanbenchmark.com/dashboard2',
       slashtag: 'rebrand.ly/241b5',
       click: 12,
       date: '2020-08-21T10:10:25.704675+07:00',
     },
     {
       id: 3,
-      link: 'https://humanbenchmark.com/dashboard',
+      link: 'https://humanbenchmark.com/dashboard3',
       slashtag: 'rebrand.ly/241b9',
       click: 12,
       date: '2020-08-26T10:11:25.704675+07:00',
     },
   ],
-  key: '',
 });
 
 export const getters = {

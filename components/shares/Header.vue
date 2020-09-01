@@ -7,7 +7,6 @@
             <img src="~/assets/logo.png" />
           </div>
         </nuxt-link>
-        <v-spacer></v-spacer>
         <ul>
           <li v-for="item in menu" :key="item.id">
             <nuxt-link :to="item.route" exact-active-class="nuxt-link-active">
@@ -18,6 +17,12 @@
           </li>
         </ul>
         <v-spacer></v-spacer>
+        <nuxt-link to="/notifications">
+          <div class="d-flex align-center header__notification mr-5 px-4 py-2">
+            <div class="counter mr-4">12</div>
+            <div class="content">Notification</div>
+          </div>
+        </nuxt-link>
         <nuxt-link to="/login">
           <div class="header__login mr-5">
             <div>Login</div>
@@ -91,7 +96,7 @@ export default {
     li:last-child {
       margin-right: 0;
     }
-    @media (max-width: 660px) {
+    @media (max-width: 900px) {
       display: none;
     }
   }
@@ -129,7 +134,23 @@ export default {
       color: #000;
     }
   }
-
+  &__notification {
+    border: 0.5px solid #3c64b1;
+    border-radius: 4px;
+    .counter {
+      background-color: #d34547;
+      border-radius: 75%;
+      color: #fff;
+      line-height: 1;
+      font-size: 14px;
+      padding: 5px;
+    }
+    .content {
+      font-size: 14px;
+      font-weight: 500;
+      color: #3c64b1;
+    }
+  }
   .nuxt-link-active {
     .header__menu {
       .menu-text {
@@ -144,14 +165,14 @@ export default {
 
 .display-small-hidden {
   display: none;
-  @media (min-width: 660px) {
+  @media (min-width: 900px) {
     display: block;
   }
 }
 
 .display-big-show {
   display: block;
-  @media (min-width: 660px) {
+  @media (min-width: 900px) {
     display: none;
   }
 }

@@ -1,0 +1,255 @@
+<template>
+  <v-list class="dialog-add-links-domains">
+    <div
+      class="dialog-add-links-domains__header d-flex justify-space-between align-center py-3 border-b"
+    >
+      <div class="d-flex align-center">
+        <div class="header-title mr-3">Add more domains</div>
+      </div>
+      <div class="d-flex justify-space-between">
+        <div></div>
+        <div class="header-dialog-icon pa-2" @click.stop="$emit('closeModalAddLinksDomain')">
+          <img src="@/assets/svg/close.svg" alt="close" />
+        </div>
+      </div>
+    </div>
+    <v-row
+      class="mx-0 justify-space-between py-3 align-center dialog-add-links-domains__menu border-b"
+    >
+      <div class="menu-title">Domains</div>
+      <button class="button-normal add-button">Add more</button>
+    </v-row>
+    <div class="border-b">
+      <transition-group name="fade" mode="in-out">
+        <div
+          v-for="item in domain_joined"
+          :key="item.id"
+          class="d-flex justify-space-between dialog-add-links-domains__domain align-center"
+        >
+          <div class="member-name">{{item.domain}}</div>
+
+          <button class="button-warning member-action" @click="removeFromList(item.id)">Remove</button>
+        </div>
+      </transition-group>
+    </div>
+    <transition-group name="fade" mode="in-out">
+      <div
+        v-for="item in unjoined"
+        :key="item.id"
+        class="d-flex justify-space-between dialog-add-links-domains__undomain align-center"
+      >
+        <v-checkbox v-model="domainSelected" class="checkbox-member" :label="item.domain"></v-checkbox>
+      </div>
+    </transition-group>
+  </v-list>
+</template>
+
+<script>
+import { mapGetters } from 'vuex';
+export default {
+  data: () => ({
+    tabs: null,
+    domain_joined: [
+      {
+        id: 11,
+        domain: 'https://godgroup.atlassian.net/',
+        createdAt: '2020-08-26T10:10:25.704675+07:00',
+      },
+      {
+        id: 21,
+        domain: 'https://gitlab.com/',
+        createdAt: '2020-08-21T10:10:25.704675+07:00',
+      },
+    ],
+    domainSelected: [],
+  }),
+  computed: {
+    ...mapGetters({
+      domains: 'domains/getDomains',
+    }),
+    unjoined() {
+      const names = [...this.domain_joined].map((x) => x.domain);
+      return [...this.domains].filter((x) => {
+        if (!names.includes(x.domain)) return x;
+      });
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.dialog-add-links-domains {
+  font-family: Poppins, sans-serif;
+  &__header {
+    padding: 1vh 4vh;
+    .header-title {
+      font-size: 22px;
+      font-weight: 500;
+    }
+    .header-dialog-icon {
+      cursor: pointer;
+      height: 32px;
+      background-color: #f9f9fa;
+      border-radius: 50%;
+      img {
+        object-fit: cover;
+        width: 16px;
+        height: auto;
+      }
+    }
+  }
+  &__menu {
+    padding: 1vh 4vh;
+    .menu-title {
+      color: #909398;
+
+      font-weight: 500;
+    }
+    .add-button {
+      font-weight: 500;
+      padding: 3px 5vh;
+    }
+  }
+  &__domain {
+    margin: 2vh 0;
+    padding: 1vh 4vh;
+    .member-name {
+      color: #909398;
+    }
+    .member-action {
+      font-weight: 500;
+      padding: 3px 25px;
+    }
+  }
+  &__undomain {
+    padding: 0 4vh;
+    .member-name {
+      font-size: 15px;
+      color: #909398;
+    }
+    .member-action {
+      font-weight: 500;
+      padding: 3px 25px;
+    }
+  }
+  @media screen and (max-width: 1368px) {
+    &__header {
+      padding: 1vh 3.5vh;
+      .header-title {
+        font-size: 20px;
+      }
+    }
+    &__menu {
+      padding: 1vh 3.5vh;
+      .menu-title {
+        font-size: 15px;
+      }
+      .add-button {
+        font-size: 15px;
+        padding: 3px 4.5vh;
+      }
+    }
+    &__domain {
+      margin: 1.5vh 0;
+      padding: 1vh 3.5vh;
+      .member-name {
+        font-size: 15px;
+      }
+      .member-action {
+        font-size: 15px;
+      }
+    }
+    &__undomain {
+      padding: 0 3.5vh;
+      .member-name {
+        font-size: 15px;
+      }
+      .member-action {
+        font-size: 15px;
+      }
+      .checkbox-member::v-deep label {
+        font-size: 15px;
+      }
+    }
+  }
+  @media screen and (max-width: 960px) {
+    &__header {
+      padding: 1vh 3vh;
+      .header-title {
+        font-size: 18px;
+      }
+    }
+    &__menu {
+      padding: 1vh 3.5vh;
+      .menu-title {
+        font-size: 14px;
+      }
+      .add-button {
+        font-size: 14px;
+        padding: 3px 4.5vh;
+      }
+    }
+    &__domain {
+      margin: 1.5vh 0;
+      padding: 1vh 3.5vh;
+      .member-name {
+        font-size: 14px;
+      }
+      .member-action {
+        font-size: 14px;
+      }
+    }
+    &__undomain {
+      padding: 0 3.5vh;
+      .member-name {
+        font-size: 14px;
+      }
+      .member-action {
+        font-size: 14px;
+      }
+      .checkbox-member::v-deep label {
+        font-size: 14px;
+      }
+    }
+  }
+  @media screen and (max-width: 960px) {
+    &__header {
+      .header-title {
+        font-size: 16px;
+      }
+    }
+    &__menu {
+      padding: 1vh 3.5vh;
+      .menu-title {
+        font-size: 13px;
+      }
+      .add-button {
+        font-size: 13px;
+        padding: 3px 4.5vh;
+      }
+    }
+    &__domain {
+      margin: 1.5vh 0;
+      padding: 1vh 3.5vh;
+      .member-name {
+        font-size: 13px;
+      }
+      .member-action {
+        font-size: 13px;
+      }
+    }
+    &__undomain {
+      padding: 0 3.5vh;
+      .member-name {
+        font-size: 13px;
+      }
+      .member-action {
+        font-size: 13px;
+      }
+      .checkbox-member::v-deep label {
+        font-size: 13px;
+      }
+    }
+  }
+}
+</style>
