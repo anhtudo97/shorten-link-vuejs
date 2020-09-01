@@ -34,7 +34,7 @@
         </transition-group>
       </v-col>
     </v-row>
-    <v-dialog v-model="openCreateNewWorkspace" max-width="750">
+    <v-dialog v-model="openCreateNewWorkspace" max-width="850">
       <CreateNewWorkspaceModal @closeCreateNewWorkspace="closeCreateNewWorkspace"/>
     </v-dialog>
   </div>

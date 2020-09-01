@@ -1,9 +1,11 @@
 <template>
   <v-list class="dialog-create-workspace">
     <div
-      class="dialog-create-workspace__header d-flex justify-space-between align-center px-4 py-3"
+      class="dialog-create-workspace__header d-flex justify-space-between align-center py-3 border-b"
     >
-      <div class="header-title">Create a new workspace</div>
+      <div class="d-flex align-center">
+        <div class="header-title mr-3">Create a new workspace</div>
+      </div>
       <div class="d-flex justify-space-between">
         <div></div>
         <div class="header-dialog-icon pa-2" @click.stop="$emit('closeCreateNewWorkspace')">
@@ -11,84 +13,44 @@
         </div>
       </div>
     </div>
-    <div class="py-3">
-
+    <div class="dialog-create-workspace__content">
+      <v-row class="py-5 align-center">
+        <v-col cols="12" sm="4" class="py-0">
+          <div class="label-text">Workspace name:</div>
+        </v-col>
+        <v-col cols="12" sm="8" class="py-0">
+          <v-text-field
+            class="text-field-name"
+            outlined
+            dense
+            label="Workspace name"
+            hide-details="auto"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row class="py-1 align-center my-3">
+        <v-col cols="12" class="py-0 text-right">
+          <button class="button-normal button-create">Create workspace</button>
+        </v-col>
+      </v-row>
     </div>
-    <v-card flat>
-      <v-tabs v-model="tabs" fixed-tabs>
-        <v-tabs-slider></v-tabs-slider>
-        <v-tab href="#links" class="primary--text">Add Links</v-tab>
-        <v-tab href="#members" class="primary--text">Add Members</v-tab>
-        <v-tab href="#domains" class="primary--text">Add Domains</v-tab>
-      </v-tabs>
-    </v-card>
-    <v-tabs-items v-model="tabs" class="px-10">
-      <v-tab-item value="links">
-        <v-list>
-          <v-checkbox
-            v-for="link in links"
-            :key="link.id"
-            v-model="linkSelected"
-            :label="link.link"
-            :value="link.link"
-          ></v-checkbox>
-        </v-list>
-      </v-tab-item>
-      <v-tab-item value="members">
-        <v-checkbox
-          v-for="user in users"
-          :key="user.id"
-          v-model="userSelected"
-          :label="user.name"
-          :value="user.name"
-        ></v-checkbox>
-      </v-tab-item>
-    </v-tabs-items>
-    <v-tab-item value="domains">
-      <v-checkbox
-        v-for="domain in domains"
-        :key="domain.id"
-        v-model="domainSelected"
-        :label="domain.domain"
-        :value="domain.domain"
-      ></v-checkbox>
-    </v-tab-item>
   </v-list>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-export default {
-  data: () => ({
-    tabs: null,
-    linkSelected: [],
-    domainSelected: [],
-    userSelected: [],
-    users: [
-      {
-        id: 1,
-        name: 'tuanh',
-      },
-    ],
-  }),
-  computed: {
-    ...mapGetters({
-      links: 'links/getLinks',
-      domains: 'domains/getDomains',
-    }),
-  },
-};
+export default {};
 </script>
 
 <style lang="scss" scoped>
 .dialog-create-workspace {
   font-family: Poppins, sans-serif;
   &__header {
-    border-bottom: 0.5px solid #e8e9ea;
+    padding: 1vh 4vh;
     .header-title {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 500;
     }
+
     .header-dialog-icon {
       cursor: pointer;
       height: 32px;
@@ -99,6 +61,78 @@ export default {
         width: 16px;
         height: auto;
       }
+    }
+  }
+  &__content {
+    padding: 1vh 4vh;
+    .label-text {
+      font-weight: 500;
+      color: #909398;
+    }
+    .button-create {
+      font-weight: 500;
+      padding: 5px 5vh;
+    }
+  }
+
+  @media screen and (max-width: 1368px) {
+    &__header {
+      .header-title {
+        font-size: 20px;
+      }
+    }
+    .button-create {
+      font-size: 15px;
+    }
+    .label-text {
+      font-size: 15px;
+    }
+    .text-field-name::v-deep label {
+      font-size: 15px;
+    }
+    .text-field-name::v-deep input {
+      font-size: 15px;
+    }
+  }
+  @media screen and (max-width: 960px) {
+    &__header {
+      .header-title {
+        font-size: 18px;
+        font-weight: 500;
+      }
+    }
+    .button-create {
+      font-size: 14px;
+    }
+    .label-text {
+      font-size: 14px;
+    }
+    .text-field-name::v-deep label {
+      font-size: 14px;
+    }
+    .text-field-name::v-deep input {
+      font-size: 14px;
+    }
+  }
+  @media screen and (max-width: 600px) {
+    &__header {
+      .header-title {
+        font-size: 16px;
+        font-weight: 500;
+      }
+    }
+    .button-create {
+      font-size: 13px;
+    }
+    .label-text {
+      font-size: 13px;
+    }
+    .text-field-name::v-deep label {
+      font-size: 13px;
+    }
+    .text-field-name::v-deep input {
+      font-size: 13px;
+       padding: 3px 5vh;
     }
   }
 }
