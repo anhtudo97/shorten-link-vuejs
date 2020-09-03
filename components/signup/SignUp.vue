@@ -2,7 +2,7 @@
   <div>
     <v-row id="signup" no-gutters class="signup overflow-hidden">
       <v-col
-        class="px-5 px-md-7 py-sm-10 py-5 d-flex flex-column align-self-center signup__form-signup order-last order-sm-first"
+        class="px-5 px-md-7 py-sm-10 py-md-7 py-5 d-flex flex-column align-self-center signup__form-signup order-last order-sm-first"
         cols="12"
         sm="5"
         lg="4"
@@ -13,12 +13,12 @@
         <div class="text-center signup-title">Create a new account</div>
         <v-sheet>
           <form action>
-            <v-text-field label="Your name or company name" outlined></v-text-field>
-            <v-text-field label="Your business email" outlined></v-text-field>
-            <v-text-field label="Your Password" outlined type="password"></v-text-field>
-            <v-btn class="signup-button">
+            <v-text-field class="input-name" label="Your name or company name" outlined></v-text-field>
+            <v-text-field class="input-email" label="Your business email" outlined></v-text-field>
+            <v-text-field class="input-password" label="Your Password" outlined type="password"></v-text-field>
+            <button class="signup-button">
               <div class="button-text my-3">Create account</div>
-            </v-btn>
+            </button>
           </form>
         </v-sheet>
         <div class="an-account text-center mt-3 px-2 px-md-4 px-lg-10">
@@ -71,23 +71,21 @@ export default {};
     }
     .signup-button {
       width: 100%;
-      height: 50px !important;
-      background: #3c64b1 !important;
+      background: #3c64b1;
       border-radius: 10px;
       .button-text {
         font-weight: 600;
-        font-size: 18px;
+        font-size: 16px;
         line-height: 26px;
         color: white;
       }
     }
-
     .account-signup {
       font-weight: 600;
       color: #3c64b1;
     }
   }
-  @media (max-width: 1366px) {
+  @media (max-width: 1368px) {
     &__form-signup {
       .signup-image {
         img {
@@ -113,11 +111,25 @@ export default {};
       }
       .an-account,
       .signup-an-account {
-        font-size: 14px;
+        font-size: 15px;
       }
-      .account-signup {
-        font-weight: 600;
-        color: #3c64b1;
+      .input-name::v-deep label {
+        font-size: 15px;
+      }
+      .input-name::v-deep input {
+        font-size: 15px;
+      }
+      .input-email::v-deep label {
+        font-size: 15px;
+      }
+      .input-email::v-deep input {
+        font-size: 15px;
+      }
+      .input-password::v-deep label {
+        font-size: 15px;
+      }
+      .input-password::v-deep input {
+        font-size: 15px;
       }
     }
   }
@@ -125,9 +137,7 @@ export default {};
     &__form-signup {
       .signup-image {
         img {
-          object-fit: cover;
           width: 110px;
-          height: auto;
         }
       }
       .signup-title {
@@ -136,20 +146,31 @@ export default {};
         margin-bottom: 25px;
       }
       .signup-button {
-        height: 40px !important;
         .button-text {
-          font-weight: 600;
           font-size: 14px;
-          line-height: 22px;
         }
       }
       .an-account,
       .signup-an-account {
-        font-size: 13px;
+        font-size: 14px;
       }
-      .account-signup {
-        font-weight: 600;
-        color: #3c64b1;
+      .input-name::v-deep label {
+        font-size: 14px;
+      }
+      .input-name::v-deep input {
+        font-size: 14px;
+      }
+      .input-email::v-deep label {
+        font-size: 14px;
+      }
+      .input-email::v-deep input {
+        font-size: 14px;
+      }
+      .input-password::v-deep label {
+        font-size: 14px;
+      }
+      .input-password::v-deep input {
+        font-size: 14px;
       }
     }
   }
@@ -160,9 +181,7 @@ export default {};
     &__form-signup {
       .signup-image {
         img {
-          object-fit: cover;
           width: 100px;
-          height: auto;
         }
       }
       .signup-title {
@@ -170,21 +189,9 @@ export default {};
         line-height: 30px;
         margin-bottom: 20px;
       }
-      .signup-button {
-        height: 40px !important;
-        .button-text {
-          font-weight: 600;
-          font-size: 12px;
-          line-height: 20px;
-        }
-      }
       .an-account,
       .signup-an-account {
-        font-size: 12px;
-      }
-      .account-signup {
-        font-weight: 600;
-        color: #3c64b1;
+        font-size: 13px;
       }
     }
   }

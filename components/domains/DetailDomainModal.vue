@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="modal-detail-domain__domain">
-      <div class="domain-url">https://gitlab.com/</div>
+      <div class="domain-url text-overflow-hidden">https://gitlab.com/</div>
       <div class="domain-created-at d-flex my-5 align-center">
         <img src="@/assets/svg/calendar.svg" alt="calendar" srcset />
         <v-tooltip bottom>
@@ -100,9 +100,6 @@ export default {
     .domain-url {
       font-size: 24px;
       line-height: 28px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
     }
     .domain-created-at {
       img {

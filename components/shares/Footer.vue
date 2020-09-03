@@ -24,12 +24,10 @@ export default {};
 <style lang="scss" scoped>
 .footer {
   font-family: Montserrat, sans-serif;
-  height: 70px;
   background-color: #263849;
   .footer-title {
     color: white;
     font-weight: 600;
-    font-size: 16px;
     line-height: 24px;
   }
   .rect-20 {
@@ -45,8 +43,14 @@ export default {};
   @media (max-width: 960px) {
     padding: 0;
     .footer-title {
-      font-size: 12px;
+      font-size: 13px;
       line-height: 20px;
+    }
+  }
+  @media (max-width: 600px) {
+    .footer-title {
+      font-size: 12px;
+      line-height: 18px;
     }
   }
 }

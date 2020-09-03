@@ -5,7 +5,7 @@
         <div class="image"></div>
       </v-col>
       <v-col
-        class="pa-sm-10 pa-5 d-flex flex-column align-self-center login__form-login"
+        class="pa-xs-10 pa-sm-7 pa-5 d-flex flex-column align-self-center login__form-login"
         cols="12"
         sm="5"
         lg="4"
@@ -17,13 +17,10 @@
         <v-sheet>
           <form action>
             <v-text-field class="login-email" label="Your Email" outlined></v-text-field>
-
-            <v-text-field class="login-password" label="Your Password" outlined></v-text-field>
-            <nuxt-link to="/">
-              <v-btn class="login-button" @click="routeToHome">
-                <div class="button-text my-3">Login</div>
-              </v-btn>
-            </nuxt-link>
+            <v-text-field class="login-password" type="password" label="Your Password" outlined></v-text-field>
+            <button class="login-button" @click="routeToHome">
+              <div class="button-text my-3">Login</div>
+            </button>
           </form>
         </v-sheet>
         <div class="an-account text-center mt-3">
@@ -84,18 +81,16 @@ export default {
       border-radius: 10px;
       .button-text {
         font-weight: 600;
-        font-size: 20px;
-        line-height: 28px;
         color: white;
+        font-size: 16px;
       }
     }
-
     .account-signup {
       font-weight: 600;
       color: #3c64b1;
     }
   }
-  @media (max-width: 1366px) {
+  @media (max-width: 1368px) {
     &__form-login {
       .login-image {
         img {
@@ -107,21 +102,25 @@ export default {
         line-height: 34px;
         margin-bottom: 30px;
       }
-      .login-email,
-      .login-password {
-        font-size: 15px;
-      }
       .login-button {
-        height: 45px !important;
         .button-text {
-          font-weight: 600;
-          font-size: 18px;
-          line-height: 26px;
-          color: white;
+          font-size: 15px;
         }
       }
       .an-account,
       .forgot-password {
+        font-size: 15px;
+      }
+      .login-email::v-deep label {
+        font-size: 15px;
+      }
+      .login-email::v-deep input {
+        font-size: 15px;
+      }
+      .login-password::v-deep label {
+        font-size: 15px;
+      }
+      .login-password::v-deep input {
         font-size: 15px;
       }
     }
@@ -138,22 +137,26 @@ export default {
         line-height: 32px;
         margin-bottom: 25px;
       }
-      .login-email,
-      .login-password {
-        font-size: 15px;
-      }
       .login-button {
         width: 100%;
-        height: 42px !important;
         .button-text {
-          font-weight: 600;
-          font-size: 16px;
-          line-height: 24px;
-          color: white;
+          font-size: 14px;
         }
       }
       .an-account,
       .forgot-password {
+        font-size: 14px;
+      }
+      .login-email::v-deep label {
+        font-size: 14px;
+      }
+      .login-email::v-deep input {
+        font-size: 14px;
+      }
+      .login-password::v-deep label {
+        font-size: 14px;
+      }
+      .login-password::v-deep input {
         font-size: 14px;
       }
     }
@@ -168,28 +171,9 @@ export default {
           width: 110px;
         }
       }
-      .login-title {
-        font-size: 18px;
-        line-height: 30px;
-        margin-bottom: 22px;
-      }
-      .login-email,
-      .login-password {
-        font-size: 14px;
-      }
-      .login-button {
-        width: 100%;
-        height: 40px !important;
-        .button-text {
-          font-weight: 600;
-          font-size: 14px;
-          line-height: 22px;
-          color: white;
-        }
-      }
       .an-account,
       .forgot-password {
-        font-size: 14px;
+        font-size: 13px;
       }
     }
   }

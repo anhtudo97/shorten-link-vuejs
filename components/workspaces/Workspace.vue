@@ -13,7 +13,7 @@
             class="img"
             src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
           />
-          <div class="name-text px-5">{{workspace.name}}</div>
+          <div class="name-text px-5 text-overflow-hidden">{{workspace.name}}</div>
         </div>
       </v-col>
       <v-col cols="5" sm="4" md="3" class="text-md-center text-right workspace__content">
@@ -131,11 +131,6 @@ export default {
       object-fit: cover;
       width: 24px;
       height: auto;
-    }
-    .name-text {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
   }
   &__content {
