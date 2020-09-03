@@ -9,10 +9,10 @@
     >
       <v-row class="align-center mx-0">
         <v-col cols="12" sm="8" md="8" lg="9">
-          <div class="domain">{{domain}}</div>
+          <div class="domain text-overflow-hidden">{{domain}}</div>
         </v-col>
         <v-col cols="12" sm="4" md="4" lg="3" class="text-left text-sm-right">
-          <div class="added">{{date}}</div>
+          <div class="added text-overflow-hidden">{{date}}</div>
         </v-col>
       </v-row>
     </v-col>
@@ -75,17 +75,9 @@ export default {
     font-size: 20px;
     line-height: 28px;
     color: #212732;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
     &:hover {
       color: #3c64b1;
     }
-  }
-  .added {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   @media (max-width: 1366px) {
     .domain {

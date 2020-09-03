@@ -3,8 +3,8 @@
     <v-col cols="12" sm="10" md="8" class="mx-auto px-0 border-radius-10">
       <v-row class="align-center mx-0">
         <v-col cols="12" md="8" @click.stop="models.isOpen = true">
-          <div class="shortened-link">{{slashtag}}</div>
-          <div class="origin-link pt-2">{{link}}</div>
+          <div class="shortened-link text-overflow-hidden">{{slashtag}}</div>
+          <div class="origin-link pt-2 text-overflow-hidden">{{link}}</div>
         </v-col>
         <v-col cols="12" md="4">
           <div class="d-flex justify-space-between align-center shortened-info">
@@ -176,9 +176,6 @@ export default {
     font-size: 20px;
     line-height: 28px;
     color: #212732;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
     &:hover {
       color: #3c64b1;
     }
@@ -187,9 +184,6 @@ export default {
     font-size: 15px;
     line-height: 24px;
     color: #595d66;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
   }
   .shortened-info {
     position: relative;

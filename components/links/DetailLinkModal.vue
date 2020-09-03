@@ -13,7 +13,7 @@
         >
           <a
             href="https://www.johnsmilga.com/projects"
-            class="main-title"
+            class="main-title text-overflow-hidden"
           >https://www.johnsmilga.com/projects</a>
           <div class="d-flex dialog-link-service align-center">
             <div v-clipboard="slashtag" class="dialog-button-copy mr-3">Copy</div>
@@ -124,9 +124,6 @@ export default {
       cursor: pointer;
       font-size: 24px;
       font-weight: 500;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
       &:hover {
         color: #3c64b1;
       }

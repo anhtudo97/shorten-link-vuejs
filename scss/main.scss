@@ -48,6 +48,24 @@ button {
     }
 }
 
+.button-primary {
+    cursor: pointer;
+    background-color: #3c64b1;
+    border-radius: 10px;
+    color: #fff;
+    text-align: center;
+    font-weight: bold;
+    &:hover {
+        background-color: #2a5bd7;
+    }
+}
+
+.text-overflow-hidden {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .border-b {
     border-bottom: 1px solid #e8e9ea;
 }
@@ -119,5 +137,61 @@ button {
     }
     to {
         opacity: 1;
+    }
+}
+
+// animation about notification
+@keyframes bell {
+    0%,
+    25%,
+    75%,
+    100% {
+        transform: rotate(0deg);
+    }
+    40% {
+        transform: rotate(10deg);
+    }
+    45% {
+        transform: rotate(-10deg);
+    }
+    55% {
+        transform: rotate(8deg);
+    }
+    60% {
+        transform: rotate(-8deg);
+    }
+}
+
+@keyframes bellClapper {
+    0%,
+    25%,
+    75%,
+    100% {
+        transform: translateX(0);
+    }
+    40% {
+        transform: translateX(-0.15em);
+    }
+    45% {
+        transform: translateX(0.15em);
+    }
+    55% {
+        transform: translateX(-0.1em);
+    }
+    60% {
+        transform: translateX(0.1em);
+    }
+}
+
+@keyframes notification {
+    0%,
+    25%,
+    75%,
+    100% {
+        opacity: 1;
+    }
+    30%,
+    70% {
+        opacity: 0;
     }
 }

@@ -18,9 +18,18 @@
         </ul>
         <v-spacer></v-spacer>
         <nuxt-link to="/notifications">
-          <div class="d-flex align-center header__notification mr-5 px-4 py-2">
-            <div class="counter mr-4">12</div>
-            <div class="content">Notification</div>
+          <div class="header__notification align-self-center">
+            <svg viewBox="-10 0 35 35">
+              <path
+                class="notification--bell"
+                d="M14 12v1H0v-1l0.73-0.58c0.77-0.77 0.81-3.55 1.19-4.42 0.77-3.77 4.08-5 4.08-5 0-0.55 0.45-1 1-1s1 0.45 1 1c0 0 3.39 1.23 4.16 5 0.38 1.88 0.42 3.66 1.19 4.42l0.66 0.58z"
+              />
+              <path
+                class="notification--bellClapper"
+                d="M7 15.7c1.11 0 2-0.89 2-2H5c0 1.11 0.89 2 2 2z"
+              />
+            </svg>
+            <span class="notification--num">5</span>
           </div>
         </nuxt-link>
         <nuxt-link to="/login">
@@ -29,9 +38,7 @@
           </div>
         </nuxt-link>
         <nuxt-link to="/sign-up">
-          <div class="header__signup py-3 px-6">
-            <div class="signup-text">Sign up</div>
-          </div>
+          <button class="button-normal header__signup py-2 px-6 font-weight-bold">Sign up</button>
         </nuxt-link>
       </div>
     </div>
@@ -96,9 +103,6 @@ export default {
     li:last-child {
       margin-right: 0;
     }
-    @media (max-width: 900px) {
-      display: none;
-    }
   }
   &__logo {
     img {
@@ -114,17 +118,8 @@ export default {
     color: #3c64b1;
   }
   &__signup {
-    background: #3c64b1;
-    border-radius: 10px;
-    .signup-text {
-      font-weight: bold;
-      font-size: 14px;
-      line-height: 18px;
-      color: #fff;
-    }
-    &:hover {
-      background-color: #2a5bd7;
-    }
+    font-weight: bold;
+    font-size: 14px;
   }
   &__menu {
     .menu-text {
@@ -135,20 +130,34 @@ export default {
     }
   }
   &__notification {
-    border: 0.5px solid #3c64b1;
-    border-radius: 4px;
-    .counter {
-      background-color: #d34547;
-      border-radius: 75%;
-      color: #fff;
-      line-height: 1;
-      font-size: 14px;
-      padding: 5px;
+    position: relative;
+    width: 4em;
+    height: 1.75em;
+    .notification--bell {
+      animation: bell 2.2s linear infinite;
+      transform-origin: 50% 0%;
     }
-    .content {
-      font-size: 14px;
-      font-weight: 500;
-      color: #3c64b1;
+    .notification--bellClapper {
+      animation: bellClapper 2.2s 0.1s linear infinite;
+    }
+    .notification--num {
+      position: absolute;
+      top: -10px;
+      left: 25px;
+      background-color: #ff4c13;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 11px;
+      padding: 3px 8px;
+      animation: notification 2.2s linear;
+    }
+  }
+  svg {
+    width: 3.5em;
+    height: 3.5em;
+    path {
+      border: 0.5px solid #3c64b1;
+      fill: #3c64b1;
     }
   }
   .nuxt-link-active {

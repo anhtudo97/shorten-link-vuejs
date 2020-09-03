@@ -18,21 +18,24 @@
       </v-col>
     </v-row>
     <v-row class="home__shorten mb-8 mx-0">
-      <v-col cols="8" class="mx-auto">
-        <v-row>
-          <v-col cols="12" md="8" class="pb-0 pa-small-hidden">
+      <v-col cols="12" md="8" class="mx-auto">
+        <v-row class="mb-3">
+          <v-col cols="12" sm="8">
             <v-text-field
               background-color="white"
               class="shorten-input"
               placeholder="Enter your link"
               outlined
+              dense
               clearable
+              hide-details="auto"
             ></v-text-field>
           </v-col>
-          <v-col cols="12" md="4" class="mb-8 ma-md-0 pa-small-hidden">
-            <div class="shorten-button" @click="isShorten = !isShorten">
-              <div class="button-text">{{isShorten ? 'Copy':'Shorten'}}</div>
-            </div>
+          <v-col cols="12" sm="4" class="ma-md-0">
+            <button
+              class="shorten-button button-primary"
+              @click="isShorten = !isShorten"
+            >{{isShorten ? 'Copy':'Shorten'}}</button>
           </v-col>
         </v-row>
         <slide-fade-transition mode="out-in">
@@ -43,7 +46,9 @@
           </div>
           <v-row v-else key="true" class="shortened justify-space-between mb-0 mb-md-3">
             <v-col cols="12" md="7" lg="8" class="shortened__shortened-link">
-              <div class="link-text">https://vuetifyjs.com/en/components/buttons/#buttons</div>
+              <div
+                class="link-text text-overflow-hidden"
+              >https://vuetifyjs.com/en/components/buttons/#buttons</div>
             </v-col>
             <v-col cols="12" md="5" lg="4" class="shortened__shortened-service">
               <div class="d-flex flex-wrap justify-space-between">
@@ -100,53 +105,42 @@ export default {
       }
     }
     @media (max-width: 1366px) {
-      margin-top: 10vh;
+      margin-top: 0vh;
       .hero-banner {
         &__title {
-          font-weight: bold;
           font-size: 50px;
           line-height: 62px;
         }
         &__sub {
           font-size: 14px;
           line-height: 20px;
-          letter-spacing: 0.3px;
         }
       }
     }
     @media (max-width: 960px) {
-      margin-top: 10vh;
       .hero-banner {
         &__title {
-          font-weight: bold;
           font-size: 44px;
           line-height: 56px;
         }
         &__sub {
           font-size: 12px;
           line-height: 18px;
-          letter-spacing: 0.3px;
         }
       }
     }
     @media (max-width: 600px) {
-      margin-top: 10vh;
       .hero-banner {
         &__title {
-          font-weight: bold;
           font-size: 38px;
           line-height: 48px;
-        }
-        &__sub {
-          font-size: 10px;
-          line-height: 16px;
-          letter-spacing: 0.3px;
         }
       }
     }
   }
   &__shorten {
     background-color: #263849;
+    height: 100%;
     .shorten-input {
       color: #fff;
       @media (max-width: 1366px) {
@@ -158,34 +152,21 @@ export default {
         line-height: 18px;
       }
     }
+    .shorten-input::v-deep v-input__control {
+      height: 100%;
+    }
     .shorten-button {
-      cursor: pointer;
-      background-color: #3c64b1;
-      border-radius: 10px;
-      padding: 14px 0;
-      .button-text {
-        color: #fff;
-        text-align: center;
-        font-weight: bold;
-        font-size: 18px;
-        line-height: 24px;
-      }
-      &:hover {
-        background-color: #2a5bd7;
-      }
+      padding: 10px 0;
+      width: 100%;
+      font-size: 18px;
+      line-height: 24px;
       @media (max-width: 1366px) {
-        padding: 12px 0;
-        .button-text {
-          font-size: 14px;
-          line-height: 20px;
-        }
+        font-size: 14px;
+        line-height: 20px;
       }
       @media (max-width: 960px) {
         padding: 10px 0;
-        .button-text {
-          font-size: 12px;
-          line-height: 18px;
-        }
+        font-size: 12px;
       }
     }
     .shorten-policy {
@@ -213,9 +194,6 @@ export default {
       &__shortened-link {
         font-size: 18px;
         line-height: 24px;
-        .link-text {
-          text-overflow: ellipsis;
-        }
       }
       &__shortened-service {
         align-items: center;
@@ -268,7 +246,6 @@ export default {
         &__shortened-link {
           font-size: 10px;
           line-height: 16px;
-          text-overflow: ellipsis;
         }
         &__shortened-service {
           .shortened-link {
@@ -281,11 +258,6 @@ export default {
           }
         }
       }
-    }
-  }
-  .pa-small-hidden {
-    @media (max-width: 1366px) {
-      padding: 0 12px;
     }
   }
 }
