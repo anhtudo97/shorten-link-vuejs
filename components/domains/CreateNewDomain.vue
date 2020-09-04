@@ -21,6 +21,7 @@
           label="Destination your Domain"
           hint="Type or paste your domain"
           placeholder="What is your domain name"
+          hide-details="auto"
           outlined
           rows="1"
           dense
@@ -33,6 +34,7 @@
           :items="items"
           label="Workspace(s)"
           outlined
+          hide-details="auto"
           dense
         ></v-select>
       </v-col>
@@ -59,6 +61,7 @@ export default {
 <style lang="scss" scoped>
 .dialog-create-new-domain {
   padding: 2vh 3vh;
+  height: 100%;
   font-family: Poppins, sans-serif;
   &__dialog-icon {
     cursor: pointer;
@@ -89,14 +92,17 @@ export default {
     &__description {
       font-size: 13px;
     }
-    &__input {
+    &__input::v-deep label {
       font-size: 15px;
     }
-    &__select {
+    &__input::v-deep textarea {
       font-size: 15px;
-      ::v-deep.v-label {
-        font-size: 15px;
-      }
+    }
+    &__select::v-deep label {
+      font-size: 15px;
+    }
+    &__select::v-deep input {
+      font-size: 15px;
     }
     &__button {
       padding: 7px 35px;
@@ -110,15 +116,21 @@ export default {
     &__description {
       font-size: 10px;
     }
-    &__input {
-      font-size: 12px;
+    &__input::v-deep label {
+      font-size: 14px;
     }
-    &__select {
-      font-size: 12px;
+    &__input::v-deep textarea {
+      font-size: 14px;
+    }
+    &__select::v-deep label {
+      font-size: 14px;
+    }
+    &__select::v-deep input {
+      font-size: 14px;
     }
     &__button {
       padding: 5px 35px;
-      font-size: 12px;
+      font-size: 14px;
       width: 100%;
     }
   }

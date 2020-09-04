@@ -37,7 +37,12 @@
         </li>
       </transition-group>
     </div>
-    <v-dialog v-model="openModalCreateNewDomain" class="domain__dialog" max-width="900">
+    <v-dialog
+      v-model="openModalCreateNewDomain"
+      class="domain__dialog"
+      max-width="900"
+      :fullscreen="width<600?true: false"
+    >
       <CreateNewDomain @closeModalCreateNewDomain="closeModalCreateNewDomain" />
     </v-dialog>
   </div>
@@ -54,6 +59,7 @@ export default {
   },
   data: () => ({
     openModalCreateNewDomain: false,
+    width: 0,
   }),
   computed: {
     ...mapGetters({
@@ -65,9 +71,21 @@ export default {
       });
     },
   },
+  beforeMount() {
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
+  },
   methods: {
     closeModalCreateNewDomain() {
       this.openModalCreateNewDomain = false;
+    },
+    handleResize() {
+      if (process.client) {
+        this.width = window.innerWidth;
+      }
     },
   },
 };

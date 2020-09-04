@@ -18,6 +18,11 @@
             "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
         }
     },
+    "eslintConfig": {
+        "globals": {
+            "window": true
+        }
+    },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^1.2.30",
         "date-fns": "^2.15.0",

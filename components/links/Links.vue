@@ -3,7 +3,7 @@
     <v-row class="link__menu mx-0">
       <v-col cols="12" sm="10" md="8" class="mx-auto py-3">
         <v-row class="align-center">
-          <v-col cols="7" sm="8" lg="10">
+          <v-col cols="7" sm="8" lg="9">
             <div class="d-flex align-center">
               <div class="menu-text pr-4">{{links.length}} Link(s)</div>
               <div v-click-outside="onClickOutsideStandard" class="menu-selection pr-4 d-flex">
@@ -27,7 +27,7 @@
               </div>
             </div>
           </v-col>
-          <v-col cols="5" sm="4" lg="2" class="text-right">
+          <v-col cols="5" sm="4" lg="3" class="text-right">
             <button class="button-normal add-new-link" @click.stop="models.modal = true">New Link</button>
           </v-col>
         </v-row>
@@ -45,7 +45,12 @@
         </li>
       </transition-group>
     </div>
-    <v-dialog v-model="models.modal" class="link__dialog" max-width="900">
+    <v-dialog
+      v-model="models.modal"
+      class="link__dialog"
+      max-width="900"
+      :fullscreen="width<600?true: false"
+    >
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
   </div>
@@ -67,6 +72,7 @@ export default {
       base: false,
       modal: false,
     },
+    width: 0,
     destinationUrl: '',
   }),
   computed: {
@@ -80,6 +86,13 @@ export default {
     tempDomains() {
       return this.domains.map((x) => x.domain);
     },
+  },
+  beforeMount() {
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
   },
   methods: {
     changeConditions(value) {
@@ -135,6 +148,11 @@ export default {
     closeModalAddNewLink() {
       this.models.modal = false;
     },
+    handleResize() {
+      if (process.client) {
+        this.width = window.innerWidth;
+      }
+    },
   },
 };
 </script>
@@ -142,6 +160,7 @@ export default {
 <style lang="scss" scoped>
 .link {
   font-family: Poppins, sans-serif;
+  height: 100%;
   &__menu {
     .menu-text {
       font-size: 18px;

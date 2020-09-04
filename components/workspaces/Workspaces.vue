@@ -2,11 +2,11 @@
   <div class="workspaces">
     <v-row class="workspaces__menu mx-0">
       <v-col cols="12" sm="10" md="8" class="mx-auto py-2 py-md-3 py-lg-5">
-        <v-row class="align-center justify-space-between main-menu">
-          <v-col cols class="px-sm-0">
+        <v-row class="align-center justify-space-between main-menu px-3 px-sm-0">
+          <v-col cols class="px-0">
             <button class="menu-text">{{workspaces.length}} Workspace(s)</button>
           </v-col>
-          <v-col class="text-right">
+          <v-col class="text-right px-0">
             <button
               class="button-normal menu-button"
               @click.stop="openCreateNewWorkspace = true"
@@ -34,8 +34,8 @@
         </transition-group>
       </v-col>
     </v-row>
-    <v-dialog v-model="openCreateNewWorkspace" max-width="850">
-      <CreateNewWorkspaceModal @closeCreateNewWorkspace="closeCreateNewWorkspace"/>
+    <v-dialog v-model="openCreateNewWorkspace" max-width="850" :fullscreen="width<600?true: false">
+      <CreateNewWorkspaceModal @closeCreateNewWorkspace="closeCreateNewWorkspace" />
     </v-dialog>
   </div>
 </template>
@@ -43,14 +43,16 @@
 <script>
 import { mapGetters } from 'vuex';
 import Workspace from '@/components/workspaces/Workspace';
-import CreateNewWorkspaceModal from '@/components/workspaces/CreateNewWorkspace'
+import CreateNewWorkspaceModal from '@/components/workspaces/CreateNewWorkspace';
 export default {
   components: {
     Workspace,
-    CreateNewWorkspaceModal
+    CreateNewWorkspaceModal,
   },
   data: () => ({
     openCreateNewWorkspace: false,
+
+    width: 0,
   }),
   computed: {
     ...mapGetters({
@@ -62,11 +64,23 @@ export default {
       });
     },
   },
-  methods:{
-    closeCreateNewWorkspace(){
+  beforeMount() {
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
+  },
+  methods: {
+    closeCreateNewWorkspace() {
       this.openCreateNewWorkspace = false;
-    }
-  }
+    },
+    handleResize() {
+      if (process.client) {
+        this.width = window.innerWidth;
+      }
+    },
+  },
 };
 </script>
 

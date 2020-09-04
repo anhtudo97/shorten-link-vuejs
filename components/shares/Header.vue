@@ -1,6 +1,6 @@
 <template>
-  <div id="header" class="mx-auto py-0 py-sm-3">
-    <div class="display-small-hidden mx-0 mx-sm-6 mx-lg-8 mx-xl-10">
+  <div id="header" class="py-0">
+    <div class="py-3 display-small-hidden mx-0 mx-sm-6 mx-lg-8 mx-xl-10">
       <div class="header d-flex absolute align-center">
         <nuxt-link to="/">
           <div class="header__logo">
@@ -43,15 +43,19 @@
       </div>
     </div>
     <div class="display-big-show">
-      <div class="header d-flex absolute align-center mx-2 mx-sm-7 py-0">
-        <nuxt-link to="/">
-          <div class="header__logo">
-            <img src="~/assets/logo.png" />
-          </div>
-        </nuxt-link>
-        <v-spacer></v-spacer>
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>
-      </div>
+      <v-row>
+        <v-col cols="12">
+          <v-row class="header d-flex align-center mx-2 mx-sm-7 py-0">
+            <nuxt-link to="/">
+              <div class="header__logo">
+                <img src="~/assets/logo.png" />
+              </div>
+            </nuxt-link>
+            <v-spacer></v-spacer>
+            <v-app-bar-nav-icon></v-app-bar-nav-icon>
+          </v-row>
+        </v-col>
+      </v-row>
     </div>
   </div>
 </template>

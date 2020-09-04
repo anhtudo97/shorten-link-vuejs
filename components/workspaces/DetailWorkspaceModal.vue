@@ -22,47 +22,49 @@
           </div>
         </div>
       </div>
-      <div
-        class="dialog-detail-workspace__modify d-flex align-center justify-end justify-md-center"
-      >
-        <img
-          src="@/assets/svg/member.svg"
-          alt="member"
-          class="ml-4"
+    </div>
+    <div class="mt-16 mb-4 border-b">
+      <div class="d-flex dialog-detail-workspace__info align-center mb-5">
+        <img src="@/assets/svg/calendar.svg" alt="calendar" class="mr-3" />
+        <div class="info-text">Created on {{createdDate}} by anhtudo97@gmail.com</div>
+      </div>
+      <div class="d-flex dialog-detail-workspace__info align-center mb-5">
+        <img src="@/assets/svg/links.svg" alt="calendar" class="mr-3" />
+        <nuxt-link to="/links">
+          <div class="info-text info-link font-weight-medium">4 Links</div>
+        </nuxt-link>
+      </div>
+      <div class="d-flex dialog-detail-workspace__info align-center mb-5">
+        <img src="@/assets/svg/members.svg" alt="calendar" class="mr-3" />
+        <div
+          class="info-text font-weight-medium"
           @click.stop="openModalMemberModal = true"
-        />
-        <img
-          src="@/assets/svg/trash.svg"
-          alt="trash"
-          class="ml-4"
-          @click.stop="isRemoveModal = true"
-        />
+        >3 teammates</div>
+      </div>
+      <div class="d-flex dialog-detail-workspace__info align-center mb-5">
+        <img src="@/assets/svg/domains.svg" alt="calendar" class="mr-3" />
+        <div
+          class="info-text info-link font-weight-medium"
+          @click.stop="openAddLinkDomainModal=true"
+        >2 Branded domains included</div>
       </div>
     </div>
-    <div class="my-16"></div>
-    <div class="d-flex dialog-detail-workspace__info align-center mb-5">
-      <img src="@/assets/svg/calendar.svg" alt="calendar" class="mr-3" />
-      <div class="info-text">Created on {{createdDate}} by anhtudo97@gmail.com</div>
-    </div>
-    <div class="d-flex dialog-detail-workspace__info align-center mb-5">
-      <img src="@/assets/svg/links.svg" alt="calendar" class="mr-3" />
-      <nuxt-link to="/links">
-        <div class="info-text info-link font-weight-medium">4 Links</div>
-      </nuxt-link>
-    </div>
-    <div class="d-flex dialog-detail-workspace__info align-center mb-5">
-      <img src="@/assets/svg/members.svg" alt="calendar" class="mr-3" />
-      <nuxt-link to="/links">
-        <div class="info-text font-weight-medium">3 teammates</div>
-      </nuxt-link>
-    </div>
-    <div class="d-flex dialog-detail-workspace__info align-center mb-5">
-      <img src="@/assets/svg/domains.svg" alt="calendar" class="mr-3" />
-      <nuxt-link to="/domains">
-        <div class="info-text info-link font-weight-medium">2 Branded domains included</div>
-      </nuxt-link>
-    </div>
-    <v-dialog v-model="openModalMemberModal" class="dialog" max-width="650">
+    <v-row class="align-center dialog-detail-workspace__button-remove">
+      <v-col cols="12" sm="3">
+        <div class="services-title">Delete this repository</div>
+      </v-col>
+      <v-col cols="12" sm="9" class="text-md-right text-left">
+        <button class="button-warning button-remove" @click.stop="isRemoveModal = true">
+          <div class="button-text">Remove this domain</div>
+        </button>
+      </v-col>
+    </v-row>
+    <v-dialog
+      v-model="openModalMemberModal"
+      class="dialog"
+      max-width="650"
+      :fullscreen="width<600?true: false"
+    >
       <ManagementMemberModal :workspace="workspace" @closeModalMembers="closeModalMembers" />
     </v-dialog>
     <v-dialog v-model="isRemoveModal" persistent width="500">
@@ -72,15 +74,22 @@
         @removeElement="removeWorkspace"
       />
     </v-dialog>
+    <v-dialog v-model="openAddLinkDomainModal" max-width="700" :fullscreen="width<600?true: false">
+      <AddLinksDomainsModal @closeModalAddLinksDomain="closeModalAddLinksDomain" />
+    </v-dialog>
   </v-list>
 </template>
 
 <script>
 import { format } from 'date-fns';
+
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
+import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
+
 export default {
   components: {
     ManagementMemberModal,
+    AddLinksDomainsModal,
   },
   props: {
     workspace: {
@@ -90,20 +99,37 @@ export default {
   },
   data: () => ({
     openModalMemberModal: false,
+    openAddLinkDomainModal: false,
     isRemoveModal: false,
+    width: 0,
   }),
   computed: {
     createdDate() {
       return format(new Date(this.workspace.createdAt), 'MMMM dd, yyyy');
     },
   },
+  beforeMount() {
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
+  },
   methods: {
     closeModalMembers() {
       this.openModalMemberModal = false;
     },
-    removeWorkspace() {},
     closeRemoveModal() {
       this.isRemoveModal = false;
+    },
+    closeModalAddLinksDomain() {
+      this.openAddLinkDomainModal = false;
+    },
+    removeWorkspace() {},
+    handleResize() {
+      if (process.client) {
+        this.width = window.innerWidth;
+      }
     },
   },
 };
@@ -112,6 +138,7 @@ export default {
 <style lang="scss" scoped>
 .dialog-detail-workspace {
   font-family: Poppins, sans-serif;
+  height: 100%;
   padding: 3vh 4vh;
   &__dialog-icon {
     cursor: pointer;
@@ -143,15 +170,8 @@ export default {
       }
     }
   }
-  &__modify {
-    img {
-      opacity: 0.6;
-      object-fit: cover;
-      width: 24px;
-      height: auto;
-    }
-  }
   &__info {
+    cursor: pointer;
     img {
       object-fit: cover;
       width: 20px;
@@ -165,6 +185,69 @@ export default {
       color: #2281c2;
       &:hover {
         color: #2c96df;
+      }
+    }
+  }
+  &__button-remove {
+    border: 1px solid #d34547;
+    border-radius: 10px;
+    .services-title {
+      color: #000;
+    }
+    .button-remove {
+      padding: 0.5vh 4vh;
+      font-weight: 500;
+    }
+  }
+  @media screen and (max-width: 1368px) {
+    &__name {
+      .dialog-name-text {
+        font-size: 20px;
+      }
+    }
+    &__info {
+      img {
+        width: 20px;
+      }
+      .info-text {
+        font-size: 15px;
+      }
+    }
+    &__button-remove {
+      .services-title {
+        font-size: 15px;
+        color: #000;
+      }
+      .button-remove {
+        padding: 0.5vh 4vh;
+        font-weight: 500;
+        font-size: 15px;
+      }
+    }
+  }
+  @media screen and (max-width: 960px) {
+    &__name {
+      .dialog-name-text {
+        font-size: 18px;
+      }
+    }
+    &__info {
+      img {
+        width: 20px;
+      }
+      .info-text {
+        font-size: 14px;
+      }
+    }
+    &__button-remove {
+      .services-title {
+        font-size: 15px;
+        color: #000;
+      }
+      .button-remove {
+        padding: 0.5vh 4vh;
+        font-weight: 500;
+        font-size: 14px;
       }
     }
   }

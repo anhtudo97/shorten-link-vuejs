@@ -16,7 +16,12 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-dialog v-model="models.isOpen" class="dialog" max-width="900">
+    <v-dialog
+      v-model="models.isOpen"
+      class="dialog"
+      max-width="900"
+      :fullscreen="width<600?true: false"
+    >
       <DetailDomainModal @closeModalDetailDomain="closeModalDetailDomain" />
     </v-dialog>
   </v-row>
@@ -43,15 +48,28 @@ export default {
     models: {
       isOpen: false,
     },
+    width: 0,
   }),
   computed: {
     date() {
       return format(new Date(this.added), 'MMMM dd, yyyy');
     },
   },
+  beforeMount() {
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
+  },
   methods: {
     closeModalDetailDomain() {
       this.models.isOpen = false;
+    },
+    handleResize() {
+      if (process.client) {
+        this.width = window.innerWidth;
+      }
     },
   },
 };

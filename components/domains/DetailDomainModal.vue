@@ -34,7 +34,7 @@
         <hr class="modal-detail-domain__underline" />
       </v-col>
     </v-row>
-    <v-row class="modal-detail-domain__services align-center my-5">
+    <v-row class="modal-detail-domain__services align-center my-0 my-sm-5">
       <v-col cols="12" sm="3">
         <div class="services-title">Remove</div>
       </v-col>
@@ -71,9 +71,7 @@ export default {
     },
   },
   methods: {
-    removeDomain() {
-      console.log('Remove domain');
-    },
+    removeDomain() {},
     closeRemoveModal() {
       this.isRemoveModal = false;
     },
@@ -84,6 +82,7 @@ export default {
 <style lang="scss" scoped>
 .modal-detail-domain {
   font-family: Poppins, sans-serif;
+  height: 100%;
   padding: 2vh 4vh 4vh 4vh;
   &__dialog-icon {
     cursor: pointer;

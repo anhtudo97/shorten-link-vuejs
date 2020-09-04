@@ -80,6 +80,7 @@ export default {
 <style lang="scss" scoped>
 .dialog-add-links-domains {
   font-family: Poppins, sans-serif;
+  height: 100%;
   &__header {
     padding: 1vh 4vh;
     .header-title {
