@@ -18,7 +18,7 @@
         rows="1"
       ></v-textarea>
       <transition name="slide-fade">
-        <div v-if="validURL(destinationUrl)">
+        <div v-if="validURL(destinationUrl) || edit">
           <v-row>
             <v-col cols="12" md="6" class="py-0">
               <div class="modal-mask__sub-title">Branded domain</div>

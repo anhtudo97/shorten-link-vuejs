@@ -100,12 +100,14 @@
 import { clipboard } from 'vue-clipboards';
 
 import DetailLinkModal from '@/components/links/DetailLinkModal';
+import CreateNewLink from '@/components/links/CreateNewLink';
 import RemoveModal from '@/components/shares/RemoveModal';
 export default {
   directives: { clipboard },
   components: {
     DetailLinkModal,
     RemoveModal,
+    CreateNewLink,
   },
   props: {
     link: {
