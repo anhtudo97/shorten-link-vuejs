@@ -82,7 +82,7 @@ export default {
       {
         id: 4,
         name: 'Contact',
-        route: '/c',
+        route: '/contact',
       },
     ],
   }),
