@@ -5,7 +5,7 @@
         cols="7"
         sm="8"
         md="9"
-        class="workspace__name"
+        class="workspace__name my-3"
         @click.stop="openModalDetailModal = true"
       >
         <div class="d-flex">
@@ -204,9 +204,7 @@ export default {
   @media (max-width: 1368px) {
     &__name {
       img {
-        object-fit: cover;
         width: 24px;
-        height: auto;
       }
       .name-text {
         font-size: 15px;
@@ -226,9 +224,7 @@ export default {
   @media (max-width: 960px) {
     &__name {
       img {
-        object-fit: cover;
         width: 24px;
-        height: auto;
       }
       .name-text {
         font-size: 14px;
@@ -250,18 +246,10 @@ export default {
   @media (max-width: 600px) {
     &__name {
       img {
-        object-fit: cover;
-        width: auto;
         height: 20px;
-      }
-      .name-text {
-        font-size: 12px;
       }
     }
     &__content {
-      .date {
-        font-size: 12px;
-      }
       .modify {
         width: 80%;
         img {

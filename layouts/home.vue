@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <div id="header" class="relative">
-      <Header class="header-fixed" :drawer="drawer" @openModal="openModal" />
+      <Header class="header-fixed" @openModal="openModal" />
     </div>
     <nuxt />
     <Footer />

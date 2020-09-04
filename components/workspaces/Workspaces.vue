@@ -1,7 +1,7 @@
 <template>
   <div class="workspaces">
     <v-row class="workspaces__menu mx-0">
-      <v-col cols="12" sm="10" md="8" class="mx-auto py-2 py-md-3 py-lg-5">
+      <v-col cols="12" sm="10" md="8" class="mx-auto py-2 py-md-3 py-lg-6">
         <v-row class="align-center justify-space-between main-menu px-3 px-sm-0">
           <v-col cols class="px-0">
             <button class="menu-text">{{workspaces.length}} Workspace(s)</button>

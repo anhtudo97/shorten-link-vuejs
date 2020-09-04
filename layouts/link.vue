@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <Header :drawer="drawer" @openModal="openModal" />
+    <Header @openModal="openModal" />
     <nuxt />
     <v-navigation-drawer v-model="drawer" absolute left temporary style="width: 60%;">
       <Drawer />

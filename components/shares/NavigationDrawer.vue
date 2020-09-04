@@ -25,9 +25,11 @@
         </nuxt-link>
       </v-row>
     </div>
-    <div class="navigation-drawer__item text-center" v-for="item in items" :key="item.id">
-      <nuxt-link :to="item.link" class="noselect" :class="[activatedRoute(item.link)]">{{item.name}}</nuxt-link>
-    </div>
+    <nuxt-link v-for="item in items" :key="item.id" :to="item.link">
+      <div class="navigation-drawer__item text-center">
+        <div class="noselect" :class="[activatedRoute(item.link)]">{{item.name}}</div>
+      </div>
+    </nuxt-link>
   </v-list>
 </template>
 
@@ -63,7 +65,7 @@ export default {
       {
         id: 6,
         name: 'Contact us',
-        link: '/sign-up',
+        link: '/contact',
       },
     ],
   }),
@@ -186,10 +188,10 @@ export default {
     &__item {
       font-size: 14px;
     }
-    &__header{
-      .header{
-        .logo{
-          img{
+    &__header {
+      .header {
+        .logo {
+          img {
             width: 50px;
           }
         }
