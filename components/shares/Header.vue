@@ -1,7 +1,7 @@
 <template>
-  <div id="header" class="py-0">
-    <div class="py-3 display-small-hidden mx-0 mx-sm-6 mx-lg-8 mx-xl-10">
-      <div class="header d-flex absolute align-center">
+  <div class="py-0">
+    <div class="py-3 display-small-hidden border-b">
+      <div class="header d-flex align-center mx-0 mx-sm-6 mx-lg-8 mx-xl-10">
         <nuxt-link to="/">
           <div class="header__logo">
             <img src="~/assets/logo.png" />
@@ -42,17 +42,17 @@
         </nuxt-link>
       </div>
     </div>
-    <div class="display-big-show">
+    <div class="display-big-show border-b">
       <v-row>
         <v-col cols="12">
           <v-row class="header d-flex align-center mx-2 mx-sm-7 py-0">
             <nuxt-link to="/">
               <div class="header__logo">
-                <img src="~/assets/logo.png" />
+                <img src="@/assets/logo.png" />
               </div>
             </nuxt-link>
             <v-spacer></v-spacer>
-            <v-app-bar-nav-icon></v-app-bar-nav-icon>
+            <v-app-bar-nav-icon @click.stop="$emit('openModal')"></v-app-bar-nav-icon>
           </v-row>
         </v-col>
       </v-row>
@@ -62,40 +62,34 @@
 
 <script>
 export default {
-  data() {
-    return {
-      menu: [
-        {
-          id: 1,
-          name: 'Links',
-          route: '/links',
-        },
-        {
-          id: 2,
-          name: 'Domains',
-          route: '/domains',
-        },
-        {
-          id: 3,
-          name: 'Workspaces',
-          route: '/workspaces',
-        },
-        {
-          id: 4,
-          name: 'Contact',
-          route: '/c',
-        },
-      ],
-    };
-  },
+  data: () => ({
+    menu: [
+      {
+        id: 1,
+        name: 'Links',
+        route: '/links',
+      },
+      {
+        id: 2,
+        name: 'Domains',
+        route: '/domains',
+      },
+      {
+        id: 3,
+        name: 'Workspaces',
+        route: '/workspaces',
+      },
+      {
+        id: 4,
+        name: 'Contact',
+        route: '/c',
+      },
+    ],
+  }),
 };
 </script>
 
 <style lang="scss" scoped>
-#header {
-  border-bottom: 1px solid #c4c4c4;
-}
-
 .header {
   font-family: Montserrat, sans-serif;
   ul {
@@ -178,14 +172,14 @@ export default {
 
 .display-small-hidden {
   display: none;
-  @media (min-width: 900px) {
+  @media (min-width: 800px) {
     display: block;
   }
 }
 
 .display-big-show {
   display: block;
-  @media (min-width: 900px) {
+  @media (min-width: 800px) {
     display: none;
   }
 }
