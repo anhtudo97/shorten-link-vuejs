@@ -1,14 +1,14 @@
 <template>
   <div class="domain">
-    <v-row class="domain__menu mx-0">
+    <v-row class="domain__menu mx-0 my-3">
       <v-col cols="12" sm="10" md="8" class="mx-auto py-0 py-md-3">
         <v-row class="align-center">
-          <v-col cols="6" sm="9" lg="9">
+          <v-col cols="6" sm="7" md="8" lg="9">
             <div class="d-flex align-center">
               <div class="domain-count pr-4">{{domains.length}} Domain(s)</div>
             </div>
           </v-col>
-          <v-col cols="6" sm="3" lg="3" class="text-right">
+          <v-col cols="6" sm="5" md="4" lg="3" class="text-right">
             <button
               class="button-normal add-new-domain"
               @click.stop="openModalCreateNewDomain = true"

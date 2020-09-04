@@ -52,42 +52,52 @@
               </div>
             </nuxt-link>
             <v-spacer></v-spacer>
-            <v-app-bar-nav-icon></v-app-bar-nav-icon>
+            <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
           </v-row>
         </v-col>
       </v-row>
     </div>
+    <v-navigation-drawer v-model="drawer" absolute left temporary style="width: 60%;">
+      <Drawer />
+    </v-navigation-drawer>
   </div>
 </template>
 
 <script>
+import Drawer from '@/components/shares/NavigationDrawer';
 export default {
-  data() {
-    return {
-      menu: [
-        {
-          id: 1,
-          name: 'Links',
-          route: '/links',
-        },
-        {
-          id: 2,
-          name: 'Domains',
-          route: '/domains',
-        },
-        {
-          id: 3,
-          name: 'Workspaces',
-          route: '/workspaces',
-        },
-        {
-          id: 4,
-          name: 'Contact',
-          route: '/c',
-        },
-      ],
-    };
+  components: {
+    Drawer,
   },
+  data: () => ({
+    menu: [
+      {
+        id: 1,
+        name: 'Links',
+        route: '/links',
+      },
+      {
+        id: 2,
+        name: 'Domains',
+        route: '/domains',
+      },
+      {
+        id: 3,
+        name: 'Workspaces',
+        route: '/workspaces',
+      },
+      {
+        id: 4,
+        name: 'Contact',
+        route: '/c',
+      },
+    ],
+    drawer: false,
+    items: [
+      { title: 'Home', icon: 'dashboard' },
+      { title: 'About', icon: 'question_answer' },
+    ],
+  }),
 };
 </script>
 
@@ -178,14 +188,14 @@ export default {
 
 .display-small-hidden {
   display: none;
-  @media (min-width: 900px) {
+  @media (min-width: 800px) {
     display: block;
   }
 }
 
 .display-big-show {
   display: block;
-  @media (min-width: 900px) {
+  @media (min-width: 800px) {
     display: none;
   }
 }
