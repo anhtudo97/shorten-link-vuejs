@@ -39,26 +39,35 @@
           />
         </div>
       </v-col>
-      <v-dialog v-model="openModalDetailModal" class="dialog" max-width="1000">
+
+      <v-dialog v-model="openModalDetailModal" max-width="1000" :fullscreen="width<600?true: false">
         <DetailWorkspaceModal
           :workspace="workspace"
           @closeModalDetailWorkspace="closeModalDetailWorkspace"
         />
       </v-dialog>
-      <v-dialog v-model="openModalMemberModal" class="dialog" max-width="650">
+
+      <v-dialog
+        v-model="openModalMemberModal"
+        class="dialog"
+        max-width="650"
+        :fullscreen="width<600?true: false"
+      >
         <ManagementMemberModal :workspace="workspace" @closeModalMembers="closeModalMembers" />
       </v-dialog>
-      <v-dialog v-model="isRemoveModal" persistent width="500">
+      <v-dialog v-model="isRemoveModal" persistent max-width="500">
         <RemoveModal
           name="workspace"
           @closeRemoveModal="closeRemoveModal"
           @removeElement="removeWorkspace"
         />
       </v-dialog>
-      <v-dialog v-model="openAddLinkDomainModal" width="700">
-        <AddLinksDomainsModal
-          @closeModalAddLinksDomain="closeModalAddLinksDomain"
-        />
+      <v-dialog
+        v-model="openAddLinkDomainModal"
+        max-width="700"
+        :fullscreen="width<600?true: false"
+      >
+        <AddLinksDomainsModal @closeModalAddLinksDomain="closeModalAddLinksDomain" />
       </v-dialog>
     </v-row>
   </div>
@@ -90,11 +99,20 @@ export default {
     isRemoveModal: false,
     items: ['https://passport.yandex.com/', 'https://www.notion.so/'],
     value: ['https://www.notion.so/'],
+
+    width: 0,
   }),
   computed: {
     createdDate() {
       return format(new Date(this.workspace.createdAt), 'MMMM dd, yyyy');
     },
+  },
+  beforeMount() {
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
   },
   methods: {
     closeModalDetailWorkspace() {
@@ -109,6 +127,11 @@ export default {
     removeWorkspace() {},
     closeRemoveModal() {
       this.isRemoveModal = false;
+    },
+    handleResize() {
+      if (process.client) {
+        this.width = window.innerWidth;
+      }
     },
   },
 };
@@ -166,6 +189,18 @@ export default {
       }
     }
   }
+  .dialog-detail-600::v-deep .v-dialog {
+    display: block;
+    @media screen and (min-width: 600px) {
+      display: none;
+    }
+  }
+  .dialog-detail-other {
+    display: none;
+    @media screen and (min-width: 600px) {
+      display: block;
+    }
+  }
   @media (max-width: 1368px) {
     &__name {
       img {
@@ -183,10 +218,7 @@ export default {
       }
       .modify {
         img {
-          opacity: 0.6;
-          object-fit: cover;
-          width: 30px;
-          height: auto;
+          width: 25px;
         }
       }
     }
@@ -210,10 +242,7 @@ export default {
         width: 80%;
         img {
           margin-top: 2px;
-          opacity: 0.6;
-          object-fit: cover;
-          width: 30px;
-          height: auto;
+          width: 22px;
         }
       }
     }
@@ -238,7 +267,6 @@ export default {
         img {
           margin-top: 5px;
           width: 20px;
-          height: auto;
         }
       }
     }

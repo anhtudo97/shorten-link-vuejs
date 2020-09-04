@@ -15,7 +15,7 @@
     </div>
     <div class="dialog-create-workspace__content">
       <v-row class="py-5 align-center">
-        <v-col cols="12" sm="4" class="py-0">
+        <v-col cols="12" sm="4" class="py-0 mb-4 mb-sm-0">
           <div class="label-text">Workspace name:</div>
         </v-col>
         <v-col cols="12" sm="8" class="py-0">
@@ -44,6 +44,7 @@ export default {};
 <style lang="scss" scoped>
 .dialog-create-workspace {
   font-family: Poppins, sans-serif;
+  height: 100%;
   &__header {
     padding: 1vh 4vh;
     .header-title {

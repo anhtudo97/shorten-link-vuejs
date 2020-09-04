@@ -24,8 +24,7 @@
           :key="item.id"
           class="d-flex justify-space-between dialog-member-workspace__member align-center"
         >
-          <div class="member-name">{{item.name}}</div>
-
+          <div class="member-name" @click.stop="openUserDetailModal = true">{{item.name}}</div>
           <button class="button-warning member-action" @click="removeFromList(item.id)">Remove</button>
         </div>
       </transition-group>
@@ -39,11 +38,23 @@
         <v-checkbox v-model="selected" class="checkbox-member" :label="item.name"></v-checkbox>
       </div>
     </transition-group>
+    <v-dialog
+      v-model="openUserDetailModal"
+      :overlay="false"
+      max-width="700px"
+      transition="dialog-transition"
+    >
+      <DetailUserModal @closeUserDetailModal="closeUserDetailModal" />
+    </v-dialog>
   </v-list>
 </template>
 
 <script>
+import DetailUserModal from '@/components/user/DetailUserModal';
 export default {
+  components: {
+    DetailUserModal,
+  },
   props: {
     workspace: {
       type: Object,
@@ -51,6 +62,7 @@ export default {
     },
   },
   data: () => ({
+    openUserDetailModal: false,
     selected: [],
     joined: [
       {
@@ -89,12 +101,18 @@ export default {
       });
     },
   },
+  methods: {
+    closeUserDetailModal() {
+      this.openUserDetailModal = false;
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 .dialog-member-workspace {
   font-family: Poppins, sans-serif;
+  height: 100%;
   &__title {
     padding: 3vh 4vh;
     .dialog-title {
@@ -129,6 +147,7 @@ export default {
     margin: 2vh 0;
     padding: 1vh 4vh;
     .member-name {
+      cursor: pointer;
       color: #909398;
     }
     .member-action {

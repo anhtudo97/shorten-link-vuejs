@@ -42,7 +42,7 @@
                 </v-tooltip>
                 <v-tooltip top nudge-left="10">
                   <template v-slot:activator="{ on, attrs }">
-                    <div>
+                    <div @click.stop="modalEditLink = true">
                       <img
                         :src="require('@/assets/icons/edit-solid.svg')"
                         alt="route"
@@ -74,8 +74,21 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-dialog v-model="models.isOpen" class="dialog" max-width="900">
+    <v-dialog
+      v-model="models.isOpen"
+      class="dialog"
+      max-width="900"
+      :fullscreen="width<600?true: false"
+    >
       <DetailLinkModal :slashtag="slashtag" @closeModalDetailLink="closeModalDetailLink" />
+    </v-dialog>
+    <v-dialog
+      v-model="modalEditLink"
+      class="link__dialog"
+      max-width="900"
+      :fullscreen="width<600?true: false"
+    >
+      <CreateNewLink :edit="true" @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
     <v-dialog v-model="isRemoveModal" persistent width="500">
       <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
@@ -117,6 +130,8 @@ export default {
       isOpen: false,
     },
     isRemoveModal: false,
+    modalEditLink: false,
+    width: 0,
   }),
   computed: {
     createAt() {
@@ -136,6 +151,13 @@ export default {
       }
     },
   },
+  beforeMount() {
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
+  },
   methods: {
     closeModalDetailLink() {
       this.models.isOpen = false;
@@ -143,6 +165,14 @@ export default {
     removeLink() {},
     closeRemoveModal() {
       this.isRemoveModal = false;
+    },
+    handleResize() {
+      if (process.client) {
+        this.width = window.innerWidth;
+      }
+    },
+    closeModalAddNewLink() {
+      this.modalEditLink = false;
     },
   },
 };

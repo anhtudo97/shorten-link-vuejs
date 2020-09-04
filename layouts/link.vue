@@ -1,8 +1,6 @@
 <template>
   <v-app>
-    <div id="header" class="relative">
-      <Header class="header-fixed" />
-    </div>
+    <Header />
     <nuxt />
   </v-app>
 </template>
@@ -15,15 +13,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-#header {
-  position: relative;
-  z-index: 999;
-}
-.header-fixed {
-  position: fixed;
-  background-color: #fff;
-  width: 100%;
-}
-</style>

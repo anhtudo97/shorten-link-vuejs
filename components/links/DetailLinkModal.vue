@@ -7,13 +7,13 @@
       </div>
     </div>
     <v-row class="mx-0">
-      <v-col cols="11" class="mx-auto">
+      <v-col cols="12" class="px-3 px-sm-5">
         <div
           class="d-flex justify-space-between modal-detail-link__dialog-main align-center mb-10 flex-wrap"
         >
           <a
             href="https://www.johnsmilga.com/projects"
-            class="main-title text-overflow-hidden"
+            class="main-title text-overflow-hidden pb-3 pb-sm-0"
           >https://www.johnsmilga.com/projects</a>
           <div class="d-flex dialog-link-service align-center">
             <div v-clipboard="slashtag" class="dialog-button-copy mr-3">Copy</div>
@@ -55,8 +55,8 @@
             </v-col>
             <v-col cols="12" md="9">
               <button
-                @click.stop="isRemoveModal = true"
                 class="remove-button button-warning"
+                @click.stop="isRemoveModal = true"
               >Remove this link</button>
             </v-col>
           </v-row>
@@ -95,9 +95,7 @@ export default {
     },
   },
   methods: {
-    removeLink() {
-      console.log('remove');
-    },
+    removeLink() {},
     closeRemoveModal() {
       this.isRemoveModal = false;
     },
@@ -108,6 +106,7 @@ export default {
 <style lang="scss" scoped>
 .modal-detail-link {
   font-family: Poppins, sans-serif;
+  height: 100%;
   &__dialog-icon {
     cursor: pointer;
     height: 32px;
