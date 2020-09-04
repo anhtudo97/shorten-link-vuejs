@@ -17,7 +17,7 @@
           >https://www.johnsmilga.com/projects</a>
           <div class="d-flex dialog-link-service align-center">
             <div v-clipboard="slashtag" class="dialog-button-copy mr-3">Copy</div>
-            <button class="dialog-button button-normal">Edit</button>
+            <button class="dialog-button button-normal" @click.stop="modalEditLink =true">Edit</button>
           </div>
         </div>
         <div class="modal-detail-link__dialog-sub">
@@ -63,6 +63,14 @@
         </div>
       </v-col>
     </v-row>
+    <v-dialog
+      v-model="modalEditLink"
+      class="link__dialog"
+      max-width="900"
+      :fullscreen="width<600?true: false"
+    >
+      <CreateNewLink :edit="true" @closeModalAddNewLink="closeModalAddNewLink" />
+    </v-dialog>
     <v-dialog v-model="isRemoveModal" persistent width="500">
       <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
     </v-dialog>
@@ -73,11 +81,13 @@
 import { clipboard } from 'vue-clipboards';
 import { format } from 'date-fns';
 
+import CreateNewLink from '@/components/links/CreateNewLink';
 import RemoveModal from '@/components/shares/RemoveModal';
 export default {
   directives: { clipboard },
   components: {
     RemoveModal,
+    CreateNewLink,
   },
   props: {
     slashtag: {
@@ -88,17 +98,34 @@ export default {
   data: () => ({
     isRemove: false,
     isRemoveModal: false,
+    modalEditLink: false,
+    width: 0,
   }),
   computed: {
     date() {
       return format(new Date(), 'MMMM dd, yyyy');
     },
   },
+  beforeMount() {
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
+  },
   methods: {
-    removeLink() {},
     closeRemoveModal() {
       this.isRemoveModal = false;
     },
+    closeModalAddNewLink() {
+      this.modalEditLink = false;
+    },
+    handleResize() {
+      if (process.client) {
+        this.width = window.innerWidth;
+      }
+    },
+    removeLink() {},
   },
 };
 </script>

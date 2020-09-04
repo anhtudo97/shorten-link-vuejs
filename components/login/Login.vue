@@ -18,7 +18,7 @@
           <form action>
             <v-text-field class="login-email" label="Your Email" outlined></v-text-field>
             <v-text-field class="login-password" type="password" label="Your Password" outlined></v-text-field>
-            <button class="login-button" @click="routeToHome">
+            <button class="login-button" @click="routeToLinks">
               <div class="button-text my-3">Login</div>
             </button>
           </form>
@@ -42,8 +42,8 @@
 <script>
 export default {
   methods: {
-    routeToHome() {
-      this.$router.push('/');
+    routeToLinks() {
+      this.$router.push('/links');
     },
   },
 };
