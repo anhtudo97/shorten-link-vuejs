@@ -89,7 +89,7 @@ export default {
 .home {
   font-family: Montserrat, sans-serif;
   &__hero {
-    margin-top: 5vh;
+    margin-top: 10vh;
     .hero-banner {
       &__title {
         font-weight: bold;
@@ -105,7 +105,7 @@ export default {
       }
     }
     @media (max-width: 1366px) {
-      margin-top: 0vh;
+      margin-top: 10vh;
       .hero-banner {
         &__title {
           font-size: 50px;
@@ -132,7 +132,7 @@ export default {
     @media (max-width: 600px) {
       .hero-banner {
         &__title {
-          font-size: 38px;
+          font-size: 34px;
           line-height: 48px;
         }
       }
