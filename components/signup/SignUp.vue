@@ -2,197 +2,139 @@
   <div>
     <v-row id="signup" no-gutters class="signup overflow-hidden">
       <v-col
-        class="px-5 px-md-7 py-sm-10 py-md-7 py-5 d-flex flex-column align-self-center signup__form-signup order-last order-sm-first"
-        cols="12"
-        sm="5"
-        lg="4"
+        cols="11"
+        md="10"
+        lg="7"
+        class="signup__block mx-auto d-flex flex-column justify-center"
       >
-        <div class="signup-image text-center">
-          <img src="~/assets/logo.png" />
-        </div>
-        <div class="text-center signup-title">Create a new account</div>
-        <v-sheet>
-          <form action>
-            <v-text-field class="input-name" label="Your name or company name" outlined></v-text-field>
-            <v-text-field class="input-email" label="Your business email" outlined></v-text-field>
-            <v-text-field class="input-password" label="Your Password" outlined type="password"></v-text-field>
-            <button class="signup-button">
-              <div class="button-text my-3">Create account</div>
-            </button>
-          </form>
-        </v-sheet>
-        <div class="an-account text-center mt-3 px-2 px-md-4 px-lg-10">
-          By creating an account you agree to our
-          <strong class="account-signup">terms</strong> and
-          <strong class="account-signup">privacy policy</strong>
-        </div>
-        <div class="signup-an-account text-center mt-1">
-          Already have an account?
-          <nuxt-link to="/login">
-            <strong class="account-signup">login</strong>
-          </nuxt-link>
-        </div>
-      </v-col>
-      <v-col class="signup__image order-first order-sm-last" cols="12" sm="7" lg="8">
-        <div class="image"></div>
+        <v-row>
+          <v-col cols="12" sm="6" class="signup__left pr-10">
+            <div class="signup-title">Sign up</div>
+            <v-text-field class="input-name mt-4 mt-sm-6" label="Your name" hide-details="auto"></v-text-field>
+            <v-text-field
+              class="input-password mt-4 mt-sm-6"
+              label="Your email"
+              type="email"
+              hide-details="auto"
+            ></v-text-field>
+            <v-text-field
+              class="input-password mt-4 mt-sm-6"
+              label="Password"
+              type="password"
+              hide-details="auto"
+            ></v-text-field>
+            <v-text-field
+              class="input-password mt-4 mt-sm-6"
+              label="Password"
+              type="password"
+              hide-details="auto"
+            ></v-text-field>
+            <v-menu
+              ref="menu"
+              v-model="menu"
+              class="input-date mt-4 mt-sm-6"
+              :close-on-content-click="false"
+              :return-value.sync="date"
+              transition="scale-transition"
+              offset-y
+              min-width="290px"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  class="input-date mt-4 mt-sm-6"
+                  v-model="date"
+                  label="Date of birth"
+                  readonly
+                  v-bind="attrs"
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker v-model="date" no-title scrollable>
+                <v-spacer></v-spacer>
+                <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+                <v-btn text color="primary" @click="$refs.menu.save(date)">OK</v-btn>
+              </v-date-picker>
+            </v-menu>
+            <button class="button-normal signup-button mt-6 mt-sm-8" @click="routeToLinks">Register</button>
+          </v-col>
+          <v-col cols="12" sm="6" class="text-center text-sm-right signup__right">
+            <figure>
+              <img src="@/assets/signup-image.jpg" alt="sing up image" />
+            </figure>
+            <div class="create-account text-center">
+              <a href="#">I am already member</a>
+            </div>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  data: () => ({
+    date: new Date().toISOString().substr(0, 10),
+    menu: false,
+    modal: false,
+    menu2: false,
+  }),
+  methods: {
+    routeToLinks() {
+      this.$router.push('/links');
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
 .signup {
-  font-family: Montserrat, sans-serif;
-  &__image {
-    background-image: url('https://freelancer-free.johnleider.com/img/aboutme.f240a572.png');
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
+  font-family: Poppins, sans-serif;
+  &__block {
+    margin: 150px 0;
+    padding: 50px 100px;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.4) 0 0 10px;
   }
-  &__form-signup {
-    .signup-image {
-      img {
-        object-fit: cover;
-        width: 150px;
-        height: auto;
-      }
+  &__right {
+    .create-account {
+      width: 100%;
     }
+    img {
+      object-fit: cover;
+      width: 100%;
+      height: auto;
+    }
+  }
+  &__left {
     .signup-title {
-      font-size: 24px;
-      line-height: 36px;
-      margin-bottom: 35px;
+      line-height: 1.66;
+      margin: 0;
+      padding: 0;
+      font-weight: bold;
+      color: #222;
+      font-size: 36px;
     }
     .signup-button {
-      width: 100%;
-      background: #3c64b1;
-      border-radius: 10px;
-      .button-text {
-        font-weight: 600;
-        font-size: 16px;
-        line-height: 26px;
-        color: white;
-      }
-    }
-    .account-signup {
-      font-weight: 600;
-      color: #3c64b1;
+      padding: 7px 7vh;
+      font-weight: 500;
     }
   }
-  @media (max-width: 1368px) {
-    &__form-signup {
-      .signup-image {
-        img {
-          object-fit: cover;
-          width: 130px;
-          height: auto;
-        }
-      }
-      .signup-title {
-        font-size: 22px;
-        line-height: 34px;
-        margin-bottom: 30px;
-      }
-      .signup-button {
-        height: 45px !important;
-        border-radius: 10px;
-        .button-text {
-          font-weight: 600;
-          font-size: 16px;
-          line-height: 24px;
-          color: white;
-        }
-      }
-      .an-account,
-      .signup-an-account {
-        font-size: 15px;
-      }
-      .input-name::v-deep label {
-        font-size: 15px;
-      }
-      .input-name::v-deep input {
-        font-size: 15px;
-      }
-      .input-email::v-deep label {
-        font-size: 15px;
-      }
-      .input-email::v-deep input {
-        font-size: 15px;
-      }
-      .input-password::v-deep label {
-        font-size: 15px;
-      }
-      .input-password::v-deep input {
-        font-size: 15px;
-      }
+  @media screen and (max-width: 1368px) {
+    &__block {
+      padding: 50px 70px;
     }
   }
-  @media (max-width: 960px) {
-    &__form-signup {
-      .signup-image {
-        img {
-          width: 110px;
-        }
-      }
-      .signup-title {
-        font-size: 20px;
-        line-height: 32px;
-        margin-bottom: 25px;
-      }
-      .signup-button {
-        .button-text {
-          font-size: 14px;
-        }
-      }
-      .an-account,
-      .signup-an-account {
-        font-size: 14px;
-      }
-      .input-name::v-deep label {
-        font-size: 14px;
-      }
-      .input-name::v-deep input {
-        font-size: 14px;
-      }
-      .input-email::v-deep label {
-        font-size: 14px;
-      }
-      .input-email::v-deep input {
-        font-size: 14px;
-      }
-      .input-password::v-deep label {
-        font-size: 14px;
-      }
-      .input-password::v-deep input {
-        font-size: 14px;
-      }
+  @media screen and (max-width: 960px) {
+    &__block {
+      margin: 100px 0;
+      padding: 40px 60px;
     }
   }
-  @media (max-width: 600px) {
-    &__image {
-      min-height: 35vh;
-    }
-    &__form-signup {
-      .signup-image {
-        img {
-          width: 100px;
-        }
-      }
-      .signup-title {
-        font-size: 18px;
-        line-height: 30px;
-        margin-bottom: 20px;
-      }
-      .an-account,
-      .signup-an-account {
-        font-size: 13px;
-      }
+  @media screen and (max-width: 600px) {
+    &__block {
+      margin: 100px 0;
+      padding: 30px 50px;
     }
   }
 }
