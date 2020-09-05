@@ -25,13 +25,7 @@
               type="password"
               hide-details="auto"
             ></v-text-field>
-            <v-checkbox
-              class="input-checkbox mt-6 mt-sm-8"
-              label="Remember me"
-              color="secondary"
-              value="secondary"
-            ></v-checkbox>
-            <button class="button-normal login-button mt-1 mt-sm-3" @click="routeToLinks">Login</button>
+            <button class="button-normal login-button mt-8 mt-sm-10" @click="routeToLinks">Login</button>
           </v-col>
         </v-row>
       </v-col>
@@ -61,6 +55,11 @@ export default {
   &__left {
     .create-account {
       width: 100%;
+    }
+    img {
+      object-fit: cover;
+      width: 100%;
+      height: auto;
     }
   }
   &__right {
