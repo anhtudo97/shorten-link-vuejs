@@ -115,4 +115,5 @@ export default {
   router: {
     linkExactActiveClass: 'exact-active-link',
   },
+  serverMiddleware: ['~/api/server.js'],
 };
