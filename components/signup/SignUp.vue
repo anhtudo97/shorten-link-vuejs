@@ -8,8 +8,15 @@
         class="signup__block mx-auto d-flex flex-column justify-center order-last order-md-first"
       >
         <v-row>
-          <v-col cols="12" sm="6" class="signup__left pr-10">
-            <div class="signup-title">Sign up</div>
+          <v-col cols="12" sm="6" class="signup__left pr-0 pr-sm-10">
+            <div class="signup-header d-flex align-center">
+              <nuxt-link to="/">
+                <div class="header__logo mr-4">
+                  <img src="~/assets/logo.png" />
+                </div>
+              </nuxt-link>
+              <div class="signup-title">Sign up</div>
+            </div>
             <v-text-field
               v-model="form.name"
               class="input-name mt-4 mt-sm-6"
@@ -129,11 +136,20 @@ export default {
     }
   }
   &__left {
-    .signup-title {
-      line-height: 1.66;
-      font-weight: bold;
-      color: #222;
-      font-size: 36px;
+    .signup-header {
+      img {
+        object-fit: cover;
+        width: 60px;
+        height: auto;
+      }
+      .signup-title {
+        line-height: 1.66;
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+        color: #222;
+        font-size: 36px;
+      }
     }
     .signup-button {
       padding: 7px 7vh;
@@ -150,8 +166,13 @@ export default {
       }
     }
     &__left {
-      .signup-title {
-        font-size: 34px;
+      .signup-header {
+        img {
+          width: 55px;
+        }
+        .signup-title {
+          font-size: 34px;
+        }
       }
       .gender-title {
         font-size: 15px;
@@ -177,7 +198,7 @@ export default {
   @media screen and (max-width: 960px) {
     &__block {
       margin: 100px 0;
-      padding: 40px 60px;
+      padding: 40px 50px;
     }
     &__right {
       .create-account {
@@ -185,8 +206,13 @@ export default {
       }
     }
     &__left {
-      .signup-title {
-        font-size: 32px;
+      .signup-header {
+        img {
+          width: 50px;
+        }
+        .signup-title {
+          font-size: 32px;
+        }
       }
       .gender-title {
         font-size: 14px;
@@ -212,7 +238,7 @@ export default {
   @media screen and (max-width: 600px) {
     &__block {
       margin: 100px 0;
-      padding: 30px 50px;
+      padding: 30px 30px;
     }
     &__right {
       .create-account {
@@ -220,8 +246,13 @@ export default {
       }
     }
     &__left {
-      .signup-title {
-        font-size: 30px;
+      .signup-header {
+        img {
+          width: 50px;
+        }
+        .signup-title {
+          font-size: 30px;
+        }
       }
       .gender-title {
         font-size: 13px;

@@ -72,13 +72,20 @@ export default {
     }
   }
   &__right {
-    .login-title {
-      line-height: 1.66;
-      margin: 0;
-      padding: 0;
-      font-weight: bold;
-      color: #222;
-      font-size: 36px;
+    .login-header {
+      img {
+        object-fit: cover;
+        width: 60px;
+        height: auto;
+      }
+      .login-title {
+        line-height: 1.66;
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+        color: #222;
+        font-size: 36px;
+      }
     }
     .login-button {
       padding: 7px 7vh;
@@ -110,7 +117,7 @@ export default {
           height: auto;
         }
         .login-title {
-          font-size: 32px;
+          font-size: 34px;
         }
       }
       .login-button {
@@ -123,7 +130,7 @@ export default {
   @media screen and (max-width: 960px) {
     &__block {
       margin: 100px 0;
-      padding: 40px 60px;
+      padding: 40px 50px;
     }
     &__left {
       .create-account {
@@ -146,7 +153,7 @@ export default {
           height: auto;
         }
         .login-title {
-          font-size: 30px;
+          font-size: 32px;
         }
       }
       .login-button {
@@ -159,7 +166,7 @@ export default {
   @media screen and (max-width: 600px) {
     &__block {
       margin: 100px 0;
-      padding: 30px 50px;
+      padding: 30px 30px;
     }
     &__left {
       .create-account {
