@@ -10,15 +10,24 @@
         <v-row>
           <v-col cols="12" sm="6" class="text-center text-sm-left login__left">
             <figure>
-              <img src="@/assets/signin-image.jpg" alt="sing up image" />
+              <img src="@/assets/signin-image.jpg" alt="sign in image" />
             </figure>
-            <div class="create-account text-center">
-              <a href="#">Create an account</a>
-            </div>
+            <nuxt-link to="/sign-up">
+              <div class="create-account text-center">
+                <div>Create an account</div>
+              </div>
+            </nuxt-link>
           </v-col>
           <v-col cols="12" sm="6" class="login__right">
-            <div class="login-title">Sign in</div>
-            <v-text-field class="input-name mt-4 mt-sm-6" label="Your name" hide-details="auto"></v-text-field>
+            <div class="login-header d-flex align-center">
+              <nuxt-link to="/">
+                <div class="header__logo mr-4">
+                  <img src="~/assets/logo.png" />
+                </div>
+              </nuxt-link>
+              <div class="login-title">Login</div>
+            </div>
+            <v-text-field class="input-name mt-4 mt-sm-6" label="Your email" hide-details="auto"></v-text-field>
             <v-text-field
               class="input-password mt-4 mt-sm-6"
               label="Password"
@@ -94,8 +103,15 @@ export default {
       font-size: 15px;
     }
     &__right {
-      .login-title {
-        font-size: 32px;
+      .login-header {
+        img {
+          object-fit: cover;
+          width: 60px;
+          height: auto;
+        }
+        .login-title {
+          font-size: 32px;
+        }
       }
       .login-button {
         font-size: 15px;
@@ -123,8 +139,15 @@ export default {
       font-size: 14px;
     }
     &__right {
-      .login-title {
-        font-size: 30px;
+      .login-header {
+        img {
+          object-fit: cover;
+          width: 55px;
+          height: auto;
+        }
+        .login-title {
+          font-size: 30px;
+        }
       }
       .login-button {
         font-size: 14px;
@@ -152,8 +175,15 @@ export default {
       font-size: 13px;
     }
     &__right {
-      .login-title {
-        font-size: 28px;
+      .login-header {
+        img {
+          object-fit: cover;
+          width: 50px;
+          height: auto;
+        }
+        .login-title {
+          font-size: 28px;
+        }
       }
       .login-button {
         font-size: 13px;
