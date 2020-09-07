@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div v-if="showAlert">
+      <v-alert type="success">I'm a success alert.</v-alert>
+    </div>
     <v-row id="signup" no-gutters class="signup overflow-hidden">
       <v-col
         cols="11"
@@ -97,6 +100,7 @@
 </template>
 
 <script>
+import { createNewUser } from '@/services/api';
 export default {
   data: () => ({
     form: {
@@ -107,10 +111,19 @@ export default {
       date: new Date().toISOString().substr(0, 10),
       menu: false,
     },
+    showAlert: false,
   }),
   methods: {
-    register() {
-      console.log(this.form);
+    async register() {
+      const { name, email, password, gender, date } = this.form;
+      const tempDate = new Date(date).toISOString()
+      const res = await createNewUser(name, email, password, gender, tempDate);
+      const { status } = res.data;
+      if (status === 200) {
+        this.showAlert = true;
+        setTimeout(() => (this.showAlert = false), 3000);
+        this.$router.push('/login');
+      }
     },
   },
 };
