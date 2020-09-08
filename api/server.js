@@ -2,6 +2,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 
 import routeUser from './routes/user'
+import routeLink from './routes/link'
 
 const app = express()
 
@@ -16,6 +17,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/user', routeUser)
+app.use('/link', routeLink)
 
 module.exports = {
   path: '/api',
