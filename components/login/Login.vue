@@ -1,5 +1,12 @@
 <template>
   <div>
+    <div class="alert">
+      <transition name="fade" mode="in-out">
+        <div v-if="showAlert">
+          <v-alert type="success">Login successfully</v-alert>
+        </div>
+      </transition>
+    </div>
     <v-row id="login" no-gutters class="login overflow-hidden">
       <v-col
         cols="11"
@@ -7,6 +14,11 @@
         lg="7"
         class="login__block mx-auto d-flex flex-column justify-center"
       >
+        <transition name="fade" mode="out-in">
+          <div v-show="showAlertError">
+            <v-alert type="error">Email or password is incorrect</v-alert>
+          </div>
+        </transition>
         <v-row>
           <v-col cols="12" sm="6" class="text-center text-sm-left login__left">
             <figure>
@@ -27,14 +39,28 @@
               </nuxt-link>
               <div class="login-title">Login</div>
             </div>
-            <v-text-field class="input-name mt-4 mt-sm-6" label="Your email" hide-details="auto"></v-text-field>
             <v-text-field
+              v-model="form.email"
+              class="input-name mt-4 mt-sm-6"
+              label="Your email"
+              hide-details="auto"
+              :rules="[required('email'), emailFormat()]"
+            />
+            <v-text-field
+              v-model="form.password"
               class="input-password mt-4 mt-sm-6"
               label="Password"
               type="password"
               hide-details="auto"
-            ></v-text-field>
-            <button class="button-normal login-button mt-8 mt-sm-10" @click="routeToLinks">Login</button>
+              :rules="[required('password')]"
+            />
+            <button
+              :disabled="isLoading"
+              class="button-normal login-button mt-8 mt-sm-10"
+              @click.prevent="login"
+            >
+              Login
+            </button>
           </v-col>
         </v-row>
       </v-col>
@@ -43,20 +69,68 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
+import validations from '@/utils/validations';
+import { loginUser } from '@/services/api';
 export default {
+  data: () => ({
+    form: {
+      email: '',
+      password: '',
+    },
+    showAlert: false,
+    isLoading: false,
+    showAlertError: false,
+    ...validations,
+  }),
   methods: {
-    routeToLinks() {
-      this.$router.push('/links');
+    ...mapMutations({
+      updateUser: 'updateUser',
+    }),
+    async login() {
+      this.isLoading = true;
+      try {
+        const res = await loginUser(this.form.email, this.form.password);
+        const { status } = res.data;
+
+        if (status === 200) {
+          this.showAlert = true;
+
+          setTimeout(() => {
+            this.showAlert = false;
+            this.isLoading = false;
+            this.$router.push('/links');
+          }, 500);
+        }
+
+        const { data } = res.data;
+        const { fullName, email, token } = data;
+        this.updateUser({ fullName, email, token });
+      } catch (error) {
+        console.log(error);
+        this.showAlertError = true;
+        setTimeout(() => {
+          this.showAlertError = false;
+          this.isLoading = false;
+        }, 1000);
+      } finally {
+        this.isLoading = false;
+      }
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.alert {
+  height: 100px;
+}
 .login {
   font-family: Poppins, sans-serif;
   &__block {
-    margin: 150px 0;
+    margin-top: 20px;
+    margin-bottom: 100px;
     padding: 50px 100px;
     border-radius: 20px;
     box-shadow: rgba(0, 0, 0, 0.4) 0 0 10px;
@@ -129,7 +203,6 @@ export default {
   }
   @media screen and (max-width: 960px) {
     &__block {
-      margin: 100px 0;
       padding: 40px 50px;
     }
     &__left {
@@ -165,7 +238,6 @@ export default {
   }
   @media screen and (max-width: 600px) {
     &__block {
-      margin: 100px 0;
       padding: 30px 30px;
     }
     &__left {

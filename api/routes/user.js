@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createNewUser } from '../services/api';
+import { createNewUser, loginUser } from '../services/api';
 
 const routeUser = new Router();
 
@@ -18,6 +18,18 @@ routeUser.post('/sign-up', async (req, res) => {
       gender,
       dateOfBirth
     );
+  } catch (error) {
+    console.log(error);
+  }
+
+  res.send(result.data);
+});
+
+routeUser.post('/sign-in', async (req, res) => {
+  const { email, password } = req.body;
+  let result = null;
+  try {
+    result = await loginUser(email, password);
   } catch (error) {
     console.log(error);
   }

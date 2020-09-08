@@ -1,7 +1,12 @@
 import axios from 'axios';
-const API_URL = process.env.WEB_API_URL || 'https://api.shorten.godmerch.com';
+import FormData from 'form-data';
+const API_URL = process.env.API_URL || 'http://localhost:3000';
+// const API_URL = process.env.WEB_API_URL || 'https://api.shorten.godmerch.com';
+// const client = axios.create({
+//   baseURL: `${API_URL}`,
+// });
 const client = axios.create({
-  baseURL: `${API_URL}`,
+  baseURL: `${API_URL}/api`,
 });
 
 export const createNewUser = (
@@ -19,4 +24,11 @@ export const createNewUser = (
   form.append('dateOfBirth', dateOfBirth);
 
   return client.post('auth/sign-up', form);
+};
+
+export const loginUser = (email, password) => {
+  return client.post('user/sign-in', {
+    email,
+    password,
+  });
 };
