@@ -9,15 +9,19 @@ routeUser.get('/', (req, res) => {
 
 routeUser.post('/sign-up', async (req, res) => {
   const { fullName, email, password, gender, dateOfBirth } = req.body;
-  console.log({ fullName, email, password, gender, dateOfBirth });
-  const result = await createNewUser(
-    fullName,
-    email,
-    password,
-    gender,
-    dateOfBirth
-  );
-  console.log(result);
+  let result = null;
+  try {
+    result = await createNewUser(
+      fullName,
+      email,
+      password,
+      gender,
+      dateOfBirth
+    );
+  } catch (error) {
+    console.log(error);
+  }
+
   res.send(result.data);
 });
 
