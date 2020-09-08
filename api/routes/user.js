@@ -31,9 +31,14 @@ routeUser.post('/sign-in', async (req, res) => {
   try {
     result = await loginUser(email, password);
   } catch (error) {
+    result = {
+      data: {
+        status: 400,
+      },
+    };
     console.log(error);
   }
-
+  console.log(result);
   res.send(result.data);
 });
 
