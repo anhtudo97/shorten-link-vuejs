@@ -11,7 +11,7 @@
           <li v-for="item in menu" :key="item.id">
             <nuxt-link :to="item.route" exact-active-class="nuxt-link-active">
               <div class="header__menu">
-                <div class="menu-text">{{item.name}}</div>
+                <div class="menu-text">{{ item.name }}</div>
               </div>
             </nuxt-link>
           </li>
@@ -32,14 +32,28 @@
             <span class="notification--num">5</span>
           </div>
         </nuxt-link>
-        <nuxt-link to="/login">
-          <div class="header__login mr-5">
-            <div>Login</div>
-          </div>
-        </nuxt-link>
-        <nuxt-link to="/sign-up">
-          <button class="button-normal header__signup py-2 px-6 font-weight-bold">Sign up</button>
-        </nuxt-link>
+        <div v-if="user.token === ''" class="d-flex align-center">
+          <nuxt-link to="/login">
+            <div class="header__login mr-5">
+              <div>Login</div>
+            </div>
+          </nuxt-link>
+          <nuxt-link to="/sign-up">
+            <button
+              class="button-normal header__signup py-2 px-6 font-weight-bold"
+            >
+              Sign up
+            </button>
+          </nuxt-link>
+        </div>
+        <div v-else>
+          <button
+            class="button-normal header__signup py-2 px-6 font-weight-bold"
+            @click.prevent="logout"
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </div>
     <div class="display-big-show border-b">
@@ -52,7 +66,9 @@
               </div>
             </nuxt-link>
             <v-spacer></v-spacer>
-            <v-app-bar-nav-icon @click.stop="$emit('openModal')"></v-app-bar-nav-icon>
+            <v-app-bar-nav-icon
+              @click.stop="$emit('openModal')"
+            ></v-app-bar-nav-icon>
           </v-row>
         </v-col>
       </v-row>
@@ -61,6 +77,7 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex';
 export default {
   data: () => ({
     menu: [
@@ -86,6 +103,22 @@ export default {
       },
     ],
   }),
+  computed: {
+    ...mapGetters({
+      user: 'getUser',
+    }),
+  },
+  methods: {
+    ...mapMutations(['updateUser']),
+    logout() {
+      this.updateUser({
+        fullName: '',
+        email: '',
+        token: '',
+      });
+      this.$router.push('/login')
+    },
+  },
 };
 </script>
 

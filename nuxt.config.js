@@ -37,7 +37,7 @@ export default {
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
    */
-  plugins: [{ src: "@/plugins/clickOutside", ssr: false }],
+  plugins: [{ src: '@/plugins/clickOutside', ssr: false }],
   /*
    ** Auto import components
    ** See https://nuxtjs.org/api/configuration-components
@@ -51,17 +51,22 @@ export default {
     '@nuxtjs/style-resources',
     '@nuxtjs/fontawesome',
   ],
-  fontawesome:{
+  fontawesome: {
     components: 'fa',
-    icons:{
+    icons: {
       solid: true,
-      brands: true
-    }
+      brands: true,
+    },
   },
   /*
    ** Nuxt.js modules
    */
-  modules: ['nuxt-webfontloader', '@nuxtjs/svg'],
+  modules: [
+    'nuxt-webfontloader',
+    '@nuxtjs/svg',
+    '@nuxtjs/axios',
+    '@nuxtjs/auth',
+  ],
   webfontloader: {
     custom: {
       families: [
@@ -70,7 +75,7 @@ export default {
         'Work+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap',
         'Montserrat:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap',
         'Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700&display=swap',
-        'Poppins:wght@400;500;600;700;800&display=swap'
+        'Poppins:wght@400;500;600;700;800&display=swap',
       ],
       urls: [
         'https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap',
@@ -78,7 +83,7 @@ export default {
         'https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap',
         'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap',
         'https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700&display=swap',
-        'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap'
+        'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap',
       ],
     },
   },
@@ -89,7 +94,7 @@ export default {
    */
   vuetify: {
     font: {
-      family: 'Poppins'
+      family: 'Poppins',
     },
     customVariables: ['~/scss/variables.scss', '~/scss/main.scss'],
     theme: {
@@ -116,4 +121,7 @@ export default {
     linkExactActiveClass: 'exact-active-link',
   },
   serverMiddleware: ['~/api/server.js'],
+  axios: {
+    baseURL: 'http://localhost:3000/api',
+  },
 };

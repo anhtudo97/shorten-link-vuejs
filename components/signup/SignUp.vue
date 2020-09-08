@@ -161,10 +161,7 @@ export default {
         );
 
         const { status } = res.data;
-        if (status === 400) {
-          this.showAlertError = true;
-          setTimeout(() => (this.showAlertError = false), 5000);
-        } else {
+        if (status === 200) {
           name = '';
           email = '';
           password = '';
@@ -174,9 +171,14 @@ export default {
             this.showAlert = false;
             this.isLoading = false;
             this.$router.push('/login');
-          }, 4000);
+          }, 2000);
         }
       } catch (e) {
+        this.showAlertError = true;
+        setTimeout(() => {
+          this.showAlertError = false;
+          this.isLoading = false;
+        }, 1000);
         console.log(e);
       }
     },

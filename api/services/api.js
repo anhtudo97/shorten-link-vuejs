@@ -18,6 +18,13 @@ export const createNewUser = (
   form.append('password', password);
   form.append('gender', gender);
   form.append('dateOfBirth', dateOfBirth);
-  // console.log(form);
+
   return api.post('auth/sign-up', form);
+};
+
+export const loginUser = (email, password) => {
+  return api.post('auth/sign-in', {
+    email,
+    password,
+  });
 };

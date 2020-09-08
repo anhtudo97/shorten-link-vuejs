@@ -13,10 +13,9 @@ export const getters = {
 };
 
 export const mutations = {
-  updateUser(state, { name, email, token }) {
-    state.user.name = name;
-    state.user.email = email;
-    state.user.token = token;
+  updateUser(state, payload) {
+    state.user.name = payload.fullName;
+    state.user.email = payload.email;
+    state.user.token = payload.token;
   },
 };
-
