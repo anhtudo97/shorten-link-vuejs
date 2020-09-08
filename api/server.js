@@ -1,7 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser'
 
-// import routeUser from './routes/user'
+import routeUser from './routes/user'
 
 const app = express()
 
@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
   res.send({ msg: process.env.WEB_API_URL })
 })
 
-// app.use('/orders', routeOrder)
+app.use('/user', routeUser)
 
 module.exports = {
   path: '/api',

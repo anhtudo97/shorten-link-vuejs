@@ -1,5 +1,15 @@
 <template>
   <div>
+    <transition name="fade" mode="in-out">
+      <div v-if="showAlert">
+        <v-alert type="success">Account is created</v-alert>
+      </div>
+    </transition>
+    <transition name="fade" mode="in-out">
+      <div v-if="showAlertError">
+        <v-alert type="error">Email is existed</v-alert>
+      </div>
+    </transition>
     <v-row id="signup" no-gutters class="signup overflow-hidden">
       <v-col
         cols="11"
@@ -22,6 +32,7 @@
               class="input-name mt-4 mt-sm-6"
               label="Your name"
               hide-details="auto"
+              :rules="[(v) => !!v || 'Name is required']"
             ></v-text-field>
             <v-text-field
               v-model="form.email"
@@ -30,6 +41,7 @@
               label="Your email"
               type="email"
               hide-details="auto"
+              :rules="emailRules"
             ></v-text-field>
             <v-text-field
               v-model="form.password"
@@ -37,12 +49,22 @@
               label="Password"
               type="password"
               hide-details="auto"
+              :rules="[(v) => !!v || 'Password is required']"
             ></v-text-field>
             <div class="mt-4 mt-sm-6">
               <div class="gender-title">Gender</div>
-              <v-radio-group v-model="form.gender" :mandatory="false" dense hide-details="auto">
+              <v-radio-group
+                v-model="form.gender"
+                :mandatory="false"
+                dense
+                hide-details="auto"
+              >
                 <v-radio class="gender-input" label="Male" value="M"></v-radio>
-                <v-radio class="gender-input" label="Female" value="F"></v-radio>
+                <v-radio
+                  class="gender-input"
+                  label="Female"
+                  value="F"
+                ></v-radio>
               </v-radio-group>
             </div>
             <v-menu
@@ -57,8 +79,8 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
-                  class="input-date mt-4 mt-sm-6"
                   v-model="form.date"
+                  class="input-date mt-4 mt-sm-6"
                   label="Date of birth"
                   readonly
                   v-bind="attrs"
@@ -67,14 +89,21 @@
               </template>
               <v-date-picker v-model="form.date" no-title scrollable>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="form.menu = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.menu.save(form.date)">OK</v-btn>
+                <v-btn text color="primary" @click="form.menu = false"
+                  >Cancel</v-btn
+                >
+                <v-btn text color="primary" @click="$refs.menu.save(form.date)"
+                  >OK</v-btn
+                >
               </v-date-picker>
             </v-menu>
             <button
+              :disabled="isLoading"
               class="button-normal signup-button mt-6 mt-sm-8"
               @click.prevent="register"
-            >Register</button>
+            >
+              Register
+            </button>
           </v-col>
           <v-col
             cols="12"
@@ -97,6 +126,7 @@
 </template>
 
 <script>
+import { createNewUser } from '@/services/api';
 export default {
   data: () => ({
     form: {
@@ -107,10 +137,48 @@ export default {
       date: new Date().toISOString().substr(0, 10),
       menu: false,
     },
+    showAlert: false,
+    showAlertError: false,
+    isLoading: false,
+    emailRules: [
+      (v) => !!v || 'E-mail is required',
+      (v) => /.+@.+/.test(v) || 'E-mail must be valid',
+    ],
   }),
   methods: {
-    register() {
-      console.log(this.form);
+    async register() {
+      let { name, email, password } = this.form;
+      const { gender, date } = this.form;
+      const tempDate = new Date(date).toISOString();
+      this.isLoading = true;
+      try {
+        const res = await createNewUser(
+          name,
+          email,
+          password,
+          gender,
+          tempDate
+        );
+
+        const { status } = res.data;
+        if (status === 400) {
+          this.showAlertError = true;
+          setTimeout(() => (this.showAlertError = false), 5000);
+        } else {
+          name = '';
+          email = '';
+          password = '';
+          this.showAlert = true;
+
+          setTimeout(() => {
+            this.showAlert = false;
+            this.isLoading = false;
+            this.$router.push('/login');
+          }, 4000);
+        }
+      } catch (e) {
+        console.log(e);
+      }
     },
   },
 };
