@@ -37,8 +37,8 @@
         <v-col cols="12" class="py-0 text-right">
           <button
             :disabled="loading"
-            @click="createNewWorkspace"
             class="button-normal button-create"
+            @click="createNewWorkspace"
           >
             Create workspace
           </button>

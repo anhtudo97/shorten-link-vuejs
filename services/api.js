@@ -119,4 +119,15 @@ export const createNewWorkspace = (token, name) => {
   );
 };
 
+export const getWorkspaces = (token, page) => {
+  return api.get(
+    `/workspaces?page=${page}&perPage=10`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
 
