@@ -41,7 +41,6 @@
         </button>
       </v-col>
     </v-row>
-    <v-row> </v-row>
     <v-snackbar v-model="showAlert" top color="success">
       Create new domain successfully
       <template v-slot:action="{ attrs }">
@@ -80,8 +79,8 @@ export default {
           this.showAlert = true;
           setTimeout(() => {
             this.$emit('closeModalCreateNewDomain');
-            this.reload()
-          }, 4000);
+            this.reload();
+          }, 2000);
         }
       } catch (error) {
         console.log(error);
