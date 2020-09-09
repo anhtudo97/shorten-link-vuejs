@@ -10,12 +10,14 @@
       </div>
     </div>
     <div class="modal-detail-domain__domain">
-      <div class="domain-url text-overflow-hidden">https://gitlab.com/</div>
+      <div class="domain-url text-overflow-hidden">{{ domainURL }}</div>
       <div class="domain-created-at d-flex my-5 align-center">
-        <img src="@/assets/svg/calendar.svg" alt="calendar" srcset />
+        <img src="@/assets/svg/calendar.svg" alt="calendar" />
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <div class="date pl-3" v-bind="attrs" v-on="on">{{date}}</div>
+            <div class="date pl-3" v-bind="attrs" v-on="on">
+              {{ date }}
+            </div>
           </template>
           <span>Added on</span>
         </v-tooltip>
@@ -26,7 +28,12 @@
         <div class="services-title">Workspace(s)</div>
       </v-col>
       <v-col cols="12" sm="9">
-        <div class="services-name">Workspace 1</div>
+        <div class="d-flex">
+          <div v-for="(w, i) in works" :key="i" class="services-name d-flex">
+            {{ w }}
+            <div v-if="i < works.length - 1">,</div>
+          </div>
+        </div>
       </v-col>
     </v-row>
     <v-row>
@@ -39,7 +46,10 @@
         <div class="services-title">Remove</div>
       </v-col>
       <v-col cols="12" sm="9">
-        <button class="button-warning services-button" @click.stop="isRemoveModal = true">
+        <button
+          class="button-warning services-button"
+          @click.stop="isRemoveModal = true"
+        >
           <div class="button-text">Remove this domain</div>
         </button>
       </v-col>
@@ -60,15 +70,43 @@
 </template>
 
 <script>
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
+import { getDomain } from '@/services/api';
 export default {
+  props: {
+    id: {
+      type: String,
+      default: '',
+    },
+  },
+  async fetch() {
+    try {
+      const res = await getDomain(this.token, this.id);
+      const { status } = res.data;
+      if (status === 200) {
+        const { name, createdAt, workspaces } = res.data.data;
+        this.domainURL = name;
+        this.date = format(parseISO(createdAt), 'MMM dd, yyyy');
+        this.works = [...workspaces].map((x) => {
+          return x.name.String;
+        });
+        console.log(this.works);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
   data: () => ({
     isRemoveModal: false,
+    domainURL: '',
+    date: '',
+    works: [],
+    token: '',
   }),
-  computed: {
-    date() {
-      return format(new Date(), 'MMMM dd, yyy');
-    },
+  created() {
+    if (localStorage.token) {
+      this.token = localStorage.token;
+    }
   },
   methods: {
     removeDomain() {},

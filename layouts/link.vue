@@ -26,7 +26,8 @@ export default {
     drawer: false,
   }),
   created() {
-    if (!localStorage.token) {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+    } else {
       this.$router.push('/login');
     }
   },

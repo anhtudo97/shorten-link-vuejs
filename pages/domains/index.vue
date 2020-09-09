@@ -1,10 +1,12 @@
 <template>
   <div>
     <Domains :domains="domains" />
-    <infinite-loading
-      spinner="spiral"
-      @infinite="infiniteScroll"
-    ></infinite-loading>
+    <client-only>
+      <infinite-loading
+        spinner="spiral"
+        @infinite="infiniteScroll"
+      ></infinite-loading>
+    </client-only>
   </div>
 </template>
 
@@ -22,7 +24,7 @@ export default {
     token: '',
   }),
   created() {
-    if (localStorage.token) {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
   },
@@ -42,7 +44,6 @@ export default {
             $state.complete();
           }
         }
-        console.log(res);
       } catch (error) {
         console.log(error);
       }

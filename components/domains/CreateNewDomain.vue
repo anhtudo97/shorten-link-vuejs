@@ -54,30 +54,33 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
 import { createNewDomain } from '@/services/api';
 export default {
   data: () => ({
     destinationDomain: '',
     loading: false,
     showAlert: false,
+    token: '',
   }),
-  computed: {
-    ...mapGetters({
-      user: 'getUser',
-    }),
+  created() {
+    if (localStorage.token) {
+      this.token = localStorage.token;
+    }
   },
   methods: {
+    reload() {
+      window.location.reload();
+    },
     async createNewDomain() {
-      const { token } = this.user;
       this.loading = true;
       try {
-        const res = await createNewDomain(token, this.destinationDomain);
+        const res = await createNewDomain(this.token, this.destinationDomain);
         const { status } = res.data;
         if (status === 200) {
           this.showAlert = true;
           setTimeout(() => {
             this.$emit('closeModalCreateNewDomain');
+            this.reload()
           }, 4000);
         }
       } catch (error) {
