@@ -81,3 +81,16 @@ export const createNewDomain = (token, name) => {
     }
   );
 };
+
+export const getDomains = (token, page) => {
+  return api.get(
+    `/domains?page=${page}&perPage=10`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+

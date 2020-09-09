@@ -15,7 +15,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
 import Header from '@/components/shares/Header';
 import Drawer from '@/components/shares/NavigationDrawer';
 export default {
@@ -26,13 +25,8 @@ export default {
   data: () => ({
     drawer: false,
   }),
-  computed: {
-    ...mapGetters({
-      user: 'getUser',
-    }),
-  },
   created() {
-    if (this.user.token === '') {
+    if (!localStorage.token) {
       this.$router.push('/login');
     }
   },

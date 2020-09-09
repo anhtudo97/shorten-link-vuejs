@@ -5,14 +5,18 @@
         <v-row class="align-center">
           <v-col cols="6" sm="7" md="8" lg="9">
             <div class="d-flex align-center">
-              <div class="domain-count pr-4">{{domains.length}} Domain(s)</div>
+              <div class="domain-count pr-4">
+                {{ domains.length }} Domain(s)
+              </div>
             </div>
           </v-col>
           <v-col cols="6" sm="5" md="4" lg="3" class="text-right">
             <button
               class="button-normal add-new-domain"
               @click.stop="openModalCreateNewDomain = true"
-            >New domain</button>
+            >
+              New domain
+            </button>
           </v-col>
         </v-row>
       </v-col>
@@ -33,7 +37,7 @@
     <div class="domain__management">
       <transition-group name="list" tag="ul" class="pa-0">
         <li v-for="domain in tempDomains" :key="domain.id">
-          <Domain :domain="domain.domain" :added="domain.createdAt" />
+          <Domain :domain="domain.name" :added="domain.createdAt" />
         </li>
       </transition-group>
     </div>
@@ -41,7 +45,7 @@
       v-model="openModalCreateNewDomain"
       class="domain__dialog"
       max-width="900"
-      :fullscreen="width<600?true: false"
+      :fullscreen="width < 600 ? true : false"
     >
       <CreateNewDomain @closeModalCreateNewDomain="closeModalCreateNewDomain" />
     </v-dialog>
@@ -49,7 +53,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
 import Domain from '@/components/domains/Domain';
 import CreateNewDomain from '@/components/domains/CreateNewDomain';
 export default {
@@ -57,14 +60,16 @@ export default {
     Domain,
     CreateNewDomain,
   },
+  props: {
+    domains: {
+      type: Array,
+    },
+  },
   data: () => ({
     openModalCreateNewDomain: false,
     width: 0,
   }),
   computed: {
-    ...mapGetters({
-      domains: 'domains/getDomains',
-    }),
     tempDomains() {
       return [...this.domains].sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);

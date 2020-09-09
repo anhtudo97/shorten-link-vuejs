@@ -96,6 +96,10 @@ export default {
 
         if (status === 200) {
           this.showAlert = true;
+          const { data } = res.data;
+          const { fullName, email, token } = data;
+          this.updateUser({ fullName, email, token });
+          localStorage.token = token;
 
           setTimeout(() => {
             this.showAlert = false;
@@ -103,10 +107,6 @@ export default {
             this.$router.push('/links');
           }, 500);
         }
-
-        const { data } = res.data;
-        const { fullName, email, token } = data;
-        this.updateUser({ fullName, email, token });
       } catch (error) {
         console.log(error);
         this.showAlertError = true;
