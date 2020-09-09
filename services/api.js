@@ -1,8 +1,8 @@
 import axios from 'axios';
 // const API_URL = process.env.API_URL || 'http://localhost:3000';
-const API_URL = process.env.WEB_API_URL || 'https://api.shorten.godmerch.com';
+// const API_URL = process.env.WEB_API_URL || 'https://api.shorten.godmerch.com';
 const api = axios.create({
-  baseURL: `${API_URL}`,
+  baseURL: `http://139.180.213.253`,
 });
 // const client = axios.create({
 //   baseURL: `${API_URL}/api`,
@@ -35,6 +35,10 @@ const api = axios.create({
 //   return client.post('link/links', { token });
 // };
 
+// export const createNewDomain = (token, name) => {
+//   return client.post('domain/domains', { token, name });
+// };
+
 export const createNewUser = (
   fullName,
   email,
@@ -64,4 +68,16 @@ export const getLinks = (token) => {
       Authorization: `Bearer ${token}`,
     },
   });
+};
+
+export const createNewDomain = (token, name) => {
+  return api.post(
+    `/domains`,
+    { name },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
