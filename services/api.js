@@ -93,4 +93,15 @@ export const getDomains = (token, page) => {
   );
 };
 
+export const getDomain = (token, id) => {
+  return api.get(
+    `/domains/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
 

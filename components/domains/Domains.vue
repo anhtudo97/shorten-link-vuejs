@@ -36,8 +36,8 @@
     </v-row>
     <div class="domain__management">
       <transition-group name="list" tag="ul" class="pa-0">
-        <li v-for="domain in tempDomains" :key="domain.id">
-          <Domain :domain="domain.name" :added="domain.createdAt" />
+        <li v-for="domain in domains" :key="domain.id">
+          <Domain :id="domain.id" :domain="domain.name" :added="domain.createdAt" />
         </li>
       </transition-group>
     </div>
@@ -69,13 +69,6 @@ export default {
     openModalCreateNewDomain: false,
     width: 0,
   }),
-  computed: {
-    tempDomains() {
-      return [...this.domains].sort((a, b) => {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
-    },
-  },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);
     this.handleResize();
