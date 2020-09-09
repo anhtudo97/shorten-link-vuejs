@@ -37,7 +37,10 @@ export default {
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
    */
-  plugins: [{ src: '@/plugins/clickOutside', ssr: false }],
+  plugins: [
+    { src: '@/plugins/clickOutside', ssr: false },
+    { src: '@/plugins/infiniteLoading', ssr: false },
+  ],
   /*
    ** Auto import components
    ** See https://nuxtjs.org/api/configuration-components
@@ -61,11 +64,7 @@ export default {
   /*
    ** Nuxt.js modules
    */
-  modules: [
-    'nuxt-webfontloader',
-    '@nuxtjs/svg',
-    '@nuxtjs/axios',
-  ],
+  modules: ['nuxt-webfontloader', '@nuxtjs/svg', '@nuxtjs/axios'],
   webfontloader: {
     custom: {
       families: [
@@ -122,6 +121,6 @@ export default {
   serverMiddleware: ['~/api/server.js'],
   axios: {
     baseURL: '139.180.213.253',
-    proxy: true
+    proxy: true,
   },
 };
