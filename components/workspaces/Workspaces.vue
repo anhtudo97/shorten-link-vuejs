@@ -2,15 +2,21 @@
   <div class="workspaces">
     <v-row class="workspaces__menu mx-0">
       <v-col cols="12" sm="10" md="8" class="mx-auto py-2 py-md-3 py-lg-6">
-        <v-row class="align-center justify-space-between main-menu px-3 px-sm-0">
+        <v-row
+          class="align-center justify-space-between main-menu px-3 px-sm-0"
+        >
           <v-col cols class="px-0">
-            <button class="menu-text">{{workspaces.length}} Workspace(s)</button>
+            <button class="menu-text">
+              {{ workspaces.length }} Workspace(s)
+            </button>
           </v-col>
           <v-col class="text-right px-0">
             <button
               class="button-normal menu-button"
               @click.stop="openCreateNewWorkspace = true"
-            >New workspace</button>
+            >
+              New workspace
+            </button>
           </v-col>
         </v-row>
       </v-col>
@@ -30,18 +36,27 @@
     <v-row class="workspaces__management">
       <v-col cols="12" sm="10" md="8" class="mx-auto">
         <transition-group name="list" tag="section" class="pa-0">
-          <Workspace v-for="workspace in workspaces" :key="workspace.id" :workspace="workspace" />
+          <Workspace
+            v-for="workspace in workspaces"
+            :key="workspace.id"
+            :workspace="workspace"
+          />
         </transition-group>
       </v-col>
     </v-row>
-    <v-dialog v-model="openCreateNewWorkspace" max-width="850" :fullscreen="width<600?true: false">
-      <CreateNewWorkspaceModal @closeCreateNewWorkspace="closeCreateNewWorkspace" />
+    <v-dialog
+      v-model="openCreateNewWorkspace"
+      max-width="850"
+      :fullscreen="width < 600 ? true : false"
+    >
+      <CreateNewWorkspaceModal
+        @closeCreateNewWorkspace="closeCreateNewWorkspace"
+      />
     </v-dialog>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
 import Workspace from '@/components/workspaces/Workspace';
 import CreateNewWorkspaceModal from '@/components/workspaces/CreateNewWorkspace';
 export default {
@@ -49,20 +64,24 @@ export default {
     Workspace,
     CreateNewWorkspaceModal,
   },
+  props: {
+    workspaces: {
+      type: Array,
+    },
+  },
   data: () => ({
     openCreateNewWorkspace: false,
-
     width: 0,
   }),
   computed: {
-    ...mapGetters({
-      workspaces: 'workspaces/getWorkspaces',
-    }),
-    tempWorkspaces() {
-      return [...this.workspaces].sort((a, b) => {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
-    },
+    // ...mapGetters({
+    //   workspaces: 'workspaces/getWorkspaces',
+    // }),
+    // tempWorkspaces() {
+    //   return [...this.workspaces].sort((a, b) => {
+    //     return new Date(b.createdAt) - new Date(a.createdAt);
+    //   });
+    // },
   },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);
