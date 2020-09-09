@@ -62,6 +62,7 @@ export const loginUser = (email, password) => {
   });
 };
 
+/* Link */
 export const getLinks = (token) => {
   return api.get(`/links?page=${1}&perPage=10`, {
     headers: {
@@ -70,6 +71,7 @@ export const getLinks = (token) => {
   });
 };
 
+/* Domain */
 export const createNewDomain = (token, name) => {
   return api.post(
     `/domains`,
@@ -96,6 +98,19 @@ export const getDomains = (token, page) => {
 export const getDomain = (token, id) => {
   return api.get(
     `/domains/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+/* Workspace */
+export const createNewWorkspace = (token, name) => {
+  return api.post(
+    `/workspaces`,
+    { name },
     {
       headers: {
         Authorization: `Bearer ${token}`,

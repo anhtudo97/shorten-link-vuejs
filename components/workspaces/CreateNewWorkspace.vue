@@ -8,7 +8,10 @@
       </div>
       <div class="d-flex justify-space-between">
         <div></div>
-        <div class="header-dialog-icon pa-2" @click.stop="$emit('closeCreateNewWorkspace')">
+        <div
+          class="header-dialog-icon pa-2"
+          @click.stop="$emit('closeCreateNewWorkspace')"
+        >
           <img src="@/assets/svg/close.svg" alt="close" />
         </div>
       </div>
@@ -20,25 +23,74 @@
         </v-col>
         <v-col cols="12" sm="8" class="py-0">
           <v-text-field
+            v-model="workspaceName"
             class="text-field-name"
             outlined
             dense
             label="Workspace name"
             hide-details="auto"
+            :disabled="loading"
           ></v-text-field>
         </v-col>
       </v-row>
       <v-row class="py-1 align-center my-3">
         <v-col cols="12" class="py-0 text-right">
-          <button class="button-normal button-create">Create workspace</button>
+          <button
+            :disabled="loading"
+            @click="createNewWorkspace"
+            class="button-normal button-create"
+          >
+            Create workspace
+          </button>
         </v-col>
       </v-row>
     </div>
+    <v-snackbar v-model="showAlert" top color="success">
+      Create new workspace successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
 <script>
-export default {};
+import { createNewWorkspace } from '@/services/api';
+export default {
+  data: () => ({
+    workspaceName: '',
+    loading: false,
+    showAlert: false,
+    token: '',
+  }),
+  created() {
+    if (localStorage.token) {
+      this.token = localStorage.token;
+    }
+  },
+  methods: {
+    async createNewWorkspace() {
+      this.loading = true;
+      try {
+        const res = await createNewWorkspace(this.token, this.workspaceName);
+        const { status } = res.data;
+        if (status === 200) {
+          this.showAlert = true;
+          setTimeout(() => {
+            this.$emit('closeCreateNewWorkspace');
+          }, 2000);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.workspaceName = '';
+        this.loading = false;
+      }
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -133,7 +185,7 @@ export default {};
     }
     .text-field-name::v-deep input {
       font-size: 13px;
-       padding: 3px 5vh;
+      padding: 3px 5vh;
     }
   }
 }
