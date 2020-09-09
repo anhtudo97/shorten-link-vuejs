@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: `https://api.shorten.godmerch.com`,
+  baseURL: `139.180.213.253`,
+  // baseURL: `https://api.shorten.godmerch.com`,
 });
 
 export const createNewUser = (
@@ -33,4 +34,16 @@ export const getLinks = (token) => {
       Authorization: `Basic ${token}`,
     },
   });
+};
+
+export const createNewDomain = (token, name) => {
+  return api.post(
+    `/domains`,
+    { name },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };

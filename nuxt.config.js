@@ -65,7 +65,6 @@ export default {
     'nuxt-webfontloader',
     '@nuxtjs/svg',
     '@nuxtjs/axios',
-    '@nuxtjs/auth',
   ],
   webfontloader: {
     custom: {
@@ -122,6 +121,7 @@ export default {
   },
   serverMiddleware: ['~/api/server.js'],
   axios: {
-    baseURL: 'http://localhost:3000/api',
+    baseURL: '139.180.213.253',
+    proxy: true
   },
 };

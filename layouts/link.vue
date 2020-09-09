@@ -31,9 +31,9 @@ export default {
       user: 'getUser',
     }),
   },
-  beforeMount() {
+  created() {
     if (this.user.token === '') {
-      this.$router.push('/');
+      this.$router.push('/login');
     }
   },
   methods: {
