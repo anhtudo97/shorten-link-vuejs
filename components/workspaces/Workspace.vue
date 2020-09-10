@@ -89,16 +89,10 @@
         />
       </v-dialog>
     </v-row>
-    <v-snackbar v-model="showAlert" top color="error">
+    <v-snackbar v-model="showAlert" top>
       Delete workspace is successfully
       <template v-slot:action="{ attrs }">
-        <v-btn
-          color="white"
-          text
-          dark
-          v-bind="attrs"
-          @click="showAlert = false"
-        >
+        <v-btn color="pink" text v-bind="attrs" @click="showAlert = false">
           Close
         </v-btn>
       </template>

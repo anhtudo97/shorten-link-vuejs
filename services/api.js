@@ -100,6 +100,14 @@ export const getDomain = (token, id) => {
   });
 };
 
+export const deleteDomain = (token, id) => {
+  return api.delete(`/domains/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 /* Workspace */
 export const createNewWorkspace = (token, name) => {
   return api.post(
@@ -133,13 +141,10 @@ export const updateWorkspace = (token, id, name) => {
   );
 };
 
-export const deleteWorkspace = (token, id, name) => {
-  return api.delete(
-    `/workspaces/${id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+export const deleteWorkspace = (token, id) => {
+  return api.delete(`/workspaces/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
