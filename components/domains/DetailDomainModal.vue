@@ -66,12 +66,20 @@
         @closeRemoveModal="closeRemoveModal"
       />
     </v-dialog>
+    <v-snackbar v-model="showAlert" top>
+      Delete domains is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="pink" text v-bind="attrs" @click="showAlert = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
 <script>
 import { format, parseISO } from 'date-fns';
-import { getDomain } from '@/services/api';
+import { getDomain, deleteDomain } from '@/services/api';
 export default {
   props: {
     id: {
@@ -90,7 +98,6 @@ export default {
         this.works = [...workspaces].map((x) => {
           return x.name.String;
         });
-        console.log(this.works);
       }
     } catch (error) {
       console.log(error);
@@ -102,6 +109,8 @@ export default {
     date: '',
     works: [],
     token: '',
+    showAlert: false,
+    loading: false,
   }),
   created() {
     if (localStorage.token) {
@@ -109,7 +118,27 @@ export default {
     }
   },
   methods: {
-    removeDomain() {},
+    reload() {
+      window.location.reload();
+    },
+    async removeDomain() {
+      this.loading = true;
+      try {
+        const res = await deleteDomain(this.token, this.id);
+        const { status } = res.data;
+        if (status === 200) {
+          this.showAlert = true;
+          setTimeout(() => {
+            this.closeRemoveModal();
+            this.reload();
+            this.showAlert = false;
+            this.loading = false;
+          }, 1000);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
     closeRemoveModal() {
       this.isRemoveModal = false;
     },

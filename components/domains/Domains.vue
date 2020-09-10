@@ -37,7 +37,11 @@
     <div class="domain__management">
       <transition-group name="list" tag="ul" class="pa-0">
         <li v-for="domain in domains" :key="domain.id">
-          <Domain :id="domain.id" :domain="domain.name" :added="domain.createdAt" />
+          <Domain
+            :id="domain.id"
+            :domain="domain.name"
+            :added="domain.createdAt"
+          />
         </li>
       </transition-group>
     </div>
@@ -63,6 +67,7 @@ export default {
   props: {
     domains: {
       type: Array,
+      default: () => [],
     },
   },
   data: () => ({
