@@ -38,9 +38,7 @@
       <transition-group name="list" tag="ul" class="pa-0">
         <li v-for="domain in domains" :key="domain.id">
           <Domain
-            :id="domain.id"
-            :domain="domain.name"
-            :added="domain.createdAt"
+            :domain="domain"
           />
         </li>
       </transition-group>
