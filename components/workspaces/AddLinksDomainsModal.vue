@@ -8,7 +8,10 @@
       </div>
       <div class="d-flex justify-space-between">
         <div></div>
-        <div class="header-dialog-icon pa-2" @click.stop="$emit('closeModalAddLinksDomain')">
+        <div
+          class="header-dialog-icon pa-2"
+          @click.stop="$emit('closeModalAddLinksDomain')"
+        >
           <img src="@/assets/svg/close.svg" alt="close" />
         </div>
       </div>
@@ -19,18 +22,34 @@
       <div class="menu-title">Domains</div>
       <button class="button-normal add-button">Add more</button>
     </v-row>
+
     <div class="border-b">
-      <transition-group name="fade" mode="in-out">
+      <transition-group
+        v-if="domain_joined.length > 0"
+        name="fade"
+        mode="in-out"
+      >
         <div
           v-for="item in domain_joined"
           :key="item.id"
           class="d-flex justify-space-between dialog-add-links-domains__domain align-center"
         >
-          <div class="member-name">{{item.domain}}</div>
+          <div class="member-name">{{ item.domain }}</div>
 
-          <button class="button-warning member-action" @click="removeFromList(item.id)">Remove</button>
+          <button
+            class="button-warning member-action"
+            @click="removeFromList(item.id)"
+          >
+            Remove
+          </button>
         </div>
       </transition-group>
+      <div
+        v-else
+        class="d-flex justify-space-between dialog-add-links-domains__domain align-center"
+      >
+        <div class="member-name">Dont have any domains</div>
+      </div>
     </div>
     <transition-group name="fade" mode="in-out">
       <div
@@ -38,40 +57,90 @@
         :key="item.id"
         class="d-flex justify-space-between dialog-add-links-domains__undomain align-center"
       >
-        <v-checkbox v-model="domainSelected" class="checkbox-member" :label="item.domain"></v-checkbox>
+        <v-checkbox
+          v-model="domainSelected"
+          class="checkbox-member"
+          :label="item.name"
+        ></v-checkbox>
       </div>
     </transition-group>
+    <client-only>
+      <infinite-loading
+        spinner="spiral"
+        @infinite="infiniteScroll"
+      ></infinite-loading>
+    </client-only>
   </v-list>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { getDomainsWorkspace, getDomains } from '@/services/api';
 export default {
+  props: {
+    workspace: {
+      type: Object,
+      default: () => {},
+    },
+  },
   data: () => ({
     tabs: null,
-    domain_joined: [
-      {
-        id: 11,
-        domain: 'https://godgroup.atlassian.net/',
-        createdAt: '2020-08-26T10:10:25.704675+07:00',
-      },
-      {
-        id: 21,
-        domain: 'https://gitlab.com/',
-        createdAt: '2020-08-21T10:10:25.704675+07:00',
-      },
-    ],
+    pageDomain: 1,
+    pageDomainWorkspace: 1,
+    domain_joined: [],
+    domains: [],
     domainSelected: [],
   }),
   computed: {
-    ...mapGetters({
-      domains: 'domains/getDomains',
-    }),
     unjoined() {
       const names = [...this.domain_joined].map((x) => x.domain);
       return [...this.domains].filter((x) => {
         if (!names.includes(x.domain)) return x;
       });
+    },
+  },
+  created() {
+    if (localStorage.token) {
+      this.token = localStorage.token;
+    }
+  },
+  methods: {
+    async infiniteScroll($state) {
+      const { token, workspace } = this;
+      let { pageDomain, pageDomainWorkspace } = this;
+      try {
+        const resDomain = await getDomains(token, pageDomain);
+        const resDomainWorkspace = await getDomainsWorkspace(
+          token,
+          workspace.id,
+          pageDomainWorkspace
+        );
+
+        const statusDomain = resDomain.data.status;
+        const statusDomainWorkspace = resDomainWorkspace.data.status;
+
+        if (statusDomain === 200) {
+          pageDomain += 1;
+          const { domains } = resDomain.data.data;
+          if (domains.length) {
+            this.domains.push(...domains);
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
+        }
+        if (statusDomainWorkspace === 200) {
+          pageDomainWorkspace += 1;
+          const { domains } = resDomainWorkspace.data.data;
+          if (domains.length) {
+            this.domain_joined.push(...domains);
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };
@@ -80,7 +149,6 @@ export default {
 <style lang="scss" scoped>
 .dialog-add-links-domains {
   font-family: Poppins, sans-serif;
-  height: 100%;
   &__header {
     padding: 1vh 4vh;
     .header-title {

@@ -38,7 +38,7 @@
       <v-row class="py-1 align-center my-3">
         <v-col cols="12" class="py-0 text-right">
           <button
-            v-bind:disabled="loading"
+            :disabled="loading"
             class="button-normal button-create"
             @click="callaction"
           >
