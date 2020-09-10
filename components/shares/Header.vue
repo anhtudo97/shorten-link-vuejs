@@ -121,6 +121,7 @@ export default {
         email: '',
         token: '',
       });
+      window.localStorage.clear();
       this.$router.push('/login');
     },
   },

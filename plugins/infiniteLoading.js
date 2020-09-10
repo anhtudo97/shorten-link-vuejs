@@ -1,4 +1,9 @@
 import Vue from 'vue'
 import InfiniteLoading from 'vue-infinite-loading'
 
-Vue.component('infinite-loading', InfiniteLoading)
+Vue.use(InfiniteLoading, {
+  slots: {
+    noMore: '', // you can pass a string value
+  },
+});
+Vue.component('infinite-loading', InfiniteLoading);

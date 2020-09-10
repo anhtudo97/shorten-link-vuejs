@@ -23,8 +23,8 @@
         </div>
       </div>
       <button
-        @click="openEditWorkspace = true"
         class="dialog-detail-workspace__button button-normal"
+        @click="openEditWorkspace = true"
       >
         Edit
       </button>
@@ -98,7 +98,7 @@
       max-width="700"
       :fullscreen="width < 600 ? true : false"
     >
-      <AddLinksDomainsModal
+      <AddLinksDomainsModal :workspace="workspace"
         @closeModalAddLinksDomain="closeModalAddLinksDomain"
       />
     </v-dialog>
@@ -108,8 +108,8 @@
       :fullscreen="width < 600 ? true : false"
     >
       <CreateNewWorkspaceModal
-        :edit="true"
         :id="workspace.id"
+        :edit="true"
         :name="workspace.name"
         @closeCreateNewWorkspace="closeEditWorkspace"
       />
@@ -127,7 +127,7 @@
 
 <script>
 import { format } from 'date-fns';
-import { deleteWorkspace } from '@/services/api';
+import { deleteWorkspace, getDomainsWorkspace } from '@/services/api';
 
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
 import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
@@ -145,6 +145,13 @@ export default {
       default: () => {},
     },
   },
+  async fetch() {
+    try {
+      const res = await getDomainsWorkspace(this.token, this.workspace.id);
+      const { status } = res.data;
+      if (status === 200) console.log(res);
+    } catch (error) {}
+  },
   data: () => ({
     openModalMemberModal: false,
     openAddLinkDomainModal: false,
@@ -154,16 +161,17 @@ export default {
     token: '',
     showAlert: false,
     loading: false,
+    domainsCount: 0,
   }),
-  created() {
-    if (localStorage.token) {
-      this.token = localStorage.token;
-    }
-  },
   computed: {
     createdDate() {
       return format(new Date(this.workspace.createdAt), 'MMMM dd, yyyy');
     },
+  },
+  created() {
+    if (localStorage.token) {
+      this.token = localStorage.token;
+    }
   },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);

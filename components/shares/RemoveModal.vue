@@ -10,14 +10,14 @@
         </div>
         <div class="d-flex">
           <button
-            v-bind:disabled="loading"
+            :disabled="loading"
             class="dialog-button dialog-cancel-button mr-5"
             @click="$emit('closeRemoveModal')"
           >
             Cancel
           </button>
           <button
-            v-bind:disabled="loading"
+            :disabled="loading"
             class="dialog-button dialog-delete-button"
             @click="$emit('removeElement')"
           >

@@ -130,15 +130,15 @@ export default {
     showAlert: false,
     loading: false,
   }),
-  created() {
-    if (localStorage.token) {
-      this.token = localStorage.token;
-    }
-  },
   computed: {
     createdDate() {
       return format(new Date(this.workspace.createdAt), 'MMMM dd, yyyy');
     },
+  },
+  created() {
+    if (localStorage.token) {
+      this.token = localStorage.token;
+    }
   },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);

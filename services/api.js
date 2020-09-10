@@ -148,3 +148,11 @@ export const deleteWorkspace = (token, id) => {
     },
   });
 };
+
+export const getDomainsWorkspace = (token, workspaceId) => {
+  return api.get(`/workspaces/${workspaceId}/domains`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
