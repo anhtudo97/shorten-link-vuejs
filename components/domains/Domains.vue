@@ -6,7 +6,7 @@
           <v-col cols="6" sm="7" md="8" lg="9">
             <div class="d-flex align-center">
               <div class="domain-count pr-4">
-                {{ domains.length }} Domain(s)
+                {{ total }} Domain(s)
               </div>
             </div>
           </v-col>
@@ -37,9 +37,7 @@
     <div class="domain__management">
       <transition-group name="list" tag="ul" class="pa-0">
         <li v-for="domain in domains" :key="domain.id">
-          <Domain
-            :domain="domain"
-          />
+          <Domain :domain="domain" />
         </li>
       </transition-group>
     </div>
@@ -66,6 +64,10 @@ export default {
     domains: {
       type: Array,
       default: () => [],
+    },
+    total: {
+      type: Number,
+      default: 0,
     },
   },
   data: () => ({

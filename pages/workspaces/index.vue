@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Workspaces :workspaces="workspaces" />
+    <Workspaces :workspaces="workspaces" :total="total" />
     <client-only>
       <infinite-loading
         spinner="spiral"
@@ -22,6 +22,7 @@ export default {
     workspaces: [],
     page: 1,
     token: '',
+    total: 0,
   }),
   created() {
     if (typeof localStorage !== 'undefined' && localStorage.token) {
@@ -36,7 +37,8 @@ export default {
         const { status } = res.data;
         if (status === 200) {
           this.page += 1;
-          const { workspaces } = res.data.data;
+          const { workspaces, total } = res.data.data;
+          this.total = total;
           if (workspaces.length) {
             this.workspaces.push(...workspaces);
             $state.loaded();
