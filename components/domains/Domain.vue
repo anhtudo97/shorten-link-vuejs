@@ -9,7 +9,7 @@
     >
       <v-row class="align-center mx-0">
         <v-col cols="12" sm="8" md="8" lg="9">
-          <div class="domain text-overflow-hidden">{{ domain }}</div>
+          <div class="domain text-overflow-hidden">{{ domain.name }}</div>
         </v-col>
         <v-col cols="12" sm="4" md="4" lg="3" class="text-left text-sm-right">
           <div class="added text-overflow-hidden">{{ date }}</div>
@@ -22,7 +22,10 @@
       max-width="900"
       :fullscreen="width < 600 ? true : false"
     >
-      <DetailDomainModal :id="id" @closeModalDetailDomain="closeModalDetailDomain" />
+      <DetailDomainModal
+        :domain="domain"
+        @closeModalDetailDomain="closeModalDetailDomain"
+      />
     </v-dialog>
   </v-row>
 </template>
@@ -36,16 +39,8 @@ export default {
   },
   props: {
     domain: {
-      type: String,
-      default: '',
-    },
-    added: {
-      type: String,
-      default: '',
-    },
-    id: {
-      type: String,
-      default: '',
+      type: Object,
+      default: () => {},
     },
   },
   data: () => ({
@@ -56,7 +51,7 @@ export default {
   }),
   computed: {
     date() {
-      return format(new Date(this.added), 'MMMM dd, yyyy');
+      return format(new Date(this.domain.createdAt), 'MMMM dd, yyyy');
     },
   },
   beforeMount() {

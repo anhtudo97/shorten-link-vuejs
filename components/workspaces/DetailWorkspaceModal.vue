@@ -9,8 +9,8 @@
         <img src="@/assets/svg/close.svg" alt="close" />
       </div>
     </div>
-    <div class="d-flex justify-space-between align-center mb-3">
-      <div class="d-flex dialog-detail-workspace__name align-center">
+    <div class="d-flex align-start mb-3">
+      <div class="d-flex dialog-detail-workspace__name align-center mr-10">
         <img
           class="img"
           src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"

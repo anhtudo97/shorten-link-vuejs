@@ -80,13 +80,13 @@ export default {
           setTimeout(() => {
             this.$emit('closeModalCreateNewDomain');
             this.reload();
+            this.loading = false;
           }, 2000);
         }
       } catch (error) {
         console.log(error);
       } finally {
         this.destinationDomain = '';
-        this.loading = false;
       }
     },
   },

@@ -88,7 +88,6 @@ export default {
     };
   },
   created() {
-    console.log(this.edit);
     this.workspaceName = this.name;
     if (localStorage.token) {
       this.token = localStorage.token;

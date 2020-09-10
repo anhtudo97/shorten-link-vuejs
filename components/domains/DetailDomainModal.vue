@@ -23,6 +23,7 @@
         </v-tooltip>
       </div>
     </div>
+    </div>
     <v-row class="modal-detail-domain__services align-center my-6">
       <v-col cols="12" sm="3">
         <div class="services-title">Workspace(s)</div>
@@ -82,14 +83,14 @@ import { format, parseISO } from 'date-fns';
 import { getDomain, deleteDomain } from '@/services/api';
 export default {
   props: {
-    id: {
-      type: String,
-      default: '',
+    domain: {
+      type: Object,
+      default: () => {},
     },
   },
   async fetch() {
     try {
-      const res = await getDomain(this.token, this.id);
+      const res = await getDomain(this.token, this.domain.id);
       const { status } = res.data;
       if (status === 200) {
         const { name, createdAt, workspaces } = res.data.data;
@@ -124,7 +125,7 @@ export default {
     async removeDomain() {
       this.loading = true;
       try {
-        const res = await deleteDomain(this.token, this.id);
+        const res = await deleteDomain(this.token, this.domain.id);
         const { status } = res.data;
         if (status === 200) {
           this.showAlert = true;
