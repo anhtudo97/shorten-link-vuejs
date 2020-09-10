@@ -132,3 +132,14 @@ export const updateWorkspace = (token, id, name) => {
     }
   );
 };
+
+export const deleteWorkspace = (token, id, name) => {
+  return api.delete(
+    `/workspaces/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};

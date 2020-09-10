@@ -4,7 +4,7 @@
       class="dialog-create-workspace__header d-flex justify-space-between align-center py-3 border-b"
     >
       <div class="d-flex align-center">
-        <div v-if="edit" class="header-title mr-3">
+        <div class="header-title mr-3">
           {{ edit ? 'Update workspace' : 'Create a new workspace' }}
         </div>
       </div>
@@ -38,7 +38,7 @@
       <v-row class="py-1 align-center my-3">
         <v-col cols="12" class="py-0 text-right">
           <button
-            :disabled="loading"
+            v-bind:disabled="loading"
             class="button-normal button-create"
             @click="callaction"
           >
@@ -113,15 +113,15 @@ export default {
         if (status === 200) {
           this.showAlert = true;
           setTimeout(() => {
-            this.reload();
             this.$emit('closeCreateNewWorkspace');
+            this.reload();
+            this.loading = false;
           }, 2000);
         }
       } catch (error) {
         console.log(error);
       } finally {
         this.workspaceName = '';
-        this.loading = false;
       }
     },
     async updateWorkspace() {
@@ -136,15 +136,15 @@ export default {
         if (status === 200) {
           this.showAlert = true;
           setTimeout(() => {
-            this.reload();
             this.$emit('closeCreateNewWorkspace');
+            this.reload();
+            this.loading = false;
           }, 2000);
         }
       } catch (error) {
         console.log(error);
       } finally {
         this.workspaceName = '';
-        this.loading = false;
       }
     },
   },
