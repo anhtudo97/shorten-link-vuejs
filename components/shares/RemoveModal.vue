@@ -3,16 +3,26 @@
     <v-row class="mx-0">
       <v-col cols="11" class="mx-auto">
         <img src="@/assets/svg/warning.svg" alt="warning" />
-        <div class="dialog-main-title mb-3">Delete this {{name}}?</div>
-        <div
-          class="mb-6 dialog-main-des"
-        >If you trash this link it won't redirect to the destination URL anymore and any stats will be lost forever. This is a permanent action and cannot be undone.</div>
+        <div class="dialog-main-title mb-3">Delete this {{ name }}?</div>
+        <div class="mb-6 dialog-main-des">
+          If you trash this it won't never exist on your dashboard anymore and
+          any stats will be lost forever.
+        </div>
         <div class="d-flex">
-          <div
+          <button
+            v-bind:disabled="loading"
             class="dialog-button dialog-cancel-button mr-5"
             @click="$emit('closeRemoveModal')"
-          >Cancel</div>
-          <div class="dialog-button dialog-delete-button" @click="$emit('removeElement')">Delete</div>
+          >
+            Cancel
+          </button>
+          <button
+            v-bind:disabled="loading"
+            class="dialog-button dialog-delete-button"
+            @click="$emit('removeElement')"
+          >
+            Delete
+          </button>
         </div>
       </v-col>
     </v-row>
@@ -25,6 +35,10 @@ export default {
     name: {
       type: String,
       default: 'Link',
+    },
+    loading: {
+      type: Boolean,
+      default: false,
     },
   },
 };

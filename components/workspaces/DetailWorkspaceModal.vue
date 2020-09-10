@@ -88,6 +88,7 @@
     <v-dialog v-model="isRemoveModal" persistent width="500">
       <RemoveModal
         name="workspace"
+        :loading="loading"
         @closeRemoveModal="closeRemoveModal"
         @removeElement="removeWorkspace"
       />
@@ -106,13 +107,33 @@
       max-width="850"
       :fullscreen="width < 600 ? true : false"
     >
-      <CreateNewWorkspaceModal :edit="true" :id="workspace.id" :name="workspace.name" @closeCreateNewWorkspace="closeEditWorkspace" />
+      <CreateNewWorkspaceModal
+        :edit="true"
+        :id="workspace.id"
+        :name="workspace.name"
+        @closeCreateNewWorkspace="closeEditWorkspace"
+      />
     </v-dialog>
+    <v-snackbar v-model="showAlert" top color="error">
+      Delete workspace is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          dark
+          v-bind="attrs"
+          @click="showAlert = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
 <script>
 import { format } from 'date-fns';
+import { deleteWorkspace } from '@/services/api';
 
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
 import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
@@ -130,16 +151,21 @@ export default {
       default: () => {},
     },
   },
-  mounted(){
-    console.log(this.workspace.name)
-  },
   data: () => ({
     openModalMemberModal: false,
     openAddLinkDomainModal: false,
     isRemoveModal: false,
     openEditWorkspace: false,
     width: 0,
+    token: '',
+    showAlert: false,
+    loading: false,
   }),
+  created() {
+    if (localStorage.token) {
+      this.token = localStorage.token;
+    }
+  },
   computed: {
     createdDate() {
       return format(new Date(this.workspace.createdAt), 'MMMM dd, yyyy');
@@ -153,6 +179,9 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
+    reload() {
+      window.location.reload();
+    },
     closeModalMembers() {
       this.openModalMemberModal = false;
     },
@@ -165,7 +194,25 @@ export default {
     closeEditWorkspace() {
       this.openEditWorkspace = false;
     },
-    removeWorkspace() {},
+    async removeWorkspace() {
+      this.showAlert = false;
+      this.loading = true;
+      try {
+        const res = await deleteWorkspace(this.token, this.workspace.id);
+        const { status } = res.data;
+        if (status === 200) {
+          this.showAlert = true;
+          setTimeout(() => {
+            this.reload();
+            this.showAlert = false;
+          }, 1000);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.loading = false;
+      }
+    },
     handleResize() {
       if (process.client) {
         this.width = window.innerWidth;

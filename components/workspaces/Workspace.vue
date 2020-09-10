@@ -1,6 +1,8 @@
 <template>
   <div class="workspace mb-5">
-    <v-row class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0">
+    <v-row
+      class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0"
+    >
       <v-col
         cols="7"
         sm="8"
@@ -13,23 +15,30 @@
             class="img"
             src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
           />
-          <div class="name-text px-5 text-overflow-hidden">{{workspace.name}}</div>
+          <div class="name-text px-5 text-overflow-hidden">
+            {{ workspace.name }}
+          </div>
         </div>
       </v-col>
-      <v-col cols="5" sm="4" md="3" class="text-md-center text-right workspace__content">
-        <div class="date">{{createdDate}}</div>
+      <v-col
+        cols="5"
+        sm="4"
+        md="3"
+        class="text-md-center text-right workspace__content"
+      >
+        <div class="date">{{ createdDate }}</div>
         <div class="modify d-flex align-center justify-end justify-md-center">
           <img
             src="@/assets/svg/addlink.svg"
             alt="add link"
             class="ml-4"
-            @click.stop="openAddLinkDomainModal=true"
+            @click.stop="openAddLinkDomainModal = true"
           />
           <img
             src="@/assets/svg/member.svg"
             alt="member"
             class="ml-4 opacity-06"
-            @click.stop="openModalMemberModal=true"
+            @click.stop="openModalMemberModal = true"
           />
           <img
             src="@/assets/svg/trash.svg"
@@ -40,7 +49,11 @@
         </div>
       </v-col>
 
-      <v-dialog v-model="openModalDetailModal" max-width="1000" :fullscreen="width<600?true: false">
+      <v-dialog
+        v-model="openModalDetailModal"
+        max-width="1000"
+        :fullscreen="width < 600 ? true : false"
+      >
         <DetailWorkspaceModal
           :workspace="workspace"
           @closeModalDetailWorkspace="closeModalDetailWorkspace"
@@ -51,13 +64,17 @@
         v-model="openModalMemberModal"
         class="dialog"
         max-width="650"
-        :fullscreen="width<600?true: false"
+        :fullscreen="width < 600 ? true : false"
       >
-        <ManagementMemberModal :workspace="workspace" @closeModalMembers="closeModalMembers" />
+        <ManagementMemberModal
+          :workspace="workspace"
+          @closeModalMembers="closeModalMembers"
+        />
       </v-dialog>
       <v-dialog v-model="isRemoveModal" persistent max-width="500">
         <RemoveModal
           name="workspace"
+          :loading="loading"
           @closeRemoveModal="closeRemoveModal"
           @removeElement="removeWorkspace"
         />
@@ -65,16 +82,33 @@
       <v-dialog
         v-model="openAddLinkDomainModal"
         max-width="700"
-        :fullscreen="width<600?true: false"
+        :fullscreen="width < 600 ? true : false"
       >
-        <AddLinksDomainsModal @closeModalAddLinksDomain="closeModalAddLinksDomain" />
+        <AddLinksDomainsModal
+          @closeModalAddLinksDomain="closeModalAddLinksDomain"
+        />
       </v-dialog>
     </v-row>
+    <v-snackbar v-model="showAlert" top color="error">
+      Delete workspace is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          dark
+          v-bind="attrs"
+          @click="showAlert = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
 <script>
 import { format } from 'date-fns';
+import { deleteWorkspace } from '@/services/api';
 
 import DetailWorkspaceModal from '@/components/workspaces/DetailWorkspaceModal';
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
@@ -97,11 +131,16 @@ export default {
     openModalMemberModal: false,
     openAddLinkDomainModal: false,
     isRemoveModal: false,
-    items: ['https://passport.yandex.com/', 'https://www.notion.so/'],
-    value: ['https://www.notion.so/'],
-
     width: 0,
+    token: '',
+    showAlert: false,
+    loading: false,
   }),
+  created() {
+    if (localStorage.token) {
+      this.token = localStorage.token;
+    }
+  },
   computed: {
     createdDate() {
       return format(new Date(this.workspace.createdAt), 'MMMM dd, yyyy');
@@ -115,6 +154,9 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
+    reload() {
+      window.location.reload();
+    },
     closeModalDetailWorkspace() {
       this.openModalDetailModal = false;
     },
@@ -124,9 +166,26 @@ export default {
     closeModalAddLinksDomain() {
       this.openAddLinkDomainModal = false;
     },
-    removeWorkspace() {},
     closeRemoveModal() {
       this.isRemoveModal = false;
+    },
+    async removeWorkspace() {
+      this.loading = true;
+      try {
+        const res = await deleteWorkspace(this.token, this.workspace.id);
+        const { status } = res.data;
+        if (status === 200) {
+          this.showAlert = true;
+          setTimeout(() => {
+            this.$emit('closeCreateNewWorkspace');
+            this.reload();
+            this.showAlert = false;
+            this.loading = false;
+          }, 1000);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
     handleResize() {
       if (process.client) {
