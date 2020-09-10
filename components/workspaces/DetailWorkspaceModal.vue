@@ -16,17 +16,25 @@
           src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
         />
         <div>
-          <div class="dialog-name-text px-5">{{workspace.name}}</div>
+          <div class="dialog-name-text px-5">{{ workspace.name }}</div>
           <div class="dialog-date-text px-5">
             <button disabled class="date-text">Default</button>
           </div>
         </div>
       </div>
+      <button
+        @click="openEditWorkspace = true"
+        class="dialog-detail-workspace__button button-normal"
+      >
+        Edit
+      </button>
     </div>
     <div class="mt-16 mb-4 border-b">
       <div class="d-flex dialog-detail-workspace__info align-center mb-5">
         <img src="@/assets/svg/calendar.svg" alt="calendar" class="mr-3" />
-        <div class="info-text">Created on {{createdDate}} by anhtudo97@gmail.com</div>
+        <div class="info-text">
+          Created on {{ createdDate }} by anhtudo97@gmail.com
+        </div>
       </div>
       <div class="d-flex dialog-detail-workspace__info align-center mb-5">
         <img src="@/assets/svg/links.svg" alt="calendar" class="mr-3" />
@@ -39,14 +47,18 @@
         <div
           class="info-text font-weight-medium"
           @click.stop="openModalMemberModal = true"
-        >3 teammates</div>
+        >
+          3 teammates
+        </div>
       </div>
       <div class="d-flex dialog-detail-workspace__info align-center mb-5">
         <img src="@/assets/svg/domains.svg" alt="calendar" class="mr-3" />
         <div
           class="info-text info-link font-weight-medium"
-          @click.stop="openAddLinkDomainModal=true"
-        >2 Branded domains included</div>
+          @click.stop="openAddLinkDomainModal = true"
+        >
+          2 Branded domains included
+        </div>
       </div>
     </div>
     <v-row class="align-center dialog-detail-workspace__button-remove">
@@ -54,7 +66,10 @@
         <div class="services-title">Delete this repository</div>
       </v-col>
       <v-col cols="12" sm="9" class="text-md-right text-left">
-        <button class="button-warning button-remove" @click.stop="isRemoveModal = true">
+        <button
+          class="button-warning button-remove"
+          @click.stop="isRemoveModal = true"
+        >
           <div class="button-text">Remove this domain</div>
         </button>
       </v-col>
@@ -63,9 +78,12 @@
       v-model="openModalMemberModal"
       class="dialog"
       max-width="650"
-      :fullscreen="width<600?true: false"
+      :fullscreen="width < 600 ? true : false"
     >
-      <ManagementMemberModal :workspace="workspace" @closeModalMembers="closeModalMembers" />
+      <ManagementMemberModal
+        :workspace="workspace"
+        @closeModalMembers="closeModalMembers"
+      />
     </v-dialog>
     <v-dialog v-model="isRemoveModal" persistent width="500">
       <RemoveModal
@@ -74,8 +92,21 @@
         @removeElement="removeWorkspace"
       />
     </v-dialog>
-    <v-dialog v-model="openAddLinkDomainModal" max-width="700" :fullscreen="width<600?true: false">
-      <AddLinksDomainsModal @closeModalAddLinksDomain="closeModalAddLinksDomain" />
+    <v-dialog
+      v-model="openAddLinkDomainModal"
+      max-width="700"
+      :fullscreen="width < 600 ? true : false"
+    >
+      <AddLinksDomainsModal
+        @closeModalAddLinksDomain="closeModalAddLinksDomain"
+      />
+    </v-dialog>
+    <v-dialog
+      v-model="openEditWorkspace"
+      max-width="850"
+      :fullscreen="width < 600 ? true : false"
+    >
+      <CreateNewWorkspaceModal :edit="true" :id="workspace.id" :name="workspace.name" @closeCreateNewWorkspace="closeEditWorkspace" />
     </v-dialog>
   </v-list>
 </template>
@@ -85,11 +116,13 @@ import { format } from 'date-fns';
 
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
 import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
+import CreateNewWorkspaceModal from '@/components/workspaces/CreateNewWorkspace';
 
 export default {
   components: {
     ManagementMemberModal,
     AddLinksDomainsModal,
+    CreateNewWorkspaceModal,
   },
   props: {
     workspace: {
@@ -97,10 +130,14 @@ export default {
       default: () => {},
     },
   },
+  mounted(){
+    console.log(this.workspace.name)
+  },
   data: () => ({
     openModalMemberModal: false,
     openAddLinkDomainModal: false,
     isRemoveModal: false,
+    openEditWorkspace: false,
     width: 0,
   }),
   computed: {
@@ -124,6 +161,9 @@ export default {
     },
     closeModalAddLinksDomain() {
       this.openAddLinkDomainModal = false;
+    },
+    closeEditWorkspace() {
+      this.openEditWorkspace = false;
     },
     removeWorkspace() {},
     handleResize() {
@@ -169,6 +209,9 @@ export default {
         color: #fff;
       }
     }
+  }
+  &__button {
+    padding: 5px 5vh;
   }
   &__info {
     cursor: pointer;

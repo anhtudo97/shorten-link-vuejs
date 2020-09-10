@@ -85,25 +85,19 @@ export const createNewDomain = (token, name) => {
 };
 
 export const getDomains = (token, page) => {
-  return api.get(
-    `/domains?page=${page}&perPage=10`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return api.get(`/domains?page=${page}&perPage=10`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 export const getDomain = (token, id) => {
-  return api.get(
-    `/domains/${id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return api.get(`/domains/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 /* Workspace */
@@ -120,8 +114,17 @@ export const createNewWorkspace = (token, name) => {
 };
 
 export const getWorkspaces = (token, page) => {
-  return api.get(
-    `/workspaces?page=${page}&perPage=10`,
+  return api.get(`/workspaces?page=${page}&perPage=10`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const updateWorkspace = (token, id, name) => {
+  return api.put(
+    `/workspaces/${id}`,
+    { name },
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -129,5 +132,3 @@ export const getWorkspaces = (token, page) => {
     }
   );
 };
-
-

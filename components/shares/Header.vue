@@ -32,28 +32,30 @@
             <span class="notification--num">5</span>
           </div>
         </nuxt-link>
-        <div v-if="user.token === ''" class="d-flex align-center">
-          <nuxt-link to="/login">
-            <div class="header__login mr-5">
-              <div>Login</div>
-            </div>
-          </nuxt-link>
-          <nuxt-link to="/sign-up">
+        <client-only>
+          <div v-if="token === ''" class="d-flex align-center">
+            <nuxt-link to="/login">
+              <div class="header__login mr-5">
+                <div>Login</div>
+              </div>
+            </nuxt-link>
+            <nuxt-link to="/sign-up">
+              <button
+                class="button-normal header__signup py-2 px-6 font-weight-bold"
+              >
+                Sign up
+              </button>
+            </nuxt-link>
+          </div>
+          <div v-else>
             <button
               class="button-normal header__signup py-2 px-6 font-weight-bold"
+              @click.prevent="logout"
             >
-              Sign up
+              Logout
             </button>
-          </nuxt-link>
-        </div>
-        <div v-else>
-          <button
-            class="button-normal header__signup py-2 px-6 font-weight-bold"
-            @click.prevent="logout"
-          >
-            Logout
-          </button>
-        </div>
+          </div>
+        </client-only>
       </div>
     </div>
     <div class="display-big-show border-b">
@@ -77,7 +79,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapMutations } from 'vuex';
 export default {
   data: () => ({
     menu: [
@@ -102,11 +104,14 @@ export default {
         route: '/contact',
       },
     ],
+    token: '',
   }),
-  computed: {
-    ...mapGetters({
-      user: 'getUser',
-    }),
+  created() {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+      this.token = localStorage.token;
+    } else {
+      this.$router.push('/login');
+    }
   },
   methods: {
     ...mapMutations(['updateUser']),
@@ -116,7 +121,7 @@ export default {
         email: '',
         token: '',
       });
-      this.$router.push('/login')
+      this.$router.push('/login');
     },
   },
 };
