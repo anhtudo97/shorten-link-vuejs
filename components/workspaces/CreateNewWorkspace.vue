@@ -4,7 +4,9 @@
       class="dialog-create-workspace__header d-flex justify-space-between align-center py-3 border-b"
     >
       <div class="d-flex align-center">
-        <div class="header-title mr-3">Create a new workspace</div>
+        <div v-if="edit" class="header-title mr-3">
+          {{ edit ? 'Update workspace' : 'Create a new workspace' }}
+        </div>
       </div>
       <div class="d-flex justify-space-between">
         <div></div>
@@ -38,15 +40,19 @@
           <button
             :disabled="loading"
             class="button-normal button-create"
-            @click="createNewWorkspace"
+            @click="callaction"
           >
-            Create workspace
+            {{ edit ? 'Update workspace' : 'Create workspace' }}
           </button>
         </v-col>
       </v-row>
     </div>
     <v-snackbar v-model="showAlert" top color="success">
-      Create new workspace successfully
+      {{
+        edit
+          ? 'Update workspace successfully'
+          : 'Create new workspace successfully'
+      }}
       <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="showAlert = false">
           Close
@@ -57,20 +63,48 @@
 </template>
 
 <script>
-import { createNewWorkspace } from '@/services/api';
+import { createNewWorkspace, updateWorkspace } from '@/services/api';
 export default {
-  data: () => ({
-    workspaceName: '',
-    loading: false,
-    showAlert: false,
-    token: '',
-  }),
+  props: {
+    edit: {
+      type: Boolean,
+      default: false,
+    },
+    id: {
+      type: String,
+      default: '',
+    },
+    name: {
+      type: String,
+      default: '',
+    },
+  },
+  data: () => {
+    return {
+      workspaceName: '',
+      loading: false,
+      showAlert: false,
+      token: '',
+    };
+  },
   created() {
+    console.log(this.edit);
+    this.workspaceName = this.name;
     if (localStorage.token) {
       this.token = localStorage.token;
     }
   },
   methods: {
+    reload() {
+      window.location.reload();
+    },
+    callaction() {
+      if (this.edit) {
+        this.updateWorkspace();
+      } else {
+        this.createNewWorkspace();
+      }
+    },
     async createNewWorkspace() {
       this.loading = true;
       try {
@@ -79,6 +113,30 @@ export default {
         if (status === 200) {
           this.showAlert = true;
           setTimeout(() => {
+            this.reload();
+            this.$emit('closeCreateNewWorkspace');
+          }, 2000);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.workspaceName = '';
+        this.loading = false;
+      }
+    },
+    async updateWorkspace() {
+      this.loading = true;
+      try {
+        const res = await updateWorkspace(
+          this.token,
+          this.id,
+          this.workspaceName
+        );
+        const { status } = res.data;
+        if (status === 200) {
+          this.showAlert = true;
+          setTimeout(() => {
+            this.reload();
             this.$emit('closeCreateNewWorkspace');
           }, 2000);
         }
