@@ -7,7 +7,7 @@
         >
           <v-col cols class="px-0">
             <button class="menu-text">
-              {{ workspaces.length }} Workspace(s)
+              {{ total }} Workspace(s)
             </button>
           </v-col>
           <v-col class="text-right px-0">
@@ -67,6 +67,11 @@ export default {
   props: {
     workspaces: {
       type: Array,
+      default: () => [],
+    },
+    total: {
+      type: Number,
+      default: 0,
     },
   },
   data: () => ({

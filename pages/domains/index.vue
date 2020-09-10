@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Domains :domains="domains" />
+    <Domains :domains="domains" :total="total" />
     <client-only>
       <infinite-loading
         spinner="spiral"
@@ -22,6 +22,7 @@ export default {
     domains: [],
     page: 1,
     token: '',
+    total: 0,
   }),
   created() {
     if (typeof localStorage !== 'undefined' && localStorage.token) {
@@ -36,7 +37,8 @@ export default {
         const { status } = res.data;
         if (status === 200) {
           this.page += 1;
-          const { domains } = res.data.data;
+          const { domains, total } = res.data.data;
+          this.total = total;
           if (domains.length) {
             this.domains.push(...domains);
             $state.loaded();

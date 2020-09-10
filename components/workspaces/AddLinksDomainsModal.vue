@@ -20,7 +20,13 @@
       class="mx-0 justify-space-between py-3 align-center dialog-add-links-domains__menu border-b"
     >
       <div class="menu-title">Domains</div>
-      <button class="button-normal add-button">Add more</button>
+      <button
+        :disabled="loading"
+        @click="addMoreDomains"
+        class="button-normal add-button"
+      >
+        Add more
+      </button>
     </v-row>
 
     <div class="border-b">
@@ -30,11 +36,11 @@
         mode="in-out"
       >
         <div
-          v-for="item in domain_joined"
-          :key="item.id"
+          v-for="(item, index) in domain_joined"
+          :key="`Domain__${index}`"
           class="d-flex justify-space-between dialog-add-links-domains__domain align-center"
         >
-          <div class="member-name">{{ item.domain }}</div>
+          <div class="member-name">{{ item.name }}</div>
 
           <button
             class="button-warning member-action"
@@ -53,14 +59,15 @@
     </div>
     <transition-group name="fade" mode="in-out">
       <div
-        v-for="item in unjoined"
-        :key="item.id"
+        v-for="(item, index) in unjoined"
+        :key="`Domain__${index}`"
         class="d-flex justify-space-between dialog-add-links-domains__undomain align-center"
       >
         <v-checkbox
           v-model="domainSelected"
           class="checkbox-member"
           :label="item.name"
+          :value="item.id"
         ></v-checkbox>
       </div>
     </transition-group>
@@ -74,7 +81,11 @@
 </template>
 
 <script>
-import { getDomainsWorkspace, getDomains } from '@/services/api';
+import {
+  getDomainsWorkspace,
+  getDomains,
+  addDomainsWorkspace,
+} from '@/services/api';
 export default {
   props: {
     workspace: {
@@ -89,12 +100,18 @@ export default {
     domain_joined: [],
     domains: [],
     domainSelected: [],
+    loading: false,
   }),
+  watch: {
+    domainSelected(value) {
+      console.log(value);
+    },
+  },
   computed: {
     unjoined() {
-      const names = [...this.domain_joined].map((x) => x.domain);
+      const names = [...this.domain_joined].map((x) => x.name);
       return [...this.domains].filter((x) => {
-        if (!names.includes(x.domain)) return x;
+        if (!names.includes(x.name)) return x;
       });
     },
   },
@@ -104,22 +121,24 @@ export default {
     }
   },
   methods: {
+    reload() {
+      window.location.reload();
+    },
     async infiniteScroll($state) {
-      const { token, workspace } = this;
-      let { pageDomain, pageDomainWorkspace } = this;
+      const { token, workspace, pageDomain, pageDomainWorkspace } = this;
       try {
-        const resDomain = await getDomains(token, pageDomain);
         const resDomainWorkspace = await getDomainsWorkspace(
           token,
           workspace.id,
           pageDomainWorkspace
         );
+        const resDomain = await getDomains(token, pageDomain);
 
         const statusDomain = resDomain.data.status;
         const statusDomainWorkspace = resDomainWorkspace.data.status;
 
         if (statusDomain === 200) {
-          pageDomain += 1;
+          this.pageDomain += 1;
           const { domains } = resDomain.data.data;
           if (domains.length) {
             this.domains.push(...domains);
@@ -129,7 +148,7 @@ export default {
           }
         }
         if (statusDomainWorkspace === 200) {
-          pageDomainWorkspace += 1;
+          this.pageDomainWorkspace += 1;
           const { domains } = resDomainWorkspace.data.data;
           if (domains.length) {
             this.domain_joined.push(...domains);
@@ -139,6 +158,29 @@ export default {
           }
         }
       } catch (error) {
+        console.log(error);
+      }
+    },
+    async addMoreDomains() {
+      this.loading = true;
+      try {
+        const res = await addDomainsWorkspace(
+          this.token,
+          this.workspace.id,
+          this.domainSelected
+        );
+        const { status } = res.data;
+        if (status === 200) {
+          this.showAlert = true;
+          setTimeout(() => {
+            this.$emit('closeModalAddLinksDomain');
+            this.reload();
+            this.loading = false;
+          }, 2000);
+        }
+        console.log(res);
+      } catch (error) {
+        this.domainSelected = [];
         console.log(error);
       }
     },

@@ -149,10 +149,22 @@ export const deleteWorkspace = (token, id) => {
   });
 };
 
-export const getDomainsWorkspace = (token, workspaceId) => {
-  return api.get(`/workspaces/${workspaceId}/domains`, {
+export const getDomainsWorkspace = (token, workspaceId, page) => {
+  return api.get(`/workspaces/${workspaceId}/domains?page=${page}&perPage=10`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+};
+
+export const addDomainsWorkspace = (token, workspaceId, domainIds) => {
+  return api.post(
+    `/workspaces/${workspaceId}/domains`,
+    { domainIds },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };

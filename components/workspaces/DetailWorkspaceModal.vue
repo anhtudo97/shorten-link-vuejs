@@ -57,7 +57,7 @@
           class="info-text info-link font-weight-medium"
           @click.stop="openAddLinkDomainModal = true"
         >
-          2 Branded domains included
+          {{ total }} Branded domains included
         </div>
       </div>
     </div>
@@ -98,7 +98,8 @@
       max-width="700"
       :fullscreen="width < 600 ? true : false"
     >
-      <AddLinksDomainsModal :workspace="workspace"
+      <AddLinksDomainsModal
+        :workspace="workspace"
         @closeModalAddLinksDomain="closeModalAddLinksDomain"
       />
     </v-dialog>
@@ -147,10 +148,19 @@ export default {
   },
   async fetch() {
     try {
-      const res = await getDomainsWorkspace(this.token, this.workspace.id);
+      const res = await getDomainsWorkspace(
+        this.token,
+        this.workspace.id,
+        this.pageDomainWorkspace
+      );
       const { status } = res.data;
-      if (status === 200) console.log(res);
-    } catch (error) {}
+      if (status === 200) {
+        const { total } = res.data.data;
+        this.total = total;
+      }
+    } catch (error) {
+      console.log(error);
+    }
   },
   data: () => ({
     openModalMemberModal: false,
@@ -161,7 +171,8 @@ export default {
     token: '',
     showAlert: false,
     loading: false,
-    domainsCount: 0,
+    pageDomainWorkspace: 1,
+    total: 0,
   }),
   computed: {
     createdDate() {
@@ -207,12 +218,12 @@ export default {
           setTimeout(() => {
             this.reload();
             this.showAlert = false;
+            this.loading = false;
           }, 1000);
         }
       } catch (error) {
         console.log(error);
       } finally {
-        this.loading = false;
       }
     },
     handleResize() {
