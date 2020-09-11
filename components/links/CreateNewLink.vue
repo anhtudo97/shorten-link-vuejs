@@ -31,6 +31,7 @@
                 dense
                 outlined
                 label="Domain"
+                :disabled="loading"
               >
               </v-select>
             </v-col>
@@ -41,6 +42,7 @@
                 class="dialog-slash-tag"
                 outlined
                 dense
+                :disabled="loading"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -57,6 +59,7 @@
                 dense
                 outlined
                 menu-props="auto"
+                :disabled="loading"
               ></v-select>
             </v-col>
             <v-col cols="12" md="6" class="py-0">
@@ -67,12 +70,19 @@
                 placeholder="Web title"
                 outlined
                 dense
+                :disabled="loading"
               ></v-text-field>
             </v-col>
           </v-row>
           <div class="d-flex justify-space-between">
             <div></div>
-            <div class="modal-mask__button">Create link</div>
+            <div
+              :disabled="loading"
+              class="modal-mask__button"
+              @click="createNewLink"
+            >
+              Create link
+            </div>
           </div>
         </div>
       </transition>
@@ -83,6 +93,22 @@
         @infinite="infiniteScroll"
       ></infinite-loading>
     </client-only>
+    <v-snackbar v-model="showAlert" top color="success">
+      Create new link successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar v-model="showAlert403" top color="error">
+      Slash tag is exist
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
@@ -92,8 +118,8 @@ import {
   getWorkspaces,
   getTitleUrl,
   getSlashTag,
-  // checkSlashTag,
-  // createNewLink,
+  checkSlashTag,
+  createNewLink,
 } from '@/services/api';
 
 export default {
@@ -107,8 +133,11 @@ export default {
     domains: [],
     workspaces: [],
     token: '',
+    loading: false,
     pageDomains: 1,
     pageWorkspaces: 1,
+    showAlert: false,
+    showAlert403: false,
     form: {
       destinationUrl: '',
       title: '',
@@ -141,6 +170,9 @@ export default {
     }
   },
   methods: {
+    reload() {
+      window.location.reload();
+    },
     validURL(str) {
       const pattern = new RegExp(
         '^(https?:\\/\\/)?' + // protocol
@@ -182,7 +214,6 @@ export default {
         console.log(error);
       }
     },
-
     async infiniteScroll($state) {
       const { token, pageDomains, pageWorkspaces } = this;
       try {
@@ -214,6 +245,44 @@ export default {
         }
       } catch (error) {
         console.log(error);
+      }
+    },
+    async createNewLink() {
+      this.loading = true;
+      const { destinationUrl, domain, workspace, title, slashTag } = this.form;
+      try {
+        const check = await checkSlashTag(slashTag);
+        const { data } = check.data;
+        if (!data.exists) {
+          const res = await createNewLink(
+            this.token,
+            destinationUrl,
+            domain,
+            slashTag,
+            title,
+            workspace
+          );
+          const { status } = res.data;
+          if (status === 201) {
+            this.showAlert = true;
+            setTimeout(() => {
+              this.$emit('closeModalAddNewLink');
+              this.reload();
+              this.loading = false;
+            }, 2000);
+          }
+          if (status === 403) {
+            this.showAlert403 = true;
+            setTimeout(() => {
+              this.$emit('closeModalAddNewLink');
+              this.reload();
+              this.loading = false;
+            }, 2000);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
       }
     },
   },
