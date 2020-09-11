@@ -9,7 +9,7 @@
     <div class="modal-mask">
       <div class="modal-mask__title mb-5">Shorten a new link</div>
       <v-textarea
-        v-model="destinationUrl"
+        v-model="form.destinationUrl"
         auto-grow
         label="Destination your URL"
         hint="Type or paste your URL"
@@ -18,45 +18,110 @@
         rows="1"
       ></v-textarea>
       <transition name="slide-fade">
-        <div v-if="validURL(destinationUrl) || edit">
+        <div v-if="validURL(form.destinationUrl) || edit">
           <v-row>
             <v-col cols="12" md="6" class="py-0">
               <div class="modal-mask__sub-title">Branded domain</div>
-              <v-select class="dialog-domain" :items="tempDomains" dense outlined></v-select>
+              <v-select
+                v-model="form.domain"
+                class="dialog-domain"
+                :items="tempDomains"
+                item-text="name"
+                item-value="id"
+                dense
+                outlined
+                label="Domain"
+                :disabled="loading"
+              >
+              </v-select>
             </v-col>
             <v-col cols="12" md="6" class="py-0">
               <div class="modal-mask__sub-title">Slash tag</div>
-              <v-text-field class="dialog-slash-tag" outlined dense></v-text-field>
+              <v-text-field
+                v-model="form.slashTag"
+                class="dialog-slash-tag"
+                outlined
+                dense
+                :disabled="loading"
+              ></v-text-field>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="6" class="py-0">
               <div class="modal-mask__sub-title">Workspace belong to</div>
               <v-select
+                v-model="form.workspace"
                 class="dialog-workspace"
-                :items="tempDomains"
-                label="Workspaces"
+                :items="tempWorkspaces"
+                item-text="name"
+                label="Workspace"
+                item-value="id"
                 dense
                 outlined
+                menu-props="auto"
+                :disabled="loading"
               ></v-select>
             </v-col>
             <v-col cols="12" md="6" class="py-0">
               <div class="modal-mask__sub-title">Web title</div>
-              <v-text-field class="dialog-web-title" placeholder="Web title" outlined dense></v-text-field>
+              <v-text-field
+                v-model="form.title"
+                class="dialog-web-title"
+                placeholder="Web title"
+                outlined
+                dense
+                :disabled="loading"
+              ></v-text-field>
             </v-col>
           </v-row>
           <div class="d-flex justify-space-between">
             <div></div>
-            <div class="modal-mask__button">Create link</div>
+            <div
+              :disabled="loading"
+              class="modal-mask__button"
+              @click="createNewLink"
+            >
+              Create link
+            </div>
           </div>
         </div>
       </transition>
     </div>
+    <client-only>
+      <infinite-loading
+        spinner="waveDots"
+        @infinite="infiniteScroll"
+      ></infinite-loading>
+    </client-only>
+    <v-snackbar v-model="showAlert" top color="success">
+      Create new link successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar v-model="showAlert403" top color="error">
+      Slash tag is exist
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import {
+  getDomains,
+  getWorkspaces,
+  getTitleUrl,
+  getSlashTag,
+  checkSlashTag,
+  createNewLink,
+} from '@/services/api';
+
 export default {
   props: {
     edit: {
@@ -65,17 +130,49 @@ export default {
     },
   },
   data: () => ({
-    destinationUrl: '',
+    domains: [],
+    workspaces: [],
+    token: '',
+    loading: false,
+    pageDomains: 1,
+    pageWorkspaces: 1,
+    showAlert: false,
+    showAlert403: false,
+    form: {
+      destinationUrl: '',
+      title: '',
+      slashTag: '',
+      domain: '',
+      workspace: '',
+    },
   }),
   computed: {
-    ...mapGetters({
-      domains: 'domains/getDomains',
-    }),
     tempDomains() {
-      return this.domains.map((x) => x.domain);
+      return this.domains.map((x) => {
+        return {
+          id: x.id,
+          name: x.name,
+        };
+      });
+    },
+    tempWorkspaces() {
+      return this.workspaces.map((x) => {
+        return {
+          id: x.id,
+          name: x.name,
+        };
+      });
     },
   },
+  created() {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+      this.token = localStorage.token;
+    }
+  },
   methods: {
+    reload() {
+      window.location.reload();
+    },
     validURL(str) {
       const pattern = new RegExp(
         '^(https?:\\/\\/)?' + // protocol
@@ -86,7 +183,107 @@ export default {
           '(\\#[-a-z\\d_]*)?$',
         'i'
       ); // fragment locator
+      if (pattern.test(str)) {
+        this.getData(str);
+      }
       return !!pattern.test(str);
+    },
+    async getData(url) {
+      await Promise.all([this.getTitle(url), this.getSlashTag(url)]);
+    },
+    async getTitle(url) {
+      try {
+        const res = await getTitleUrl(url);
+        const { status, data } = res.data;
+        if (status === 200) {
+          const { title } = data;
+          this.form.title = title;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getSlashTag(url) {
+      try {
+        const res = await getSlashTag(url);
+        const { status, data } = res.data;
+        if (status === 200) {
+          this.form.slashTag = data;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async infiniteScroll($state) {
+      const { token, pageDomains, pageWorkspaces } = this;
+      try {
+        const resDomains = await getDomains(token, pageDomains, true);
+        const resWorkspaces = await getWorkspaces(token, pageWorkspaces);
+
+        const statusDomains = resDomains.data.status;
+        const statusWorkspaces = resWorkspaces.data.status;
+
+        if (statusDomains === 200) {
+          this.pageDomains += 1;
+          const { domains } = resDomains.data.data;
+          if (domains.length) {
+            this.domains.push(...domains);
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
+        }
+        if (statusWorkspaces === 200) {
+          this.pageWorkspaces += 1;
+          const { workspaces } = resWorkspaces.data.data;
+          if (workspaces.length) {
+            this.workspaces.push(...workspaces);
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async createNewLink() {
+      this.loading = true;
+      const { destinationUrl, domain, workspace, title, slashTag } = this.form;
+      try {
+        const check = await checkSlashTag(slashTag);
+        const { data } = check.data;
+        if (!data.exists) {
+          const res = await createNewLink(
+            this.token,
+            destinationUrl,
+            domain,
+            slashTag,
+            title,
+            workspace
+          );
+          const { status } = res.data;
+          if (status === 201) {
+            this.showAlert = true;
+            setTimeout(() => {
+              this.$emit('closeModalAddNewLink');
+              this.reload();
+              this.loading = false;
+            }, 2000);
+          }
+          if (status === 403) {
+            this.showAlert403 = true;
+            setTimeout(() => {
+              this.$emit('closeModalAddNewLink');
+              this.reload();
+              this.loading = false;
+            }, 2000);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+      }
     },
   },
 };
