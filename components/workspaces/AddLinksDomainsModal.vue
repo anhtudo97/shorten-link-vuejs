@@ -22,8 +22,8 @@
       <div class="menu-title">Domains</div>
       <button
         :disabled="loading"
-        class="button-normal add-button"
         @click="addMoreDomains"
+        class="button-normal add-button"
       >
         Add more
       </button>
@@ -102,17 +102,17 @@ export default {
     domainSelected: [],
     loading: false,
   }),
+  watch: {
+    domainSelected(value) {
+      console.log(value);
+    },
+  },
   computed: {
     unjoined() {
       const names = [...this.domain_joined].map((x) => x.name);
       return [...this.domains].filter((x) => {
         if (!names.includes(x.name)) return x;
       });
-    },
-  },
-  watch: {
-    domainSelected(value) {
-      console.log(value);
     },
   },
   created() {

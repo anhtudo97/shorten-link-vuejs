@@ -1,8 +1,6 @@
 <template>
   <div>
-    <div>
-      <Link />
-    </div>
+    <Link />
   </div>
 </template>
 
@@ -11,6 +9,7 @@ import Link from '@/components/links/Links';
 // import { getLinks } from '@/services/api';
 
 export default {
+  name: 'Links',
   layout: 'link',
   components: {
     Link,
@@ -18,7 +17,6 @@ export default {
   data: () => ({
     links: [],
   }),
-  methods: {},
 };
 </script>
 

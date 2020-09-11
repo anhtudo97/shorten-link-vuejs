@@ -33,8 +33,7 @@
                 outlined
                 label="Domain"
                 :disabled="loading"
-              >
-              </v-select>
+              ></v-select>
             </v-col>
             <v-col cols="12" md="6" class="py-0">
               <div class="modal-mask__sub-title">Slash tag</div>
@@ -171,12 +170,10 @@ export default {
       this.token = localStorage.token;
     }
   },
+
   methods: {
     reload() {
       window.location.reload();
-    },
-    onChange() {
-      console.log('123');
     },
     validURL: debounce(async function(str) {
       const pattern = new RegExp(
