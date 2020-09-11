@@ -5,50 +5,30 @@
         <v-row class="align-center">
           <v-col cols="7" sm="8" lg="9">
             <div class="d-flex align-center">
-              <div class="menu-text pr-4">{{ links.length }} Link(s)</div>
-              <div
-                v-click-outside="onClickOutsideStandard"
-                class="menu-selection pr-4 d-flex"
-              >
-                <div
-                  class="d-flex align-center"
-                  @click="models.base = !models.base"
-                >
-                  <div class="selection-text pr-2">{{ keySort }}</div>
+              <div class="menu-text pr-4">{{links.length}} Link(s)</div>
+              <div v-click-outside="onClickOutsideStandard" class="menu-selection pr-4 d-flex">
+                <div class="d-flex align-center" @click="models.base = !models.base">
+                  <div class="selection-text pr-2">{{keySort}}</div>
                   <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
                 <transition name="slide-fade">
                   <div v-if="models.base" class="selection-modal">
-                    <div
-                      class="modal-option"
-                      @click="changeConditions('Lastest')"
-                    >
-                      Lastest
-                    </div>
+                    <div class="modal-option" @click="changeConditions('Lastest')">Lastest</div>
                     <div
                       class="modal-option"
                       @click="changeConditions('Slashtag A - Z')"
-                    >
-                      Slashtag A - Z
-                    </div>
+                    >Slashtag A - Z</div>
                     <div
                       class="modal-option"
                       @click="changeConditions('Slashtag Z - A')"
-                    >
-                      Slashtag Z - A
-                    </div>
+                    >Slashtag Z - A</div>
                   </div>
                 </transition>
               </div>
             </div>
           </v-col>
           <v-col cols="5" sm="4" lg="3" class="text-right">
-            <button
-              class="button-normal add-new-link"
-              @click.stop="models.modal = true"
-            >
-              New Link
-            </button>
+            <button class="button-normal add-new-link" @click.stop="models.modal = true">New Link</button>
           </v-col>
         </v-row>
       </v-col>
@@ -69,7 +49,7 @@
       v-model="models.modal"
       class="link__dialog"
       max-width="900"
-      :fullscreen="width < 600 ? true : false"
+      :fullscreen="width<600?true: false"
     >
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
@@ -98,9 +78,13 @@ export default {
   computed: {
     ...mapGetters({
       links: 'links/getLinks',
+      domains: 'domains/getDomains',
     }),
     tempLinks() {
       return this.links.map((x) => x);
+    },
+    tempDomains() {
+      return this.domains.map((x) => x.domain);
     },
   },
   beforeMount() {
@@ -149,9 +133,20 @@ export default {
     onClickOutsideStandard() {
       this.models.base = false;
     },
+    validURL(str) {
+      const pattern = new RegExp(
+        '^(https?:\\/\\/)?' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+          '(\\#[-a-z\\d_]*)?$',
+        'i'
+      ); // fragment locator
+      return !!pattern.test(str);
+    },
     closeModalAddNewLink() {
       this.models.modal = false;
-      this.$forceUpdate();
     },
     handleResize() {
       if (process.client) {
@@ -340,3 +335,4 @@ export default {
   }
 }
 </style>
+

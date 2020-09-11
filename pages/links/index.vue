@@ -7,8 +7,9 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Link from '@/components/links/Links';
-// import { getLinks } from '@/services/api';
+import { getLinks } from '@/services/api';
 
 export default {
   name: 'Links',
@@ -16,10 +17,30 @@ export default {
   components: {
     Link,
   },
+  async fetch() {
+    let res = null;
+    try {
+      res = await getLinks(this.user.token);
+      const { status, data } = res.data;
+      if (status === 200) {
+        const { links } = data;
+        this.links = links;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
   data: () => ({
     links: [],
   }),
-  methods: {},
+  computed: {
+    ...mapGetters({ user: 'getUser' }),
+  },
+  methods: {
+    onCancel() {
+      console.log('User cancelled the loader.');
+    },
+  },
 };
 </script>
 
