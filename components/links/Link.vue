@@ -93,6 +93,7 @@
       :fullscreen="width < 600 ? true : false"
     >
       <CreateNewLink
+        :id="id"
         :edit="true"
         @closeModalAddNewLink="closeModalAddNewLink"
       />

@@ -31,7 +31,7 @@
                 item-value="id"
                 dense
                 outlined
-                label="Domain"
+                :label="form.domain"
                 :disabled="loading"
               ></v-select>
             </v-col>
@@ -43,6 +43,7 @@
                 outlined
                 dense
                 :disabled="loading"
+                @change="checkSlashTagValid(form.slashTag)"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -59,7 +60,7 @@
                 dense
                 outlined
                 menu-props="auto"
-                :disabled="loading"
+                :disabled="loading || edit"
               ></v-select>
             </v-col>
             <v-col cols="12" md="6" class="py-0">
@@ -79,9 +80,9 @@
             <div
               :disabled="loading"
               class="modal-mask__button"
-              @click="createNewLink"
+              @click="callAction"
             >
-              Create link
+              {{ edit ? 'Update Link' : 'Create link' }}
             </div>
           </div>
         </div>
@@ -94,7 +95,7 @@
       ></infinite-loading>
     </client-only>
     <v-snackbar v-model="showAlert" top color="success">
-      Create new link successfully
+      {{ edit ? 'Update link successfully' : 'Create new link successfully' }}
       <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="showAlert = false">
           Close
@@ -115,12 +116,14 @@
 <script>
 import debounce from 'lodash.debounce';
 import {
+  getLink,
   getDomains,
   getWorkspaces,
   getTitleUrl,
   getSlashTag,
   checkSlashTag,
   createNewLink,
+  updateLink,
 } from '@/services/api';
 export default {
   props: {
@@ -128,6 +131,35 @@ export default {
       type: Boolean,
       default: false,
     },
+    id: {
+      type: String,
+      default: '',
+    },
+  },
+  async fetch() {
+    console.log(this.edit);
+    if (this.edit) {
+      try {
+        const res = await getLink(this.token, this.id);
+        const { status, data } = res.data;
+        if (status === 200) {
+          const {
+            title,
+            destination,
+            domain,
+            slashtag,
+            domainID,
+          } = data;
+          this.form.destinationUrl = destination;
+          this.form.title = title;
+          this.form.slashTag = slashtag;
+          this.form.domain = domain.name;
+          this.form.domainId = domainID;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
   },
   data: () => ({
     domains: [],
@@ -139,12 +171,14 @@ export default {
     showAlert: false,
     showAlert403: false,
     valid: false,
+    checkSlash: false,
     form: {
       destinationUrl: '',
       title: '',
       slashTag: '',
-      domain: '',
+      domain: 'Domain',
       workspace: '',
+      domainId: '',
     },
   }),
   computed: {
@@ -170,7 +204,6 @@ export default {
       this.token = localStorage.token;
     }
   },
-
   methods: {
     reload() {
       window.location.reload();
@@ -214,6 +247,13 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    async checkSlashTagValid(tag) {
+      try {
+        const check = await checkSlashTag(tag);
+        const { data } = check.data;
+        this.checkSlash = data.exists;
+      } catch (error) {}
     },
     async infiniteScroll($state) {
       const { token, pageDomains, pageWorkspaces } = this;
@@ -285,6 +325,39 @@ export default {
         console.log(error);
       } finally {
       }
+    },
+    callAction() {
+      if (this.edit) {
+        this.updateLink();
+      } else {
+        this.createNewLink();
+      }
+    },
+    async updateLink() {
+      this.loading = true;
+      const { destinationUrl, title, slashTag, domainId } = this.form;
+      try {
+        if (!this.checkSlash) {
+          const res = await updateLink(
+            this.token,
+            this.id,
+            destinationUrl,
+            domainId,
+            slashTag,
+            title
+          );
+          const { status } = res.data;
+          console.log(res);
+          if (status === 200) {
+            this.showAlert = true;
+            setTimeout(() => {
+              this.$emit('closeModalAddNewLink');
+              this.reload();
+              this.loading = false;
+            }, 2000);
+          }
+        }
+      } catch (error) {}
     },
   },
 };

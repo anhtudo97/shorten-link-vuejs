@@ -87,6 +87,30 @@ export const deleteLink = (token, id) => {
   });
 };
 
+export const updateLink = (
+  token,
+  id,
+  destination,
+  domainId,
+  slashtag,
+  title
+) => {
+  return api.put(
+    `/links/${id}`,
+    {
+      destination,
+      domainId,
+      slashtag,
+      title,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
 export const getTitleUrl = (url) => {
   return api.get(`/url-meta?url=${url}`);
 };
