@@ -16,9 +16,10 @@
         outlined
         dense
         rows="1"
+        @input="validURL(form.destinationUrl)"
       ></v-textarea>
       <transition name="slide-fade">
-        <div v-if="validURL(form.destinationUrl) || edit">
+        <div v-if="valid || edit">
           <v-row>
             <v-col cols="12" md="6" class="py-0">
               <div class="modal-mask__sub-title">Branded domain</div>
@@ -113,6 +114,7 @@
 </template>
 
 <script>
+import debounce from 'lodash.debounce';
 import {
   getDomains,
   getWorkspaces,
@@ -121,7 +123,6 @@ import {
   checkSlashTag,
   createNewLink,
 } from '@/services/api';
-
 export default {
   props: {
     edit: {
@@ -138,6 +139,7 @@ export default {
     pageWorkspaces: 1,
     showAlert: false,
     showAlert403: false,
+    valid: false,
     form: {
       destinationUrl: '',
       title: '',
@@ -173,7 +175,10 @@ export default {
     reload() {
       window.location.reload();
     },
-    validURL(str) {
+    onChange() {
+      console.log('123');
+    },
+    validURL: debounce(async function(str) {
       const pattern = new RegExp(
         '^(https?:\\/\\/)?' + // protocol
         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
@@ -183,20 +188,19 @@ export default {
           '(\\#[-a-z\\d_]*)?$',
         'i'
       ); // fragment locator
+      this.valid = !!pattern.test(str);
       if (pattern.test(str)) {
-        this.getData(str);
+        await Promise.all([this.getTitle(str), this.getSlashTag(str)]);
       }
-      return !!pattern.test(str);
-    },
-    async getData(url) {
-      await Promise.all([this.getTitle(url), this.getSlashTag(url)]);
-    },
+      return this.valid;
+    }, 300),
     async getTitle(url) {
       try {
         const res = await getTitleUrl(url);
         const { status, data } = res.data;
         if (status === 200) {
           const { title } = data;
+          console.log(title);
           this.form.title = title;
         }
       } catch (error) {
