@@ -71,6 +71,43 @@ export const getLinks = (token) => {
   });
 };
 
+export const getTitleUrl = (url) => {
+  return api.get(`/url-meta?url=${url}`);
+};
+
+export const getSlashTag = (url) => {
+  return api.get(`/links/generate?destination=f${url}`);
+};
+
+export const checkSlashTag = (slash) => {
+  return api.get(`/links/exists?slashtag=${slash}`);
+};
+
+export const createNewLink = (
+  token,
+  destination,
+  domainId,
+  slashtag,
+  title,
+  workspaceId
+) => {
+  return api.post(
+    `/links`,
+    {
+      destination,
+      domainId,
+      slashtag,
+      title,
+      workspaceId,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
 /* Domain */
 export const createNewDomain = (token, name) => {
   return api.post(
@@ -84,12 +121,15 @@ export const createNewDomain = (token, name) => {
   );
 };
 
-export const getDomains = (token, page) => {
-  return api.get(`/domains?page=${page}&perPage=10`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const getDomains = (token, page, withDefault = false) => {
+  return api.get(
+    `/domains?page=${page}&perPage=10&withDefault=${withDefault}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
 export const getDomain = (token, id) => {
