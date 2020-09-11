@@ -14,6 +14,7 @@
 import { getDomains } from '@/services/api';
 import Domains from '@/components/domains/Domains';
 export default {
+  name: 'Domains',
   layout: 'link',
   components: {
     Domains,

@@ -14,6 +14,7 @@
 import { getWorkspaces } from '@/services/api';
 import Workspaces from '@/components/workspaces/Workspaces';
 export default {
+  name: 'Workspaces',
   layout: 'link',
   components: {
     Workspaces,
