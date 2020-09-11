@@ -104,11 +104,20 @@
         @removeElement="removeLink"
       />
     </v-dialog>
+    <v-snackbar v-model="showAlert" top>
+      Delete link is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="pink" text v-bind="attrs" @click="showAlert = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-row>
 </template>
 
 <script>
 import { clipboard } from 'vue-clipboards';
+import { deleteLink } from '@/services/api';
 
 import DetailLinkModal from '@/components/links/DetailLinkModal';
 import CreateNewLink from '@/components/links/CreateNewLink';
@@ -149,6 +158,7 @@ export default {
     isRemoveModal: false,
     modalEditLink: false,
     width: 0,
+    showAlert: false,
   }),
   computed: {
     createAt() {
@@ -175,11 +185,36 @@ export default {
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize);
   },
+  created() {
+    if (localStorage.token) {
+      this.token = localStorage.token;
+    }
+  },
   methods: {
+    reload() {
+      window.location.reload();
+    },
     closeModalDetailLink() {
       this.models.isOpen = false;
     },
-    removeLink() {},
+    async removeLink() {
+      this.loading = true;
+      try {
+        const res = await deleteLink(this.token, this.id);
+        const { status } = res.data;
+        if (status === 200) {
+          this.showAlert = true;
+          setTimeout(() => {
+            this.closeRemoveModal();
+            this.reload();
+            this.showAlert = false;
+            this.loading = false;
+          }, 1000);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
     closeRemoveModal() {
       this.isRemoveModal = false;
     },
