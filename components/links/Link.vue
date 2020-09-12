@@ -104,11 +104,21 @@
         @removeElement="removeLink"
       />
     </v-dialog>
+    <v-snackbar v-model="showAlert" top>
+      Delete link is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="pink" text v-bind="attrs" @click="showAlert = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-row>
 </template>
 
 <script>
 import { clipboard } from 'vue-clipboards';
+import { deleteLink } from '@/services/api';
+import { handle } from '@/utils/promise';
 
 import DetailLinkModal from '@/components/links/DetailLinkModal';
 import CreateNewLink from '@/components/links/CreateNewLink';
@@ -125,7 +135,6 @@ export default {
       type: String,
       default: '',
     },
-
     link: {
       type: String,
       default: '',
@@ -150,13 +159,14 @@ export default {
     isRemoveModal: false,
     modalEditLink: false,
     width: 0,
+    showAlert: false,
   }),
   computed: {
     createAt() {
       const today = Date.parse(new Date());
       const createdAt = Date.parse(this.date);
       const diffTime = Math.abs(today - createdAt);
-      if (diffTime < 60 * 1000) {
+      if (diffTime < 60) {
         return `${Math.ceil(diffTime)} second(s) ago`;
       }
       if (diffTime < 3600 * 1000) {
@@ -176,11 +186,18 @@ export default {
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize);
   },
+  created() {
+    if (localStorage.token) {
+      this.token = localStorage.token;
+    }
+  },
   methods: {
+    reload() {
+      window.location.reload();
+    },
     closeModalDetailLink() {
       this.models.isOpen = false;
     },
-    removeLink() {},
     closeRemoveModal() {
       this.isRemoveModal = false;
     },
@@ -191,6 +208,23 @@ export default {
     },
     closeModalAddNewLink() {
       this.modalEditLink = false;
+    },
+    async removeLink() {
+      this.loading = true;
+      const [resDeleteLink, deleteLinkError] = await handle(
+        deleteLink(this.token, this.id)
+      );
+      if (deleteLinkError) throw new Error('Could not fetch delete link');
+      const { status } = resDeleteLink.data;
+      if (status === 200) {
+        this.showAlert = true;
+        setTimeout(() => {
+          this.closeRemoveModal();
+          this.reload();
+          this.showAlert = false;
+          this.loading = false;
+        }, 1000);
+      }
     },
   },
 };

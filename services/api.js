@@ -116,6 +116,15 @@ export const createNewLink = (
   );
 };
 
+export const deleteLink = (token, id) => {
+  return api.delete(`/links/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+
 /* Domain */
 export const createNewDomain = (token, name) => {
   return api.post(

@@ -92,13 +92,21 @@
         @removeElement="removeLink"
       />
     </v-dialog>
+    <v-snackbar v-model="showAlert" top>
+      Delete link is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="pink" text v-bind="attrs" @click="showAlert = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
 <script>
 import { clipboard } from 'vue-clipboards';
 import { handle } from '@/utils/promise';
-import { getLink } from '@/services/api';
+import { getLink, deleteLink } from '@/services/api';
 
 import CreateNewLink from '@/components/links/CreateNewLink';
 import RemoveModal from '@/components/shares/RemoveModal';
@@ -141,6 +149,8 @@ export default {
     destination: '',
     domain: {},
     shorten: '',
+    loading: false,
+    showAlert: false,
   }),
   computed: {
     createdDate() {
@@ -161,6 +171,10 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
+    reload() {
+      window.location.reload();
+    },
+
     closeRemoveModal() {
       this.isRemoveModal = false;
     },
@@ -172,7 +186,23 @@ export default {
         this.width = window.innerWidth;
       }
     },
-    removeLink() {},
+    async removeLink() {
+      this.loading = true;
+      const [resDeleteLink, deleteLinkError] = await handle(
+        deleteLink(this.token, this.id)
+      );
+      if (deleteLinkError) throw new Error('Could not fetch delete link');
+      const { status } = resDeleteLink.data;
+      if (status === 200) {
+        this.showAlert = true;
+        setTimeout(() => {
+          this.closeRemoveModal();
+          this.reload();
+          this.showAlert = false;
+          this.loading = false;
+        }, 1000);
+      }
+    },
   },
 };
 </script>
