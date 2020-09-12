@@ -42,7 +42,7 @@
                 </v-tooltip>
                 <v-tooltip top nudge-left="10">
                   <template v-slot:activator="{ on, attrs }">
-                    <div @click.stop="modalEditLink = true">
+                    <div @click.stop="openModalUpdate">
                       <img
                         :src="require('@/assets/icons/edit-solid.svg')"
                         alt="route"
@@ -95,6 +95,7 @@
       <CreateNewLink
         :id="id"
         :edit="true"
+        :form-update="form"
         @closeModalAddNewLink="closeModalAddNewLink"
       />
     </v-dialog>
@@ -119,6 +120,7 @@
 <script>
 import { clipboard } from 'vue-clipboards';
 import { deleteLink } from '@/services/api';
+import { handle } from '@/utils/promise';
 
 import DetailLinkModal from '@/components/links/DetailLinkModal';
 import CreateNewLink from '@/components/links/CreateNewLink';
@@ -160,13 +162,21 @@ export default {
     modalEditLink: false,
     width: 0,
     showAlert: false,
+    form: {
+      destinationUrl: '',
+      title: '',
+      slashTag: '',
+      domain: 'Domain',
+      workspace: '',
+      domainId: '',
+    },
   }),
   computed: {
     createAt() {
       const today = Date.parse(new Date());
       const createdAt = Date.parse(this.date);
       const diffTime = Math.abs(today - createdAt);
-      if (diffTime < 60 * 1000) {
+      if (diffTime < 60) {
         return `${Math.ceil(diffTime)} second(s) ago`;
       }
       if (diffTime < 3600 * 1000) {
@@ -198,24 +208,6 @@ export default {
     closeModalDetailLink() {
       this.models.isOpen = false;
     },
-    async removeLink() {
-      this.loading = true;
-      try {
-        const res = await deleteLink(this.token, this.id);
-        const { status } = res.data;
-        if (status === 200) {
-          this.showAlert = true;
-          setTimeout(() => {
-            this.closeRemoveModal();
-            this.reload();
-            this.showAlert = false;
-            this.loading = false;
-          }, 1000);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },
     closeRemoveModal() {
       this.isRemoveModal = false;
     },
@@ -226,6 +218,26 @@ export default {
     },
     closeModalAddNewLink() {
       this.modalEditLink = false;
+    },
+    async removeLink() {
+      this.loading = true;
+      const [resDeleteLink, deleteLinkError] = await handle(
+        deleteLink(this.token, this.id)
+      );
+      if (deleteLinkError) throw new Error('Could not fetch delete link');
+      const { status } = resDeleteLink.data;
+      if (status === 200) {
+        this.showAlert = true;
+        setTimeout(() => {
+          this.closeRemoveModal();
+          this.reload();
+          this.showAlert = false;
+          this.loading = false;
+        }, 1000);
+      }
+    },
+    openModalUpdate() {
+      this.modalEditLink = true;
     },
   },
 };

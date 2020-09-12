@@ -5,7 +5,7 @@
         <v-row class="align-center">
           <v-col cols="7" sm="8" lg="9">
             <div class="d-flex align-center">
-              <div class="menu-text pr-4">{{ links.length }} Link(s)</div>
+              <div class="menu-text pr-4">{{ total }} Link(s)</div>
               <div
                 v-click-outside="onClickOutsideStandard"
                 class="menu-selection pr-4 d-flex"
@@ -89,6 +89,10 @@ export default {
     links: {
       type: Array,
       default: () => [],
+    },
+    total: {
+      type: Number,
+      default: 1,
     },
   },
   data: () => ({

@@ -7,7 +7,9 @@
       </div>
     </div>
     <div class="modal-mask">
-      <div class="modal-mask__title mb-5">Shorten a new link</div>
+      <div class="modal-mask__title mb-5">
+        Shorten a new link
+      </div>
       <v-textarea
         v-model="form.destinationUrl"
         auto-grow
@@ -16,7 +18,7 @@
         outlined
         dense
         rows="1"
-        @input="validURL(form.destinationUrl)"
+        @change="validURL(form.destinationUrl)"
       ></v-textarea>
       <transition name="slide-fade">
         <div v-if="valid || edit">
@@ -125,6 +127,7 @@ import {
   createNewLink,
   updateLink,
 } from '@/services/api';
+import { handle } from '@/utils/promise';
 export default {
   props: {
     edit: {
@@ -137,28 +140,16 @@ export default {
     },
   },
   async fetch() {
-    console.log(this.edit);
-    if (this.edit) {
-      try {
-        const res = await getLink(this.token, this.id);
-        const { status, data } = res.data;
-        if (status === 200) {
-          const {
-            title,
-            destination,
-            domain,
-            slashtag,
-            domainID,
-          } = data;
-          this.form.destinationUrl = destination;
-          this.form.title = title;
-          this.form.slashTag = slashtag;
-          this.form.domain = domain.name;
-          this.form.domainId = domainID;
-        }
-      } catch (error) {
-        console.log(error);
-      }
+    const [resLink, linkError] = await handle(getLink(this.token, this.id));
+    if (linkError) throw new Error('Could not fetch delete link');
+    const { status, data } = resLink.data;
+    if (status === 200) {
+      const { title, destination, domain, slashtag, domainID } = data;
+      this.form.destinationUrl = destination;
+      this.form.title = title;
+      this.form.slashTag = slashtag;
+      this.form.domain = domain.name;
+      this.form.domainId = domainID;
     }
   },
   data: () => ({
@@ -219,111 +210,128 @@ export default {
         'i'
       ); // fragment locator
       this.valid = !!pattern.test(str);
-      if (pattern.test(str)) {
+      if (this.valid) {
         await Promise.all([this.getTitle(str), this.getSlashTag(str)]);
       }
       return this.valid;
     }, 300),
     async getTitle(url) {
-      try {
-        const res = await getTitleUrl(url);
-        const { status, data } = res.data;
-        if (status === 200) {
-          const { title } = data;
-          console.log(title);
-          this.form.title = title;
-        }
-      } catch (error) {
-        console.log(error);
-      }
+      const [resTitle, titleError] = await handle(getTitleUrl(url));
+      if (titleError) throw new Error('Could not fetch title details');
+      const { title } = resTitle.data.data;
+      this.form.title = title;
     },
     async getSlashTag(url) {
-      try {
-        const res = await getSlashTag(url);
-        const { status, data } = res.data;
-        if (status === 200) {
-          this.form.slashTag = data;
-        }
-      } catch (error) {
-        console.log(error);
-      }
+      const [resSlashTag, slashTagError] = await handle(getSlashTag(url));
+      if (slashTagError) throw new Error('Could not fetch slash tag');
+      const { data } = resSlashTag.data;
+      this.form.slashTag = data;
     },
     async checkSlashTagValid(tag) {
-      try {
-        const check = await checkSlashTag(tag);
-        const { data } = check.data;
-        this.checkSlash = data.exists;
-      } catch (error) {}
+      const [resSlashTag, slashTagError] = await handle(checkSlashTag(tag));
+      if (slashTagError) throw new Error('Could not fetch slash tag');
+      const { data } = resSlashTag.data;
+      this.checkSlash = data.exists;
     },
     async infiniteScroll($state) {
       const { token, pageDomains, pageWorkspaces } = this;
-      try {
-        const resDomains = await getDomains(token, pageDomains, true);
-        const resWorkspaces = await getWorkspaces(token, pageWorkspaces);
+      const [resDomains, domainsError] = await handle(
+        getDomains(token, pageDomains, true)
+      );
+      if (domainsError) throw new Error('Could not fetch doamins details');
+      const [resWorkspaces, workspacesError] = await handle(
+        getWorkspaces(token, pageWorkspaces)
+      );
+      if (workspacesError)
+        throw new Error('Could not fetch workspaces details');
 
-        const statusDomains = resDomains.data.status;
-        const statusWorkspaces = resWorkspaces.data.status;
+      const statusDomains = resDomains.data.status;
+      const statusWorkspaces = resWorkspaces.data.status;
 
-        if (statusDomains === 200) {
-          this.pageDomains += 1;
-          const { domains } = resDomains.data.data;
-          if (domains.length) {
-            this.domains.push(...domains);
-            $state.loaded();
-          } else {
-            $state.complete();
-          }
+      if (statusDomains === 200) {
+        this.pageDomains += 1;
+        const { domains } = resDomains.data.data;
+        if (domains.length) {
+          this.domains.push(...domains);
+          $state.loaded();
+        } else {
+          $state.complete();
         }
-        if (statusWorkspaces === 200) {
-          this.pageWorkspaces += 1;
-          const { workspaces } = resWorkspaces.data.data;
-          if (workspaces.length) {
-            this.workspaces.push(...workspaces);
-            $state.loaded();
-          } else {
-            $state.complete();
-          }
+      }
+      if (statusWorkspaces === 200) {
+        this.pageWorkspaces += 1;
+        const { workspaces } = resWorkspaces.data.data;
+        if (workspaces.length) {
+          this.workspaces.push(...workspaces);
+          $state.loaded();
+        } else {
+          $state.complete();
         }
-      } catch (error) {
-        console.log(error);
       }
     },
     async createNewLink() {
       this.loading = true;
       const { destinationUrl, domain, workspace, title, slashTag } = this.form;
-      try {
-        const check = await checkSlashTag(slashTag);
-        const { data } = check.data;
-        if (!data.exists) {
-          const res = await createNewLink(
+      const [resSlashTag, slashTagError] = await handle(
+        checkSlashTag(slashTag)
+      );
+      if (slashTagError) throw new Error('Could not fetch slashTag details');
+      const { data } = resSlashTag.data;
+      if (!data.exists) {
+        const [resLink, linkError] = await handle(
+          createNewLink(
             this.token,
             destinationUrl,
             domain,
             slashTag,
             title,
             workspace
-          );
-          const { status } = res.data;
-          if (status === 201) {
-            this.showAlert = true;
-            setTimeout(() => {
-              this.$emit('closeModalAddNewLink');
-              this.reload();
-              this.loading = false;
-            }, 2000);
-          }
-          if (status === 403) {
-            this.showAlert403 = true;
-            setTimeout(() => {
-              this.$emit('closeModalAddNewLink');
-              this.reload();
-              this.loading = false;
-            }, 2000);
-          }
+          )
+        );
+        if (linkError) throw new Error('Could not fetch user link');
+        const { status } = resLink.data;
+        if (status === 201) {
+          this.showAlert = true;
+          setTimeout(() => {
+            this.$emit('closeModalAddNewLink');
+            this.reload();
+            this.loading = false;
+          }, 2000);
         }
-      } catch (error) {
-        console.log(error);
-      } finally {
+        if (status === 403) {
+          this.showAlert403 = true;
+          setTimeout(() => {
+            this.$emit('closeModalAddNewLink');
+            this.reload();
+            this.loading = false;
+          }, 2000);
+        }
+      }
+    },
+    async updateLink() {
+      this.loading = true;
+      const { destinationUrl, title, slashTag, domainId } = this.form;
+      const [resUpdateLink, updateLinkError] = await handle(
+        updateLink(
+          this.token,
+          this.id,
+          destinationUrl,
+          domainId,
+          slashTag,
+          title
+        )
+      );
+      if (updateLinkError) throw new Error('Could not fetch update link');
+      if (!this.checkSlash) {
+        const { status } = resUpdateLink.data;
+        if (status === 200) {
+          this.showAlert = true;
+          setTimeout(() => {
+            this.$emit('closeModalAddNewLink');
+            this.reload();
+            this.loading = false;
+          }, 2000);
+        }
       }
     },
     callAction() {
@@ -332,32 +340,6 @@ export default {
       } else {
         this.createNewLink();
       }
-    },
-    async updateLink() {
-      this.loading = true;
-      const { destinationUrl, title, slashTag, domainId } = this.form;
-      try {
-        if (!this.checkSlash) {
-          const res = await updateLink(
-            this.token,
-            this.id,
-            destinationUrl,
-            domainId,
-            slashTag,
-            title
-          );
-          const { status } = res.data;
-          console.log(res);
-          if (status === 200) {
-            this.showAlert = true;
-            setTimeout(() => {
-              this.$emit('closeModalAddNewLink');
-              this.reload();
-              this.loading = false;
-            }, 2000);
-          }
-        }
-      } catch (error) {}
     },
   },
 };

@@ -16,7 +16,6 @@
         >
           <a
             :href="`https://${shorten}`"
-            target="_blank"
             class="main-title text-overflow-hidden pb-3 pb-sm-0"
             >{{ shorten }}</a
           >
@@ -46,9 +45,7 @@
               <div class="information-title">Title</div>
             </v-col>
             <v-col cols="12" md="9">
-              <div class="information-content content-border">
-                {{ title }}
-              </div>
+              <div class="information-content content-border">{{ title }}</div>
             </v-col>
           </v-row>
           <v-row class="information d-flex align-center">
@@ -108,7 +105,7 @@
 
 <script>
 import { clipboard } from 'vue-clipboards';
-import { format } from 'date-fns';
+import { handle } from '@/utils/promise';
 import { getLink, deleteLink } from '@/services/api';
 
 import CreateNewLink from '@/components/links/CreateNewLink';
@@ -130,18 +127,15 @@ export default {
     },
   },
   async fetch() {
-    try {
-      const res = await getLink(this.token, this.id);
-      const { status, data } = res.data;
-      if (status === 200) {
-        const { createdAt, title, destination, domain, slashtag } = data;
-        this.date = createdAt;
-        this.title = title;
-        this.destination = destination;
-        this.shorten = `${domain.name}/${slashtag}`;
-      }
-    } catch (error) {
-      console.log(error);
+    const [resLink, linkError] = await handle(getLink(this.token, this.id));
+    if (linkError) throw new Error('Could not fetch link');
+    const { status, data } = resLink.data;
+    if (status === 200) {
+      const { createdAt, title, destination, domain, slashtag } = data;
+      this.date = createdAt;
+      this.title = title;
+      this.destination = destination;
+      this.shorten = `${domain.name}/${slashtag}`;
     }
   },
   data: () => ({
@@ -160,7 +154,8 @@ export default {
   }),
   computed: {
     createdDate() {
-      return format(new Date(), 'MMMM dd, yyyy');
+      const temp = new Date(this.date).toString().split(' ');
+      return `${temp[0]} ${temp[1]} ${temp[2]} ${temp[3]}`;
     },
   },
   created() {
@@ -192,20 +187,19 @@ export default {
     },
     async removeLink() {
       this.loading = true;
-      try {
-        const res = await deleteLink(this.token, this.id);
-        const { status } = res.data;
-        if (status === 200) {
-          this.showAlert = true;
-          setTimeout(() => {
-            this.closeRemoveModal();
-            this.reload();
-            this.showAlert = false;
-            this.loading = false;
-          }, 1000);
-        }
-      } catch (error) {
-        console.log(error);
+      const [resDeleteLink, deleteLinkError] = await handle(
+        deleteLink(this.token, this.id)
+      );
+      if (deleteLinkError) throw new Error('Could not fetch delete link');
+      const { status } = resDeleteLink.data;
+      if (status === 200) {
+        this.showAlert = true;
+        setTimeout(() => {
+          this.closeRemoveModal();
+          this.reload();
+          this.showAlert = false;
+          this.loading = false;
+        }, 1000);
       }
     },
   },
