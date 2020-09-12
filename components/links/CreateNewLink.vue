@@ -16,9 +16,10 @@
         outlined
         dense
         rows="1"
+        @change="validURL(form.destinationUrl)"
       ></v-textarea>
       <transition name="slide-fade">
-        <div v-if="validURL(form.destinationUrl) || edit">
+        <div v-if="valid || edit">
           <v-row>
             <v-col cols="12" md="6" class="py-0">
               <div class="modal-mask__sub-title">Branded domain</div>
@@ -113,6 +114,7 @@
 </template>
 
 <script>
+import debounce from 'lodash.debounce';
 import {
   getDomains,
   getWorkspaces,
@@ -121,7 +123,7 @@ import {
   checkSlashTag,
   createNewLink,
 } from '@/services/api';
-
+import { handle } from '@/utils/promise';
 export default {
   props: {
     edit: {
@@ -138,6 +140,7 @@ export default {
     pageWorkspaces: 1,
     showAlert: false,
     showAlert403: false,
+    valid: false,
     form: {
       destinationUrl: '',
       title: '',
@@ -173,7 +176,7 @@ export default {
     reload() {
       window.location.reload();
     },
-    validURL(str) {
+    validURL: debounce(async function(str) {
       const pattern = new RegExp(
         '^(https?:\\/\\/)?' + // protocol
         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
@@ -183,106 +186,97 @@ export default {
           '(\\#[-a-z\\d_]*)?$',
         'i'
       ); // fragment locator
-      if (pattern.test(str)) {
-        this.getData(str);
+      this.valid = !!pattern.test(str);
+      if (this.valid) {
+        await Promise.all([this.getTitle(str), this.getSlashTag(str)]);
       }
-      return !!pattern.test(str);
-    },
-    async getData(url) {
-      await Promise.all([this.getTitle(url), this.getSlashTag(url)]);
-    },
+      return this.valid;
+    }, 300),
     async getTitle(url) {
-      try {
-        const res = await getTitleUrl(url);
-        const { status, data } = res.data;
-        if (status === 200) {
-          const { title } = data;
-          this.form.title = title;
-        }
-      } catch (error) {
-        console.log(error);
-      }
+      const [resTitle, titleError] = await handle(getTitleUrl(url));
+      if (titleError) throw new Error('Could not fetch title details');
+      const { title } = resTitle.data.data;
+      this.form.title = title;
     },
     async getSlashTag(url) {
-      try {
-        const res = await getSlashTag(url);
-        const { status, data } = res.data;
-        if (status === 200) {
-          this.form.slashTag = data;
-        }
-      } catch (error) {
-        console.log(error);
-      }
+      const [resSlashTag, slashTagError] = await handle(getSlashTag(url));
+      if (slashTagError) throw new Error('Could not fetch slash tag');
+      const { data } = resSlashTag.data;
+      this.form.slashTag = data;
     },
     async infiniteScroll($state) {
       const { token, pageDomains, pageWorkspaces } = this;
-      try {
-        const resDomains = await getDomains(token, pageDomains, true);
-        const resWorkspaces = await getWorkspaces(token, pageWorkspaces);
+      const [resDomains, domainsError] = await handle(
+        getDomains(token, pageDomains, true)
+      );
+      if (domainsError) throw new Error('Could not fetch doamins details');
+      const [resWorkspaces, workspacesError] = await handle(
+        getWorkspaces(token, pageWorkspaces)
+      );
+      if (workspacesError)
+        throw new Error('Could not fetch workspaces details');
 
-        const statusDomains = resDomains.data.status;
-        const statusWorkspaces = resWorkspaces.data.status;
+      const statusDomains = resDomains.data.status;
+      const statusWorkspaces = resWorkspaces.data.status;
 
-        if (statusDomains === 200) {
-          this.pageDomains += 1;
-          const { domains } = resDomains.data.data;
-          if (domains.length) {
-            this.domains.push(...domains);
-            $state.loaded();
-          } else {
-            $state.complete();
-          }
+      if (statusDomains === 200) {
+        this.pageDomains += 1;
+        const { domains } = resDomains.data.data;
+        if (domains.length) {
+          this.domains.push(...domains);
+          $state.loaded();
+        } else {
+          $state.complete();
         }
-        if (statusWorkspaces === 200) {
-          this.pageWorkspaces += 1;
-          const { workspaces } = resWorkspaces.data.data;
-          if (workspaces.length) {
-            this.workspaces.push(...workspaces);
-            $state.loaded();
-          } else {
-            $state.complete();
-          }
+      }
+      if (statusWorkspaces === 200) {
+        this.pageWorkspaces += 1;
+        const { workspaces } = resWorkspaces.data.data;
+        if (workspaces.length) {
+          this.workspaces.push(...workspaces);
+          $state.loaded();
+        } else {
+          $state.complete();
         }
-      } catch (error) {
-        console.log(error);
       }
     },
     async createNewLink() {
       this.loading = true;
       const { destinationUrl, domain, workspace, title, slashTag } = this.form;
-      try {
-        const check = await checkSlashTag(slashTag);
-        const { data } = check.data;
-        if (!data.exists) {
-          const res = await createNewLink(
+      const [resSlashTag, slashTagError] = await handle(
+        checkSlashTag(slashTag)
+      );
+      if (slashTagError) throw new Error('Could not fetch slashTag details');
+      const { data } = resSlashTag.data;
+      if (!data.exists) {
+        const [resLink, linkError] = await handle(
+          createNewLink(
             this.token,
             destinationUrl,
             domain,
             slashTag,
             title,
             workspace
-          );
-          const { status } = res.data;
-          if (status === 201) {
-            this.showAlert = true;
-            setTimeout(() => {
-              this.$emit('closeModalAddNewLink');
-              this.reload();
-              this.loading = false;
-            }, 2000);
-          }
-          if (status === 403) {
-            this.showAlert403 = true;
-            setTimeout(() => {
-              this.$emit('closeModalAddNewLink');
-              this.reload();
-              this.loading = false;
-            }, 2000);
-          }
+          )
+        );
+        if (linkError) throw new Error('Could not fetch user link');
+        const { status } = resLink.data;
+        if (status === 201) {
+          this.showAlert = true;
+          setTimeout(() => {
+            this.$emit('closeModalAddNewLink');
+            this.reload();
+            this.loading = false;
+          }, 2000);
         }
-      } catch (error) {
-        console.log(error);
-      } finally {
+        if (status === 403) {
+          this.showAlert403 = true;
+          setTimeout(() => {
+            this.$emit('closeModalAddNewLink');
+            this.reload();
+            this.loading = false;
+          }, 2000);
+        }
       }
     },
   },

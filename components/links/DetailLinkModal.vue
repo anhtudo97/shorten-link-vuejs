@@ -2,7 +2,10 @@
   <v-list class="modal-detail-link py-5">
     <div class="d-flex justify-space-between px-4">
       <div></div>
-      <div class="modal-detail-link__dialog-icon pa-2" @click="$emit('closeModalDetailLink')">
+      <div
+        class="modal-detail-link__dialog-icon pa-2"
+        @click="$emit('closeModalDetailLink')"
+      >
         <img src="@/assets/svg/close.svg" alt="close" />
       </div>
     </div>
@@ -12,12 +15,20 @@
           class="d-flex justify-space-between modal-detail-link__dialog-main align-center mb-10 flex-wrap"
         >
           <a
-            href="https://www.johnsmilga.com/projects"
+            :href="`https://${shorten}`"
             class="main-title text-overflow-hidden pb-3 pb-sm-0"
-          >https://www.johnsmilga.com/projects</a>
+            >{{ shorten }}</a
+          >
           <div class="d-flex dialog-link-service align-center">
-            <div v-clipboard="slashtag" class="dialog-button-copy mr-3">Copy</div>
-            <button class="dialog-button button-normal" @click.stop="modalEditLink =true">Edit</button>
+            <div v-clipboard="slashtag" class="dialog-button-copy mr-3">
+              Copy
+            </div>
+            <button
+              class="dialog-button button-normal"
+              @click.stop="modalEditLink = true"
+            >
+              Edit
+            </button>
           </div>
         </div>
         <div class="modal-detail-link__dialog-sub">
@@ -26,7 +37,7 @@
               <div class="information-title">Created date</div>
             </v-col>
             <v-col cols="12" md="9">
-              <div class="information-content">{{date}}</div>
+              <div class="information-content">{{ createdDate }}</div>
             </v-col>
           </v-row>
           <v-row class="information d-flex align-center">
@@ -34,9 +45,7 @@
               <div class="information-title">Title</div>
             </v-col>
             <v-col cols="12" md="9">
-              <div
-                class="information-content content-border"
-              >Get title from remote HTML URL - without jQuery · GitHub</div>
+              <div class="information-content content-border">{{ title }}</div>
             </v-col>
           </v-row>
           <v-row class="information d-flex align-center">
@@ -44,9 +53,9 @@
               <div class="information-title">Original link</div>
             </v-col>
             <v-col cols="12" md="9">
-              <div
-                class="information-content content-border"
-              >https://blog.tqdesign.vn/5-meo-thiet-ke-ux-ung-dung-thuong-mai-dien-tu-thien-voi-nguoi-dung-hon-16661.html</div>
+              <div class="information-content content-border">
+                {{ destination }}
+              </div>
             </v-col>
           </v-row>
           <v-row class="information d-flex align-center">
@@ -57,7 +66,9 @@
               <button
                 class="remove-button button-warning"
                 @click.stop="isRemoveModal = true"
-              >Remove this link</button>
+              >
+                Remove this link
+              </button>
             </v-col>
           </v-row>
         </div>
@@ -67,19 +78,27 @@
       v-model="modalEditLink"
       class="link__dialog"
       max-width="900"
-      :fullscreen="width<600?true: false"
+      :fullscreen="width < 600 ? true : false"
     >
-      <CreateNewLink :edit="true" @closeModalAddNewLink="closeModalAddNewLink" />
+      <CreateNewLink
+        :edit="true"
+        @closeModalAddNewLink="closeModalAddNewLink"
+      />
     </v-dialog>
     <v-dialog v-model="isRemoveModal" persistent width="500">
-      <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
+      <RemoveModal
+        name="link"
+        @closeRemoveModal="closeRemoveModal"
+        @removeElement="removeLink"
+      />
     </v-dialog>
   </v-list>
 </template>
 
 <script>
 import { clipboard } from 'vue-clipboards';
-import { format } from 'date-fns';
+import { handle } from '@/utils/promise';
+import { getLink } from '@/services/api';
 
 import CreateNewLink from '@/components/links/CreateNewLink';
 import RemoveModal from '@/components/shares/RemoveModal';
@@ -94,17 +113,45 @@ export default {
       type: String,
       default: '',
     },
+    id: {
+      type: String,
+      default: '',
+    },
+  },
+  async fetch() {
+    const [resLink, linkError] = await handle(getLink(this.token, this.id));
+    if (linkError) throw new Error('Could not fetch link');
+    const { status, data } = resLink.data;
+    if (status === 200) {
+      const { createdAt, title, destination, domain, slashtag } = data;
+      this.date = createdAt;
+      this.title = title;
+      this.destination = destination;
+      this.shorten = `${domain.name}/${slashtag}`;
+    }
   },
   data: () => ({
     isRemove: false,
     isRemoveModal: false,
     modalEditLink: false,
     width: 0,
+    token: '',
+    date: '',
+    title: '',
+    destination: '',
+    domain: {},
+    shorten: '',
   }),
   computed: {
-    date() {
-      return format(new Date(), 'MMMM dd, yyyy');
+    createdDate() {
+      const temp = new Date(this.date).toString().split(' ');
+      return `${temp[0]} ${temp[1]} ${temp[2]} ${temp[3]}`;
     },
+  },
+  created() {
+    if (localStorage.token) {
+      this.token = localStorage.token;
+    }
   },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);

@@ -3,14 +3,14 @@
     <v-col cols="12" sm="10" md="8" class="mx-auto px-0 border-radius-10">
       <v-row class="align-center mx-0">
         <v-col cols="12" md="8" @click.stop="models.isOpen = true">
-          <div class="shortened-link text-overflow-hidden">{{slashtag}}</div>
-          <div class="origin-link pt-2 text-overflow-hidden">{{link}}</div>
+          <div class="shortened-link text-overflow-hidden">{{ slashtag }}</div>
+          <div class="origin-link pt-2 text-overflow-hidden">{{ link }}</div>
         </v-col>
         <v-col cols="12" md="4">
           <div class="d-flex justify-space-between align-center shortened-info">
-            <div class="shortened-clicks">{{clicks}} click(s)</div>
+            <div class="shortened-clicks">{{ clicks }} click(s)</div>
             <div>
-              <div class="shortened-date">{{createAt}}</div>
+              <div class="shortened-date">{{ createAt }}</div>
               <div class="d-flex link-services">
                 <v-tooltip top nudge-left="10">
                   <template v-slot:activator="{ on, attrs }">
@@ -78,20 +78,31 @@
       v-model="models.isOpen"
       class="dialog"
       max-width="900"
-      :fullscreen="width<600?true: false"
+      :fullscreen="width < 600 ? true : false"
     >
-      <DetailLinkModal :slashtag="slashtag" @closeModalDetailLink="closeModalDetailLink" />
+      <DetailLinkModal
+        :id="id"
+        :slashtag="slashtag"
+        @closeModalDetailLink="closeModalDetailLink"
+      />
     </v-dialog>
     <v-dialog
       v-model="modalEditLink"
       class="link__dialog"
       max-width="900"
-      :fullscreen="width<600?true: false"
+      :fullscreen="width < 600 ? true : false"
     >
-      <CreateNewLink :edit="true" @closeModalAddNewLink="closeModalAddNewLink" />
+      <CreateNewLink
+        :edit="true"
+        @closeModalAddNewLink="closeModalAddNewLink"
+      />
     </v-dialog>
     <v-dialog v-model="isRemoveModal" persistent width="500">
-      <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
+      <RemoveModal
+        name="link"
+        @closeRemoveModal="closeRemoveModal"
+        @removeElement="removeLink"
+      />
     </v-dialog>
   </v-row>
 </template>
@@ -110,6 +121,11 @@ export default {
     CreateNewLink,
   },
   props: {
+    id: {
+      type: String,
+      default: '',
+    },
+
     link: {
       type: String,
       default: '',

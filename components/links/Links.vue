@@ -5,7 +5,7 @@
         <v-row class="align-center">
           <v-col cols="7" sm="8" lg="9">
             <div class="d-flex align-center">
-              <div class="menu-text pr-4">{{ links.length }} Link(s)</div>
+              <div class="menu-text pr-4">{{ total }} Link(s)</div>
               <div
                 v-click-outside="onClickOutsideStandard"
                 class="menu-selection pr-4 d-flex"
@@ -57,10 +57,11 @@
       <transition-group name="list" tag="ul" class="pa-0">
         <li v-for="link in tempLinks" :key="link.id">
           <Link
-            :link="link.link"
+            :id="link.id"
+            :link="link.destination"
             :slashtag="link.slashtag"
             :clicks="link.clicks"
-            :date="link.date"
+            :date="link.createdAt"
           />
         </li>
       </transition-group>
@@ -77,14 +78,22 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-
 import Link from '@/components/links/Link';
 import CreateNewLink from '@/components/links/CreateNewLink';
 export default {
   components: {
     Link,
     CreateNewLink,
+  },
+  props: {
+    links: {
+      type: Array,
+      default: () => [],
+    },
+    total: {
+      type: Number,
+      default: 1,
+    },
   },
   data: () => ({
     keySort: 'Sort By',
@@ -96,9 +105,6 @@ export default {
     destinationUrl: '',
   }),
   computed: {
-    ...mapGetters({
-      links: 'links/getLinks',
-    }),
     tempLinks() {
       return this.links.map((x) => x);
     },
