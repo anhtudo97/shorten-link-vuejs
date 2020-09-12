@@ -13,6 +13,7 @@
 <script>
 import { getWorkspaces } from '@/services/api';
 import Workspaces from '@/components/workspaces/Workspaces';
+import { handle } from '@/utils/promise';
 export default {
   name: 'Workspaces',
   layout: 'link',
@@ -33,22 +34,21 @@ export default {
   methods: {
     async infiniteScroll($state) {
       const { token, page } = this;
-      try {
-        const res = await getWorkspaces(token, page);
-        const { status } = res.data;
-        if (status === 200) {
-          this.page += 1;
-          const { workspaces, total } = res.data.data;
-          this.total = total;
-          if (workspaces.length) {
-            this.workspaces.push(...workspaces);
-            $state.loaded();
-          } else {
-            $state.complete();
-          }
+      const [resWorkspace, workspaceError] = await handle(
+        getWorkspaces(token, page)
+      );
+      if (workspaceError) throw new Error('Could not fetch workspace link');
+      const { status, data } = resWorkspace.data;
+      if (status === 200) {
+        this.page += 1;
+        const { workspaces, total } = data;
+        this.total = total;
+        if (workspaces.length) {
+          this.workspaces.push(...workspaces);
+          $state.loaded();
+        } else {
+          $state.complete();
         }
-      } catch (error) {
-        console.log(error);
       }
     },
   },
