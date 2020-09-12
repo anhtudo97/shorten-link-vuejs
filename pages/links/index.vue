@@ -15,6 +15,7 @@ import Link from '@/components/links/Links';
 import { getLinks } from '@/services/api';
 
 export default {
+  name: 'Links',
   layout: 'link',
   components: {
     Link,
@@ -30,7 +31,6 @@ export default {
       this.token = localStorage.token;
     }
   },
-
   methods: {
     async infiniteScroll($state) {
       const { token, page } = this;

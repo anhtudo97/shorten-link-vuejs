@@ -79,6 +79,14 @@ export const getLink = (token, id) => {
   });
 };
 
+export const deleteLink = (token, id) => {
+  return api.delete(`/links/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 export const getTitleUrl = (url) => {
   return api.get(`/url-meta?url=${url}`);
 };
@@ -114,14 +122,6 @@ export const createNewLink = (
       },
     }
   );
-};
-
-export const deleteLink = (token, id) => {
-  return api.delete(`/links/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
 };
 
 export const updateLink = (

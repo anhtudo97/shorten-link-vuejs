@@ -35,8 +35,7 @@
                 outlined
                 :label="form.domain"
                 :disabled="loading"
-              >
-              </v-select>
+              ></v-select>
             </v-col>
             <v-col cols="12" md="6" class="py-0">
               <div class="modal-mask__sub-title">Slash tag</div>
@@ -46,6 +45,7 @@
                 outlined
                 dense
                 :disabled="loading"
+                @change="checkSlashTagValid(form.slashTag)"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -118,6 +118,7 @@
 <script>
 import debounce from 'lodash.debounce';
 import {
+  getLink,
   getDomains,
   getWorkspaces,
   getTitleUrl,
@@ -125,7 +126,6 @@ import {
   checkSlashTag,
   createNewLink,
   updateLink,
-  getLink,
 } from '@/services/api';
 import { handle } from '@/utils/promise';
 export default {
@@ -233,7 +233,6 @@ export default {
       const { data } = resSlashTag.data;
       this.checkSlash = data.exists;
     },
-
     async infiniteScroll($state) {
       const { token, pageDomains, pageWorkspaces } = this;
       const [resDomains, domainsError] = await handle(
@@ -268,13 +267,6 @@ export default {
         } else {
           $state.complete();
         }
-      }
-    },
-    callAction() {
-      if (this.edit) {
-        this.updateLink();
-      } else {
-        this.createNewLink();
       }
     },
     async createNewLink() {
@@ -340,6 +332,13 @@ export default {
             this.loading = false;
           }, 2000);
         }
+      }
+    },
+    callAction() {
+      if (this.edit) {
+        this.updateLink();
+      } else {
+        this.createNewLink();
       }
     },
   },

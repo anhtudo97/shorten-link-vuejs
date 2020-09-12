@@ -174,7 +174,6 @@ export default {
     reload() {
       window.location.reload();
     },
-
     closeRemoveModal() {
       this.isRemoveModal = false;
     },
