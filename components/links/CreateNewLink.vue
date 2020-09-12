@@ -7,7 +7,9 @@
       </div>
     </div>
     <div class="modal-mask">
-      <div class="modal-mask__title mb-5">Shorten a new link</div>
+      <div class="modal-mask__title mb-5">
+        Shorten a new link
+      </div>
       <v-textarea
         v-model="form.destinationUrl"
         auto-grow
@@ -31,7 +33,7 @@
                 item-value="id"
                 dense
                 outlined
-                label="Domain"
+                :label="form.domain"
                 :disabled="loading"
               >
               </v-select>
@@ -60,7 +62,7 @@
                 dense
                 outlined
                 menu-props="auto"
-                :disabled="loading"
+                :disabled="loading || edit"
               ></v-select>
             </v-col>
             <v-col cols="12" md="6" class="py-0">
@@ -80,9 +82,9 @@
             <div
               :disabled="loading"
               class="modal-mask__button"
-              @click="createNewLink"
+              @click="callAction"
             >
-              Create link
+              {{ edit ? 'Update Link' : 'Create link' }}
             </div>
           </div>
         </div>
@@ -95,7 +97,7 @@
       ></infinite-loading>
     </client-only>
     <v-snackbar v-model="showAlert" top color="success">
-      Create new link successfully
+      {{ edit ? 'Update link successfully' : 'Create new link successfully' }}
       <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="showAlert = false">
           Close
@@ -122,6 +124,8 @@ import {
   getSlashTag,
   checkSlashTag,
   createNewLink,
+  updateLink,
+  getLink,
 } from '@/services/api';
 import { handle } from '@/utils/promise';
 export default {
@@ -130,6 +134,23 @@ export default {
       type: Boolean,
       default: false,
     },
+    id: {
+      type: String,
+      default: '',
+    },
+  },
+  async fetch() {
+    const [resLink, linkError] = await handle(getLink(this.token, this.id));
+    if (linkError) throw new Error('Could not fetch delete link');
+    const { status, data } = resLink.data;
+    if (status === 200) {
+      const { title, destination, domain, slashtag, domainID } = data;
+      this.form.destinationUrl = destination;
+      this.form.title = title;
+      this.form.slashTag = slashtag;
+      this.form.domain = domain.name;
+      this.form.domainId = domainID;
+    }
   },
   data: () => ({
     domains: [],
@@ -141,12 +162,14 @@ export default {
     showAlert: false,
     showAlert403: false,
     valid: false,
+    checkSlash: false,
     form: {
       destinationUrl: '',
       title: '',
       slashTag: '',
-      domain: '',
+      domain: 'Domain',
       workspace: '',
+      domainId: '',
     },
   }),
   computed: {
@@ -204,6 +227,13 @@ export default {
       const { data } = resSlashTag.data;
       this.form.slashTag = data;
     },
+    async checkSlashTagValid(tag) {
+      const [resSlashTag, slashTagError] = await handle(checkSlashTag(tag));
+      if (slashTagError) throw new Error('Could not fetch slash tag');
+      const { data } = resSlashTag.data;
+      this.checkSlash = data.exists;
+    },
+
     async infiniteScroll($state) {
       const { token, pageDomains, pageWorkspaces } = this;
       const [resDomains, domainsError] = await handle(
@@ -240,6 +270,13 @@ export default {
         }
       }
     },
+    callAction() {
+      if (this.edit) {
+        this.updateLink();
+      } else {
+        this.createNewLink();
+      }
+    },
     async createNewLink() {
       this.loading = true;
       const { destinationUrl, domain, workspace, title, slashTag } = this.form;
@@ -271,6 +308,32 @@ export default {
         }
         if (status === 403) {
           this.showAlert403 = true;
+          setTimeout(() => {
+            this.$emit('closeModalAddNewLink');
+            this.reload();
+            this.loading = false;
+          }, 2000);
+        }
+      }
+    },
+    async updateLink() {
+      this.loading = true;
+      const { destinationUrl, title, slashTag, domainId } = this.form;
+      const [resUpdateLink, updateLinkError] = await handle(
+        updateLink(
+          this.token,
+          this.id,
+          destinationUrl,
+          domainId,
+          slashTag,
+          title
+        )
+      );
+      if (updateLinkError) throw new Error('Could not fetch update link');
+      if (!this.checkSlash) {
+        const { status } = resUpdateLink.data;
+        if (status === 200) {
+          this.showAlert = true;
           setTimeout(() => {
             this.$emit('closeModalAddNewLink');
             this.reload();

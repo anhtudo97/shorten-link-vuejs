@@ -42,7 +42,7 @@
                 </v-tooltip>
                 <v-tooltip top nudge-left="10">
                   <template v-slot:activator="{ on, attrs }">
-                    <div @click.stop="modalEditLink = true">
+                    <div @click.stop="openModalUpdate">
                       <img
                         :src="require('@/assets/icons/edit-solid.svg')"
                         alt="route"
@@ -93,7 +93,9 @@
       :fullscreen="width < 600 ? true : false"
     >
       <CreateNewLink
+        :id="id"
         :edit="true"
+        :form-update="form"
         @closeModalAddNewLink="closeModalAddNewLink"
       />
     </v-dialog>
@@ -160,6 +162,14 @@ export default {
     modalEditLink: false,
     width: 0,
     showAlert: false,
+    form: {
+      destinationUrl: '',
+      title: '',
+      slashTag: '',
+      domain: 'Domain',
+      workspace: '',
+      domainId: '',
+    },
   }),
   computed: {
     createAt() {
@@ -225,6 +235,9 @@ export default {
           this.loading = false;
         }, 1000);
       }
+    },
+    openModalUpdate() {
+      this.modalEditLink = true;
     },
   },
 };
