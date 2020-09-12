@@ -2,10 +2,7 @@
   <div>
     <Link :links="links" :total="total" />
     <client-only>
-      <infinite-loading
-        spinner="spiral"
-        @infinite="infiniteScroll"
-      ></infinite-loading>
+      <infinite-loading spinner="spiral" @infinite="infiniteScroll"></infinite-loading>
     </client-only>
   </div>
 </template>
@@ -13,7 +10,7 @@
 <script>
 import Link from '@/components/links/Links';
 import { getLinks } from '@/services/api';
-
+import { handle } from '@/utils/promise';
 export default {
   name: 'Links',
   layout: 'link',
@@ -34,22 +31,20 @@ export default {
   methods: {
     async infiniteScroll($state) {
       const { token, page } = this;
-      try {
-        const res = await getLinks(token, page);
-        const { status } = res.data;
-        if (status === 200) {
-          this.page += 1;
-          const { links, total } = res.data.data;
-          this.total = total;
-          if (links.length) {
-            this.links.push(...links);
-            $state.loaded();
-          } else {
-            $state.complete();
-          }
+      const [resLink, linkError] = await handle(getLinks(token, page));
+      if (linkError) throw new Error('Could not fetch workspace link');
+
+      const { status, data } = resLink.data;
+      if (status === 200) {
+        this.page += 1;
+        const { links, total } = data;
+        this.total = total;
+        if (links.length) {
+          this.links.push(...links);
+          $state.loaded();
+        } else {
+          $state.complete();
         }
-      } catch (error) {
-        console.log(error);
       }
     },
   },
