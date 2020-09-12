@@ -1,0 +1,197 @@
+/*//////////////////////////////////////////////////////////////////
+[ RESTYLE TAG ]*/
+
+* {
+    box-sizing: border-box;
+}
+
+body,
+html {
+    height: 100%;
+    font-family: Montserrat, sans-serif;
+}
+
+a {
+    text-decoration: none;
+}
+
+button {
+    outline: none;
+}
+
+.button-normal {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    border: 0.5px solid #3c64b1;
+    border-radius: 4px;
+    color: #3c64b1;
+    transition: all 0.2s ease-in-out;
+    &:hover {
+        background-color: #3c64b1;
+        color: #fff;
+    }
+}
+
+.button-warning {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    border: 0.5px solid #d34547;
+    border-radius: 4px;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+    color: #d34547;
+    &:hover {
+        background-color: #d34547;
+        color: #fff;
+    }
+}
+
+.button-primary {
+    cursor: pointer;
+    background-color: #3c64b1;
+    border-radius: 10px;
+    color: #fff;
+    text-align: center;
+    font-weight: bold;
+    &:hover {
+        background-color: #2a5bd7;
+    }
+}
+
+.text-overflow-hidden {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.border-b {
+    border-bottom: 1px solid #e8e9ea;
+}
+
+@media sceen and (max-width: 1368px) {
+    label {
+        font-size: 15px;
+    }
+}
+
+
+/* Enter and leave animations can use different */
+
+
+/* durations and timing functions.              */
+
+.slide-fade-enter-active {
+    transition: all 0.2s ease;
+}
+
+.slide-fade-leave-active {
+    transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter,
+.slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */
+
+{
+    transform: translateX(10px);
+    opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to
+/* .fade-leave-active below version 2.1.8 */
+
+{
+    opacity: 0;
+}
+
+.list-item {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.list-enter-active,
+.list-leave-active {
+    transition: all 1s;
+}
+
+.list-enter,
+.list-leave-to
+/* .list-leave-active below version 2.1.8 */
+
+{
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+// animation about notification
+@keyframes bell {
+    0%,
+    25%,
+    75%,
+    100% {
+        transform: rotate(0deg);
+    }
+    40% {
+        transform: rotate(10deg);
+    }
+    45% {
+        transform: rotate(-10deg);
+    }
+    55% {
+        transform: rotate(8deg);
+    }
+    60% {
+        transform: rotate(-8deg);
+    }
+}
+
+@keyframes bellClapper {
+    0%,
+    25%,
+    75%,
+    100% {
+        transform: translateX(0);
+    }
+    40% {
+        transform: translateX(-0.15em);
+    }
+    45% {
+        transform: translateX(0.15em);
+    }
+    55% {
+        transform: translateX(-0.1em);
+    }
+    60% {
+        transform: translateX(0.1em);
+    }
+}
+
+@keyframes notification {
+    0%,
+    25%,
+    75%,
+    100% {
+        opacity: 1;
+    }
+    30%,
+    70% {
+        opacity: 0;
+    }
+}

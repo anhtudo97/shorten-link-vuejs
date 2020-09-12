@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48px" height="48px" viewBox="0 0 48 48" version="1.1" class="injected-svg Icon--sm v-middle" data-src="https://dashboard-cdn.rebrandly.com/styleguide-assets/icons/ic-people-add.svg" fill="">
+    <defs></defs>
+    <g id="Styleguide---Iconography" stroke="none" stroke-width="1" transform="translate(-1301.000000, -1150.000000)">
+        <g id="icon-block" transform="translate(1260.000000, 1134.000000)">
+            <g id="icons/ic-people-add" transform="translate(41.000000, 16.000000)">
+                <path d="M14,22 C17.32,22 19.98,19.32 19.98,16 C19.98,12.68 17.32,10 14,10 C10.68,10 8,12.68 8,16 C8,19.32 10.68,22 14,22 Z M38,22 L38,16 L42,16 L42,22 L48,22 L48,26 L42,26 L42,32 L38,32 L38,26 L32,26 L32,22 L38,22 Z M14,26 C18.66,26 28,28.34 28,33 L28,38 L0,38 L0,33 C0,28.34 9.34,26 14,26 Z" id="Shape-720"></path>
+            </g>
+        </g>
+    </g>
+</svg>
