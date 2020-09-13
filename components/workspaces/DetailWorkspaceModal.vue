@@ -61,7 +61,7 @@
         </div>
       </div>
     </div>
-    <v-row class="align-center dialog-detail-workspace__button-remove">
+    <v-row class="align-center dialog-detail-workspace__button-remove" v-if="!workspace.isDefault">
       <v-col cols="12" sm="3">
         <div class="services-title">Delete this repository</div>
       </v-col>

@@ -9,9 +9,7 @@
         <img src="@/assets/svg/close.svg" alt="close" />
       </div>
     </div>
-    <div class="dialog-create-new-domain__title">
-      Connect a domain name you already own
-    </div>
+    <div class="dialog-create-new-domain__title">Connect a domain name you already own</div>
     <div class="dialog-create-new-domain__description mb-10">
       Configure a domain name you already own to use as a branded domain for
       your links.
@@ -36,17 +34,19 @@
           :disabled="loading"
           class="button-normal dialog-create-new-domain__button"
           @click.prevent="createNewDomain"
-        >
-          Create new domain
-        </button>
+        >Create new domain</button>
       </v-col>
     </v-row>
     <v-snackbar v-model="showAlert" top color="success">
       Create new domain successfully
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">
-          Close
-        </v-btn>
+        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">Close</v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar v-model="showAlert400" top color="error">
+      Domain is existed
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">Close</v-btn>
       </template>
     </v-snackbar>
   </v-list>
@@ -54,11 +54,14 @@
 
 <script>
 import { createNewDomain } from '@/services/api';
+import { handle } from '@/utils/promise';
+
 export default {
   data: () => ({
     destinationDomain: '',
     loading: false,
     showAlert: false,
+    showAlert400: false,
     token: '',
   }),
   created() {
@@ -80,11 +83,17 @@ export default {
           setTimeout(() => {
             this.$emit('closeModalCreateNewDomain');
             this.reload();
+            this.showAlert = false;
             this.loading = false;
           }, 2000);
         }
       } catch (error) {
         console.log(error);
+        this.showAlert400 = true;
+        setTimeout(() => {
+          this.showAlert400 = false;
+          this.loading = false;
+        }, 2000);
       } finally {
         this.destinationDomain = '';
       }

@@ -147,7 +147,6 @@ export default {
         this.form.domain = domain.name;
         this.form.domainId = domainID;
       }
-      ƒ;
     }
   },
   data: () => ({
@@ -306,14 +305,11 @@ export default {
             this.loading = false;
           }, 2000);
         }
-        if (status === 403) {
-          this.showAlert403 = true;
-          setTimeout(() => {
-            this.$emit('closeModalAddNewLink');
-            this.reload();
-            this.loading = false;
-          }, 2000);
-        }
+      } else {
+        this.showAlert403 = true;
+        setTimeout(() => {
+          this.loading = false;
+        }, 2000);
       }
     },
     async updateLink() {
