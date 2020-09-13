@@ -6,49 +6,16 @@
           <v-col cols="7" sm="8" lg="9">
             <div class="d-flex align-center">
               <div class="menu-text pr-4">{{ total }} Link(s)</div>
-              <div
-                v-click-outside="onClickOutsideStandard"
-                class="menu-selection pr-4 d-flex"
-              >
-                <div
-                  class="d-flex align-center"
-                  @click="models.base = !models.base"
-                >
-                  <div class="selection-text pr-2">{{ keySort }}</div>
+              <div v-click-outside="onClickOutsideStandard" class="menu-selection pr-4 d-flex">
+                <div class="d-flex align-center" @click="models.sortModal = !models.sortModal">
+                  <div class="selection-text pr-2">Sort by</div>
                   <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
-                <transition name="slide-fade">
-                  <div v-if="models.base" class="selection-modal">
-                    <div
-                      class="modal-option"
-                      @click="changeConditions('Lastest')"
-                    >
-                      Lastest
-                    </div>
-                    <div
-                      class="modal-option"
-                      @click="changeConditions('Slashtag A - Z')"
-                    >
-                      Slashtag A - Z
-                    </div>
-                    <div
-                      class="modal-option"
-                      @click="changeConditions('Slashtag Z - A')"
-                    >
-                      Slashtag Z - A
-                    </div>
-                  </div>
-                </transition>
               </div>
             </div>
           </v-col>
           <v-col cols="5" sm="4" lg="3" class="text-right">
-            <button
-              class="button-normal add-new-link"
-              @click.stop="models.modal = true"
-            >
-              New Link
-            </button>
+            <button class="button-normal add-new-link" @click.stop="models.modal = true">New Link</button>
           </v-col>
         </v-row>
       </v-col>
@@ -74,40 +41,54 @@
     >
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
+    <v-dialog v-model="models.sortModal" max-width="400">
+      <SortModal @updateSort="updateSort" />
+    </v-dialog>
+    <client-only>
+      <infinite-loading spinner="spiral" @infinite="infiniteScroll"></infinite-loading>
+    </client-only>
   </div>
 </template>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex';
 import Link from '@/components/links/Link';
 import CreateNewLink from '@/components/links/CreateNewLink';
+import SortModal from '@/components/links/SortModal';
+
+import { getLinks } from '@/services/api';
+import { handle } from '@/utils/promise';
+
 export default {
   components: {
     Link,
     CreateNewLink,
-  },
-  props: {
-    links: {
-      type: Array,
-      default: () => [],
-    },
-    total: {
-      type: Number,
-      default: 1,
-    },
+    SortModal,
   },
   data: () => ({
     keySort: 'Sort By',
     models: {
       base: false,
       modal: false,
+      sortModal: false,
+      filterModal: false,
     },
     width: 0,
-    destinationUrl: '',
+    links: [],
+    page: 1,
+    token: '',
+    total: 0,
   }),
   computed: {
+    ...mapGetters({ sort: 'links/getSort', direction: 'links/getDirection' }),
     tempLinks() {
       return this.links.map((x) => x);
     },
+  },
+  created() {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+      this.token = localStorage.token;
+    }
   },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);
@@ -116,41 +97,48 @@ export default {
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize);
   },
+  mounted() {
+    console.log(this.sort, this.direction);
+  },
   methods: {
+    ...mapMutations({
+      setSort: 'links/setSort',
+      setDirection: 'links/setDirection',
+    }),
+    reload() {
+      window.location.reload();
+    },
+
+    async infiniteScroll($state) {
+      const { token, page, sort, direction } = this;
+      const [resLink, linkError] = await handle(
+        getLinks(token, page, sort, direction)
+      );
+      if (linkError) throw new Error('Could not fetch workspace link');
+
+      const { status, data } = resLink.data;
+      if (status === 200) {
+        this.page += 1;
+        const { links, total } = data;
+        this.total = total;
+        if (links.length) {
+          this.links.push(...links);
+          $state.loaded();
+        } else {
+          $state.complete();
+        }
+      }
+    },
+    updateSort(sort, direction) {
+      this.setSort(sort);
+      this.setDirection(direction);
+      console.log(this.sort, this.direction);
+      this.$forceUpdate();
+    },
     changeConditions(value) {
       this.keySort = value;
       this.models.base = false;
       this.linksSortBy(this.keySort);
-    },
-    linksSortBy(key) {
-      switch (key) {
-        case 'Lastest':
-          return this.tempLinks.sort(function(a, b) {
-            return new Date(b.date) - new Date(a.date);
-          });
-        case 'Slashtag Z - A':
-          return this.tempLinks.sort(function(a, b) {
-            if (a.slashtag < b.slashtag) {
-              return 1;
-            }
-            if (a.slashtag > b.slashtag) {
-              return -1;
-            }
-            return 0;
-          });
-        case 'Slashtag A - Z':
-          return this.tempLinks.sort(function(a, b) {
-            if (a.slashtag < b.slashtag) {
-              return -1;
-            }
-            if (a.slashtag > b.slashtag) {
-              return 1;
-            }
-            return 0;
-          });
-        default:
-          return this.tempLinks;
-      }
     },
     onClickOutsideStandard() {
       this.models.base = false;

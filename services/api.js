@@ -63,8 +63,8 @@ export const loginUser = (email, password) => {
 };
 
 /* Link */
-export const getLinks = (token, page) => {
-  return api.get(`/links?page=${page}&perPage=10`, {
+export const getLinks = (token, page, sort = 'created_at', direction = 'DESC', domainIds = [], workspaceIds = []) => {
+  return api.get(`/links?page=${page}&perPage=10&sort=${sort}&direction=${direction}&domainIds=${domainIds}&workspaceIds=${workspaceIds}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

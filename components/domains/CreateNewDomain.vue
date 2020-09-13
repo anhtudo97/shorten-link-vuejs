@@ -54,7 +54,6 @@
 
 <script>
 import { createNewDomain } from '@/services/api';
-import { handle } from '@/utils/promise';
 
 export default {
   data: () => ({

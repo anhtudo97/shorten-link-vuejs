@@ -59,6 +59,12 @@
         </v-btn>
       </template>
     </v-snackbar>
+    <v-snackbar v-model="showAlert400" top color="error">
+      Domain is existed
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
@@ -84,6 +90,7 @@ export default {
       workspaceName: '',
       loading: false,
       showAlert: false,
+      showAlert400: false,
       token: '',
     };
   },
@@ -119,6 +126,11 @@ export default {
         }
       } catch (error) {
         console.log(error);
+        this.showAlert400 = true;
+        setTimeout(() => {
+          this.showAlert400 = false;
+          this.loading = false;
+        }, 2000);
       } finally {
         this.workspaceName = '';
       }
