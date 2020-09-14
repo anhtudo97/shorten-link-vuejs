@@ -38,8 +38,10 @@
       </div>
       <div class="d-flex dialog-detail-workspace__info align-center mb-5">
         <img src="@/assets/svg/links.svg" alt="calendar" class="mr-3" />
-        <nuxt-link to="/links">
-          <div class="info-text info-link font-weight-medium">4 Links</div>
+        <nuxt-link :to="`/links/${workspace.id}`">
+          <div class="info-text info-link font-weight-medium">
+            {{ totalLinks }} Links
+          </div>
         </nuxt-link>
       </div>
       <div class="d-flex dialog-detail-workspace__info align-center mb-5">
@@ -48,7 +50,7 @@
           class="info-text font-weight-medium"
           @click.stop="openModalMemberModal = true"
         >
-          3 teammates
+          {{ totalMembers }} teammate(s)
         </div>
       </div>
       <div class="d-flex dialog-detail-workspace__info align-center mb-5">
@@ -57,11 +59,14 @@
           class="info-text info-link font-weight-medium"
           @click.stop="openAddLinkDomainModal = true"
         >
-          {{ total }} Branded domains included
+          {{ totalDomains }} Branded domains included
         </div>
       </div>
     </div>
-    <v-row v-if="!workspace.isDefault" class="align-center dialog-detail-workspace__button-remove">
+    <v-row
+      v-if="!workspace.isDefault"
+      class="align-center dialog-detail-workspace__button-remove"
+    >
       <v-col cols="12" sm="3">
         <div class="services-title">Delete this repository</div>
       </v-col>
@@ -128,7 +133,12 @@
 
 <script>
 import { format } from 'date-fns';
-import { deleteWorkspace, getDomainsWorkspace } from '@/services/api';
+import {
+  deleteWorkspace,
+  getDomainsWorkspace,
+  getLinksWorkspaces,
+  getMembersWorkspaces,
+} from '@/services/api';
 
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
 import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
@@ -148,15 +158,37 @@ export default {
   },
   async fetch() {
     try {
-      const res = await getDomainsWorkspace(
+      const resDomains = await getDomainsWorkspace(
         this.token,
         this.workspace.id,
-        this.pageDomainWorkspace
+        this.page
       );
-      const { status } = res.data;
-      if (status === 200) {
-        const { total } = res.data.data;
-        this.total = total;
+      const resLinks = await getLinksWorkspaces(
+        this.token,
+        this.workspace.id,
+        this.page
+      );
+      const resMembers = await getMembersWorkspaces(
+        this.token,
+        this.workspace.id,
+        this.page
+      );
+
+      const statusDomains = resDomains.data.status;
+      const statusLinks = resLinks.data.status;
+      const statusMembers = resMembers.data.status;
+
+      if (statusDomains === 200) {
+        const { total } = resDomains.data.data;
+        this.totalDomains = total;
+      }
+      if (statusLinks === 200) {
+        const { total } = resLinks.data.data;
+        this.totalLinks = total;
+      }
+      if (statusMembers === 200) {
+        const { total } = resMembers.data.data;
+        this.totalMembers = total;
       }
     } catch (error) {
       console.log(error);
@@ -171,8 +203,10 @@ export default {
     token: '',
     showAlert: false,
     loading: false,
-    pageDomainWorkspace: 1,
-    total: 0,
+    page: 1,
+    totalDomains: 0,
+    totalLinks: 0,
+    totalMembers: 0,
   }),
   computed: {
     createdDate() {

@@ -63,12 +63,22 @@ export const loginUser = (email, password) => {
 };
 
 /* Link */
-export const getLinks = (token, page, sort = 'created_at', direction = 'DESC', domainIds = [], workspaceIds = []) => {
-  return api.get(`/links?page=${page}&perPage=10&sort=${sort}&direction=${direction}&domainIds=${domainIds}&workspaceIds=${workspaceIds}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const getLinks = (
+  token,
+  page,
+  sort = 'created_at',
+  direction = 'DESC',
+  domainIds = [],
+  workspaceIds = []
+) => {
+  return api.get(
+    `/links?page=${page}&perPage=10&sort=${sort}&direction=${direction}&domainIds=${domainIds}&workspaceIds=${workspaceIds}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
 export const getLink = (token, id) => {
@@ -147,8 +157,6 @@ export const updateLink = (
     }
   );
 };
-
-
 
 /* Domain */
 export const createNewDomain = (token, name) => {
@@ -249,4 +257,31 @@ export const addDomainsWorkspace = (token, workspaceId, domainIds) => {
       },
     }
   );
+};
+
+export const getLinksWorkspaces = (
+  token,
+  workspaceId,
+  page,
+  sort = 'created_at',
+  direction = 'DESC',
+  domainIds = [],
+  userIds = []
+) => {
+  return api.get(
+    `workspaces/${workspaceId}/links?page=${page}&perPage=10&sort=${sort}&direction=${direction}&domainIds=${domainIds}&userIds=${userIds}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const getMembersWorkspaces = (token, workspaceId, page) => {
+  return api.get(`workspaces/${workspaceId}/members?page=${page}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };

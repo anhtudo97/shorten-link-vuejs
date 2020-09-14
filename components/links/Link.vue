@@ -197,7 +197,7 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   created() {
-    if (localStorage.token) {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
   },
