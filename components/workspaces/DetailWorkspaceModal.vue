@@ -156,44 +156,6 @@ export default {
       default: () => {},
     },
   },
-  async fetch() {
-    try {
-      const resDomains = await getDomainsWorkspace(
-        this.token,
-        this.workspace.id,
-        this.page
-      );
-      const resLinks = await getLinksWorkspaces(
-        this.token,
-        this.workspace.id,
-        this.page
-      );
-      const resMembers = await getMembersWorkspaces(
-        this.token,
-        this.workspace.id,
-        this.page
-      );
-
-      const statusDomains = resDomains.data.status;
-      const statusLinks = resLinks.data.status;
-      const statusMembers = resMembers.data.status;
-
-      if (statusDomains === 200) {
-        const { total } = resDomains.data.data;
-        this.totalDomains = total;
-      }
-      if (statusLinks === 200) {
-        const { total } = resLinks.data.data;
-        this.totalLinks = total;
-      }
-      if (statusMembers === 200) {
-        const { total } = resMembers.data.data;
-        this.totalMembers = total;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  },
   data: () => ({
     openModalMemberModal: false,
     openAddLinkDomainModal: false,
@@ -213,8 +175,13 @@ export default {
       return format(new Date(this.workspace.createdAt), 'MMMM dd, yyyy');
     },
   },
+  mounted() {
+    this.getMembers();
+    this.getLinks();
+    this.getDomains();
+  },
   created() {
-    if (localStorage.token) {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
   },
@@ -231,15 +198,66 @@ export default {
     },
     closeModalMembers() {
       this.openModalMemberModal = false;
+      this.getMembers();
     },
     closeRemoveModal() {
       this.isRemoveModal = false;
     },
     closeModalAddLinksDomain() {
       this.openAddLinkDomainModal = false;
+      this.getDomains()
     },
     closeEditWorkspace() {
       this.openEditWorkspace = false;
+    },
+    async getMembers() {
+      try {
+        const resMembers = await getMembersWorkspaces(
+          this.token,
+          this.workspace.id,
+          this.page
+        );
+        const statusMembers = resMembers.data.status;
+        if (statusMembers === 200) {
+          const { total } = resMembers.data.data;
+          this.totalMembers = total;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getDomains() {
+      try {
+        const resDomains = await getDomainsWorkspace(
+          this.token,
+          this.workspace.id,
+          this.page
+        );
+        const statusDomains = resDomains.data.status;
+
+        if (statusDomains === 200) {
+          const { total } = resDomains.data.data;
+          this.totalDomains = total;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getLinks() {
+      try {
+        const resLinks = await getLinksWorkspaces(
+          this.token,
+          this.workspace.id,
+          this.page
+        );
+        const statusLinks = resLinks.data.status;
+        if (statusLinks === 200) {
+          const { total } = resLinks.data.data;
+          this.totalLinks = total;
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
     async removeWorkspace() {
       this.showAlert = false;

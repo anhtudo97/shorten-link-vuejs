@@ -27,7 +27,7 @@
         class="text-md-center text-right workspace__content"
       >
         <div class="date">{{ createdDate }}</div>
-        <div class="modify d-flex align-center justify-end justify-md-center">
+        <!-- <div class="modify d-flex align-center justify-end justify-md-center">
           <img
             src="@/assets/svg/addlink.svg"
             alt="add link"
@@ -46,7 +46,7 @@
             class="ml-4 opacity-06"
             @click.stop="isRemoveModal = true"
           />
-        </div>
+        </div> -->
       </v-col>
 
       <v-dialog
@@ -232,16 +232,16 @@ export default {
       }
     }
   }
-  &:hover {
-    .workspace__content {
-      .date {
-        opacity: 0;
-      }
-      .modify {
-        opacity: 1;
-      }
-    }
-  }
+  // &:hover {
+  //   .workspace__content {
+  //     .date {
+  //       opacity: 0;
+  //     }
+  //     .modify {
+  //       opacity: 1;
+  //     }
+  //   }
+  // }
   .dialog-detail-600::v-deep .v-dialog {
     display: block;
     @media screen and (min-width: 600px) {

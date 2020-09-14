@@ -285,3 +285,23 @@ export const getMembersWorkspaces = (token, workspaceId, page) => {
     },
   });
 };
+
+export const getMember = (token, search) => {
+  return api.get(`users?email=${search}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const inviteMembers = (token, workspaceId, userIds) => {
+  return api.post(
+    `workspaces/${workspaceId}/invite`,
+    { userIds },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};

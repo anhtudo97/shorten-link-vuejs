@@ -60,7 +60,7 @@
       </template>
     </v-snackbar>
     <v-snackbar v-model="showAlert400" top color="error">
-      Domain is existed
+      Workspace is existed
       <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="showAlert = false">Close</v-btn>
       </template>
