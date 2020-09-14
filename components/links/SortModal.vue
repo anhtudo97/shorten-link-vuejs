@@ -1,9 +1,30 @@
 <template>
-  <v-list class="modal-sort py-5">
-    <div>Sort By</div>
-    <div @click="updateSortBy('lastest')">The lastest</div>
-    <div @click="updateSortBy('slashTagAZ')">Slash tag A - Z</div>
-    <div @click="updateSortBy('slashTagZA')">Slash tag Z - A</div>
+  <v-list class="modal-sort py-5 px-5 d-flex flex-column">
+    <div class="d-flex justify-space-between">
+      <div></div>
+      <div class="dialog-icon" @click="$emit('closeModal')">
+        <img class="ma-2" src="@/assets/svg/close.svg" alt="close" />
+      </div>
+    </div>
+    <div class="modal-sort__title">Sort By</div>
+    <button
+      class="button-normal modal-sort__button mt-3"
+      @click="updateSortBy('lastest')"
+    >
+      The lastest
+    </button>
+    <button
+      class="button-normal modal-sort__button mt-3"
+      @click="updateSortBy('slashTagAZ')"
+    >
+      Slash tag A - Z
+    </button>
+    <button
+      class="button-normal modal-sort__button mt-3"
+      @click="updateSortBy('slashTagZA')"
+    >
+      Slash tag Z - A
+    </button>
   </v-list>
 </template>
 
@@ -33,4 +54,26 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.modal-sort {
+  font-family: Poppins, sans-serif;
+  &__title {
+    font-size: 22px;
+    font-weight: 600;
+  }
+  &__button {
+    font-weight: 500;
+    padding: 5px 4vh;
+  }
+  .dialog-icon {
+    cursor: pointer;
+    height: 32px;
+    background-color: #f9f9fa;
+    border-radius: 50%;
+    img {
+      object-fit: cover;
+      width: 16px;
+      height: auto;
+    }
+  }
+}
 </style>

@@ -81,30 +81,44 @@
                 :disabled="loading"
                 class="modal-mask__button"
                 @click="callAction"
-              >{{ edit ? 'Update Link' : 'Create link' }}</div>
+              >
+                {{ edit ? 'Update Link' : 'Create link' }}
+              </div>
             </div>
           </div>
           <div v-else class="d-flex justify-center">
-            <v-progress-circular indeterminate color="primary"></v-progress-circular>
+            <v-progress-circular
+              indeterminate
+              color="primary"
+            ></v-progress-circular>
           </div>
         </div>
       </transition>
     </div>
     <client-only>
-      <infinite-loading spinner="waveDots" @infinite="infiniteScroll"></infinite-loading>
+      <infinite-loading
+        spinner="waveDots"
+        @infinite="infiniteScroll"
+      ></infinite-loading>
     </client-only>
     <v-snackbar v-model="showAlert" top color="success">
       {{ edit ? 'Update link successfully' : 'Create new link successfully' }}
-      <template
-        v-slot:action="{ attrs }"
-      >
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">Close</v-btn>
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="showAlert = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
     <v-snackbar v-model="showAlert403" top color="error">
-      Slash tag is exist
+      {{
+        domainCheck
+          ? 'The workspace has no permission this domain'
+          : 'Slash tag is exist'
+      }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">Close</v-btn>
+        <v-btn color="white" text v-bind="attrs" @click="showAlert = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
   </v-list>
@@ -159,6 +173,7 @@ export default {
     showAlert403: false,
     valid: false,
     checkSlash: false,
+    domainCheck: false,
     form: {
       destinationUrl: '',
       title: '',
@@ -206,8 +221,8 @@ export default {
         'i'
       ); // fragment locator
       this.valid = !!pattern.test(str);
-      this.loading = true;
       if (this.valid) {
+        this.loading = true;
         await Promise.all([this.getTitle(str), this.getSlashTag(str)]);
         this.loading = false;
       }
@@ -231,7 +246,6 @@ export default {
       const { data } = resSlashTag.data;
       this.checkSlash = data.exists;
     },
-
     async infiniteScroll($state) {
       const { token, pageDomains, pageWorkspaces } = this;
       const [resDomains, domainsError] = await handle(
@@ -284,28 +298,35 @@ export default {
       if (slashTagError) throw new Error('Could not fetch slashTag details');
       const { data } = resSlashTag.data;
       if (!data.exists) {
-        const [resLink, linkError] = await handle(
-          createNewLink(
+        try {
+          const resLink = await createNewLink(
             this.token,
             destinationUrl,
             domain,
             slashTag,
             title,
             workspace
-          )
-        );
-        if (linkError) throw new Error('Could not fetch user link');
-        const { status } = resLink.data;
-        if (status === 201) {
-          this.showAlert = true;
+          );
+          const { status } = resLink.data;
+          console.log(status);
+          if (status === 201) {
+            this.showAlert = true;
+            setTimeout(() => {
+              this.$emit('closeModalAddNewLink');
+              this.reload();
+              this.loading = false;
+            }, 2000);
+          }
+        } catch (error) {
+          this.showAlert403 = true;
+          this.domainCheck = true;
           setTimeout(() => {
-            this.$emit('closeModalAddNewLink');
-            this.reload();
             this.loading = false;
           }, 2000);
         }
       } else {
         this.showAlert403 = true;
+        this.domainCheck = false;
         setTimeout(() => {
           this.loading = false;
         }, 2000);

@@ -4,25 +4,42 @@
       <v-col cols="12" sm="10" md="8" class="mx-auto py-3">
         <v-row class="align-center">
           <v-col cols="7" sm="8" lg="9">
-            <div class="d-flex align-center">
-              <div class="menu-text pr-4">{{ total }} Link(s)</div>
-              <div v-click-outside="onClickOutsideStandard" class="menu-selection pr-4 d-flex">
-                <div class="d-flex align-center" @click="models.sortModal = !models.sortModal">
+            <div class="d-flex align-center flex-wrap">
+              <div class="menu-text my-3 pr-4">{{ total }} Link(s)</div>
+              <div class="menu-selection my-3 mr-4 d-flex">
+                <div
+                  class="d-flex align-center"
+                  @click="models.sortModal = true"
+                >
                   <div class="selection-text pr-2">Sort by</div>
+                  <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
+                </div>
+              </div>
+              <div class="menu-selection my-3 d-flex">
+                <div
+                  class="d-flex align-center"
+                  @click="models.filterModal = true"
+                >
+                  <div class="selection-text pr-2">Filter by</div>
                   <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
               </div>
             </div>
           </v-col>
           <v-col cols="5" sm="4" lg="3" class="text-right">
-            <button class="button-normal add-new-link" @click.stop="models.modal = true">New Link</button>
+            <button
+              class="button-normal add-new-link"
+              @click.stop="models.modal = true"
+            >
+              New Link
+            </button>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
-    <div class="link__management">
-      <transition-group name="list" tag="ul" class="pa-0">
-        <li v-for="link in tempLinks" :key="link.id">
+    <div v-if="links.length !== 0" class="link__management">
+      <transition-group name="slide-fade" mode="out-in" tag="ul" class="pa-0">
+        <li v-for="link in links" :key="link.id">
           <Link
             :id="link.id"
             :link="link.destination"
@@ -32,6 +49,20 @@
           />
         </li>
       </transition-group>
+      <v-row justify="center">
+        <v-col cols="8">
+          <v-container class="max-width">
+            <v-pagination
+              v-model="page"
+              class="my-4"
+              :length="totalPage"
+            ></v-pagination>
+          </v-container>
+        </v-col>
+      </v-row>
+    </div>
+    <div v-else class="d-flex justify-center">
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </div>
     <v-dialog
       v-model="models.modal"
@@ -42,11 +73,17 @@
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
     <v-dialog v-model="models.sortModal" max-width="400">
-      <SortModal @updateSort="updateSort" />
+      <SortModal
+        @updateSort="updateSort"
+        @closeModal="models.sortModal = false"
+      />
     </v-dialog>
-    <client-only>
-      <infinite-loading spinner="spiral" @infinite="infiniteScroll"></infinite-loading>
-    </client-only>
+    <v-dialog v-model="models.filterModal" max-width="700">
+      <FilterModal
+        @updateFilter="updateFilter"
+        @closeModal="models.filterModal = false"
+      />
+    </v-dialog>
   </div>
 </template>
 
@@ -55,6 +92,7 @@ import { mapGetters, mapMutations } from 'vuex';
 import Link from '@/components/links/Link';
 import CreateNewLink from '@/components/links/CreateNewLink';
 import SortModal from '@/components/links/SortModal';
+import FilterModal from '@/components/links/FilterModal';
 
 import { getLinks } from '@/services/api';
 import { handle } from '@/utils/promise';
@@ -64,6 +102,7 @@ export default {
     Link,
     CreateNewLink,
     SortModal,
+    FilterModal,
   },
   data: () => ({
     keySort: 'Sort By',
@@ -78,17 +117,37 @@ export default {
     page: 1,
     token: '',
     total: 0,
+    totalPage: 0,
+    domainSelected: [],
+    workspaceSelected: [],
   }),
   computed: {
     ...mapGetters({ sort: 'links/getSort', direction: 'links/getDirection' }),
-    tempLinks() {
-      return this.links.map((x) => x);
+  },
+  watch: {
+    page(val) {
+      this.getListLinks(
+        val,
+        this.sort,
+        this.direction,
+        this.domainSelected,
+        this.workspaceSelected
+      );
     },
   },
   created() {
     if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
+  },
+  mounted() {
+    this.getListLinks(
+      1,
+      this.sort,
+      this.direction,
+      this.domainSelected,
+      this.workspaceSelected
+    );
   },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);
@@ -97,54 +156,66 @@ export default {
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize);
   },
-  mounted() {
-    console.log(this.sort, this.direction);
-  },
   methods: {
     ...mapMutations({
       setSort: 'links/setSort',
       setDirection: 'links/setDirection',
     }),
-    reload() {
-      window.location.reload();
-    },
-
-    async infiniteScroll($state) {
-      const { token, page, sort, direction } = this;
+    async getListLinks(
+      page,
+      sort,
+      direction,
+      domainSelected,
+      workspaceSelected
+    ) {
+      const { token } = this;
       const [resLink, linkError] = await handle(
-        getLinks(token, page, sort, direction)
+        getLinks(
+          token,
+          page,
+          sort,
+          direction,
+          domainSelected,
+          workspaceSelected
+        )
       );
-      if (linkError) throw new Error('Could not fetch workspace link');
-
+      if (linkError) throw new Error('Could not fetch link');
       const { status, data } = resLink.data;
       if (status === 200) {
-        this.page += 1;
-        const { links, total } = data;
+        const { links, total, totalPage } = data;
         this.total = total;
+        this.totalPage = totalPage;
         if (links.length) {
-          this.links.push(...links);
-          $state.loaded();
-        } else {
-          $state.complete();
+          this.links = links;
         }
       }
     },
     updateSort(sort, direction) {
       this.setSort(sort);
       this.setDirection(direction);
-      console.log(this.sort, this.direction);
+      this.getListLinks(
+        this.page,
+        this.sort,
+        this.direction,
+        this.domainSelected,
+        this.workspaceSelected
+      );
       this.$forceUpdate();
     },
-    changeConditions(value) {
-      this.keySort = value;
-      this.models.base = false;
-      this.linksSortBy(this.keySort);
-    },
-    onClickOutsideStandard() {
-      this.models.base = false;
+    updateFilter(domainSelected, workspaceSelected) {
+      this.domainSelected = domainSelected;
+      this.workspaceSelected = workspaceSelected;
+      this.getListLinks(
+        this.page,
+        this.sort,
+        this.direction,
+        this.domainSelected,
+        this.workspaceSelected
+      );
     },
     closeModalAddNewLink() {
       this.models.modal = false;
+
       this.$forceUpdate();
     },
     handleResize() {
