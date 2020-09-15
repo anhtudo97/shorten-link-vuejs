@@ -8,6 +8,7 @@
 import Home from '@/components/home/Home';
 export default {
   layout: 'home',
+  name: 'Home',
   components: {
     Home,
   },
