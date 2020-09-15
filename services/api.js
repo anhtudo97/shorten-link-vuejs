@@ -336,3 +336,11 @@ export const answerInvitations = (token, invitationId, status = 'ACCEPTED') => {
     }
   );
 };
+
+export const removeMemberWorkspace = (token, workspaceId, userId) => {
+  return api.delete(`workspaces/${workspaceId}/members/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

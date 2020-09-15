@@ -23,7 +23,7 @@
       <button
         :disabled="loading"
         class="button-normal add-button"
-        @click="addMoreDomains"
+        @click="addDomainsToWorkspace"
       >
         Add more
       </button>
@@ -32,8 +32,8 @@
     <div class="border-b">
       <transition-group
         v-if="domain_joined.length > 0"
-        name="fade"
-        mode="in-out"
+        name="slide-fade"
+        mode="out-in"
       >
         <div
           v-for="(item, index) in domain_joined"
@@ -45,7 +45,7 @@
           <button
             :disabled="loading"
             class="button-warning member-action"
-            @click="removeFromList(item.id)"
+            @click="removeDomainsToWorkspace(item.id)"
           >
             Remove
           </button>
@@ -57,8 +57,20 @@
       >
         <div class="member-name">Dont have any domains</div>
       </div>
+      <div
+        v-if="totalJoined > 1"
+        class="dialog-add-links-domains__domain d-flex justify-center"
+      >
+        <button
+          :disabled="loading"
+          class="button-normal member-action"
+          @click="addMoreDomainsWorkspace"
+        >
+          Add More
+        </button>
+      </div>
     </div>
-    <transition-group name="fade" mode="in-out">
+    <transition-group name="slide-fade" mode="out-in">
       <div
         v-for="(item, index) in unjoined"
         :key="`Domain__${index}`"
@@ -72,6 +84,18 @@
         ></v-checkbox>
       </div>
     </transition-group>
+    <div
+      v-if="totalDomains > 1"
+      class="dialog-add-links-domains__domain d-flex justify-center"
+    >
+      <button
+        :disabled="loading"
+        class="button-normal member-action"
+        @click="addMoreDomains"
+      >
+        Add More
+      </button>
+    </div>
     <v-snackbar v-model="showAlert400" top>
       Delete domain is successfully
       <template v-slot:action="{ attrs }">
@@ -80,13 +104,6 @@
         </v-btn>
       </template>
     </v-snackbar>
-
-    <client-only>
-      <infinite-loading
-        spinner="spiral"
-        @infinite="infiniteScroll"
-      ></infinite-loading>
-    </client-only>
   </v-list>
 </template>
 
@@ -113,6 +130,8 @@ export default {
     domainSelected: [],
     loading: false,
     showAlert400: false,
+    totalJoined: 1,
+    totalDomains: 1,
   }),
   computed: {
     unjoined() {
@@ -127,45 +146,58 @@ export default {
       this.token = localStorage.token;
     }
   },
+  async mounted() {
+    await this.getDomains();
+    await this.getDomainsWorkspace();
+  },
   methods: {
-    async infiniteScroll($state) {
-      const { token, workspace, pageDomain, pageDomainWorkspace } = this;
+    async getDomains() {
+      const { token, pageDomain } = this;
       try {
-        const resDomainWorkspace = await getDomainsWorkspace(
-          token,
-          workspace.id,
-          pageDomainWorkspace
-        );
         const resDomain = await getDomains(token, pageDomain);
-
         const statusDomain = resDomain.data.status;
-        const statusDomainWorkspace = resDomainWorkspace.data.status;
 
         if (statusDomain === 200) {
-          this.pageDomain += 1;
           const { domains } = resDomain.data.data;
-          if (domains.length) {
-            this.domains.push(...domains);
-            $state.loaded();
-          } else {
-            $state.complete();
-          }
-        }
-        if (statusDomainWorkspace === 200) {
-          this.pageDomainWorkspace += 1;
-          const { domains } = resDomainWorkspace.data.data;
-          if (domains.length) {
-            this.domain_joined.push(...domains);
-            $state.loaded();
-          } else {
-            $state.complete();
-          }
+          this.domains = domains;
+          this.totalDomains = resDomain.data.totalDomains;
         }
       } catch (error) {
         console.log(error);
       }
     },
     async addMoreDomains() {
+      this.pageDomain++;
+      await this.getDomains();
+    },
+    async getDomainsWorkspace() {
+      const { token, workspace, pageDomainWorkspace } = this;
+      try {
+        const resDomainWorkspace = await getDomainsWorkspace(
+          token,
+          workspace.id,
+          pageDomainWorkspace
+        );
+        const statusDomainWorkspace = resDomainWorkspace.data.status;
+
+        if (statusDomainWorkspace === 200) {
+          const { domains } = resDomainWorkspace.data.data;
+          this.domain_joined = domains;
+          this.totalJoined = resDomainWorkspace.data.totalJoined;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async addMoreDomainsWorkspace() {
+      this.pageDomainWorkspace++;
+      await this.getDomainsWorkspace();
+    },
+    async addDomainsToWorkspace() {
+      await this.addDomains();
+      await this.getDomainsWorkspace();
+    },
+    async addDomains() {
       this.loading = true;
       try {
         const res = await addDomainsWorkspace(
@@ -177,14 +209,19 @@ export default {
         if (status === 200) {
           this.showAlert = true;
           setTimeout(() => {
-            this.$emit('closeModalAddLinksDomain');
+            this.domainSelected = [];
+            this.$emit('updateDomains');
             this.loading = false;
-          }, 2000);
+          }, 500);
         }
       } catch (error) {
         this.domainSelected = [];
         console.log(error);
       }
+    },
+    async removeDomainsToWorkspace(id) {
+      await this.removeFromList(id);
+      await this.getDomainsWorkspace();
     },
     async removeFromList(id) {
       this.loading = true;
@@ -198,12 +235,14 @@ export default {
         if (status === 204) {
           this.showAlert400 = true;
           setTimeout(() => {
-            this.$emit('closeModalAddLinksDomain');
+            this.$emit('updateDomains');
             this.loading = false;
             this.showAlert400 = false;
-          }, 1000);
+          }, 500);
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };

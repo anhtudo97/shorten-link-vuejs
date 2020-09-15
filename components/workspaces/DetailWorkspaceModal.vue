@@ -87,6 +87,8 @@
     >
       <ManagementMemberModal
         :workspace="workspace"
+        :members="members"
+        @updateMember="updateMember"
         @closeModalMembers="closeModalMembers"
       />
     </v-dialog>
@@ -105,6 +107,7 @@
     >
       <AddLinksDomainsModal
         :workspace="workspace"
+        @updateDomains="updateDomains"
         @closeModalAddLinksDomain="closeModalAddLinksDomain"
       />
     </v-dialog>
@@ -169,6 +172,7 @@ export default {
     totalDomains: 0,
     totalLinks: 0,
     totalMembers: 0,
+    members: [],
   }),
   computed: {
     createdDate() {
@@ -194,6 +198,12 @@ export default {
     reload() {
       window.location.reload();
     },
+    updateMember() {
+      this.getMembers();
+    },
+    updateDomains() {
+      this.getDomains();
+    },
     closeModalMembers() {
       this.openModalMemberModal = false;
       this.getMembers();
@@ -217,8 +227,9 @@ export default {
         );
         const statusMembers = resMembers.data.status;
         if (statusMembers === 200) {
-          const { total } = resMembers.data.data;
+          const { total, members } = resMembers.data.data;
           this.totalMembers = total;
+          this.members = members;
         }
       } catch (error) {
         console.log(error);

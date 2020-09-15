@@ -61,8 +61,9 @@
             {{ item.status }}
           </div>
           <button
+            :disabled="loading"
             class="button-warning member-action"
-            @click="removeFromList(item.id)"
+            @click="removeMembers(item.id)"
           >
             Remove
           </button>
@@ -119,7 +120,12 @@
 
 <script>
 import validations from '@/utils/validations';
-import { getMembersWorkspaces, getMember, inviteMembers } from '@/services/api';
+import {
+  getMembersWorkspaces,
+  getMember,
+  inviteMembers,
+  removeMemberWorkspace,
+} from '@/services/api';
 import DetailUserModal from '@/components/user/DetailUserModal';
 export default {
   components: {
@@ -166,9 +172,6 @@ export default {
       this.page++;
       await this.getMembersJoined();
     },
-    reload() {
-      this.$forceUpdate();
-    },
     closeUserDetailModal() {
       this.openUserDetailModal = false;
     },
@@ -183,9 +186,7 @@ export default {
         if (status === 200) {
           const { members, totalPage } = data;
           this.totalPage = totalPage;
-          if (members.length) {
-            this.members.push(...members);
-          }
+          this.members = members;
         }
       } catch (error) {
         console.log(error);
@@ -215,7 +216,8 @@ export default {
       }
     },
     async inviteMembers() {
-      await Promise.all([this.inviteMoreMembers(), this.getMembersJoined()]);
+      await this.inviteMoreMembers();
+      await this.getMembersJoined();
     },
     async inviteMoreMembers() {
       this.loading = true;
@@ -227,7 +229,7 @@ export default {
           this.showAlert = false;
           this.users = [];
           this.search = '';
-          this.$emit('closeModalMembers');
+          this.$emit('updateMember');
         }, 2000);
       } catch (error) {
         console.log(error);
@@ -237,6 +239,25 @@ export default {
           this.showAlert400 = false;
           this.users = [];
           this.search = '';
+        }, 2000);
+      }
+    },
+    async removeMembers(id) {
+      await this.removeMemberWorkspace(id);
+      await this.getMembersJoined();
+    },
+    async removeMemberWorkspace(id) {
+      this.loading = true;
+      try {
+        await removeMemberWorkspace(this.token, this.workspace.id, id);
+        setTimeout(() => {
+          this.loading = false;
+          this.$emit('updateMember');
+        }, 2000);
+      } catch (error) {
+        console.log(error);
+        setTimeout(() => {
+          this.loading = false;
         }, 2000);
       }
     },
