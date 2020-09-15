@@ -12,5 +12,11 @@ export default {
   components: {
     Link,
   },
+  mounted() {
+    console.log(this.$route.params.id);
+  },
+  methods: {},
 };
 </script>
+
+<style lang="scss" scoped></style>

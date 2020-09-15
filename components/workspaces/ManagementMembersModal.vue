@@ -1,10 +1,8 @@
 <template>
   <v-list class="dialog-member-workspace">
-    <div
-      class="d-flex justify-space-between dialog-member-workspace__title border-b"
-    >
+    <div class="d-flex justify-space-between dialog-member-workspace__title border-b">
       <div class="d-flex align-center flex-wrap">
-        <div class="dialog-title mr-4">{{ workspace.name }}</div>
+        <div class="dialog-title mr-4">{{workspace.name}}</div>
       </div>
       <div class="d-flex justify-space-between dialog-icon-block">
         <div></div>
@@ -17,54 +15,17 @@
       class="dialog-member-workspace__header d-flex py-3 justify-space-between border-b align-center"
     >
       <div class="header-name">Name</div>
-      <button
-        :disabled="loading"
-        class="button-normal dialog-button font-weight-medium px-4"
-        @click.stop="inviteMembers"
-      >
-        Send the invitations
-      </button>
-    </div>
-    <div
-      class="d-flex flex-wrap justify-space-between py-3 dialog-member-workspace__search"
-    >
-      <v-text-field
-        v-model="search"
-        :disabled="loading"
-        :rules="[required('email'), emailFormat()]"
-        label="Searching member ..."
-        class="search-input mr-0 mr-sm-9"
-        hide-details="auto"
-        outlined
-        dense
-      ></v-text-field>
-      <button
-        :disabled="loading"
-        class="button-normal search-button font-weight-medium px-10"
-        @click.stop="searchMember"
-      >
-        Search
-      </button>
+      <button class="button-normal dialog-button font-weight-medium px-4">Send the invitations</button>
     </div>
     <div class="border-b">
       <transition-group name="fade" mode="in-out">
         <div
-          v-for="item in members"
+          v-for="item in joined"
           :key="item.id"
           class="d-flex justify-space-between dialog-member-workspace__member align-center"
         >
-          <div class="member-name" @click.stop="openUserDetailModal = true">
-            {{ item.fullName }}
-          </div>
-          <div class="member-name" @click.stop="openUserDetailModal = true">
-            {{ item.status }}
-          </div>
-          <button
-            class="button-warning member-action"
-            @click="removeFromList(item.id)"
-          >
-            Remove
-          </button>
+          <div class="member-name" @click.stop="openUserDetailModal = true">{{item.name}}</div>
+          <button class="button-warning member-action" @click="removeFromList(item.id)">Remove</button>
         </div>
       </transition-group>
     </div>
@@ -74,22 +35,9 @@
         :key="item.id"
         class="d-flex justify-space-between dialog-member-workspace__unmember align-center"
       >
-        <v-checkbox
-          v-model="selected"
-          dense
-          :disabled="loading"
-          class="checkbox-member"
-          :label="item.name"
-          :value="item.id"
-        ></v-checkbox>
+        <v-checkbox v-model="selected" class="checkbox-member" :label="item.name"></v-checkbox>
       </div>
     </transition-group>
-    <client-only>
-      <infinite-loading
-        spinner="waveDots"
-        @infinite="infiniteScroll"
-      ></infinite-loading>
-    </client-only>
     <v-dialog
       v-model="openUserDetailModal"
       :overlay="false"
@@ -98,28 +46,10 @@
     >
       <DetailUserModal @closeUserDetailModal="closeUserDetailModal" />
     </v-dialog>
-    <v-snackbar v-model="showAlert" top color="success">
-      Send the invitations is successful
-      <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false"
-          >Close</v-btn
-        >
-      </template>
-    </v-snackbar>
-    <v-snackbar v-model="showAlert400" top color="error">
-      Email is not exited
-      <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false"
-          >Close</v-btn
-        >
-      </template>
-    </v-snackbar>
   </v-list>
 </template>
 
 <script>
-import validations from '@/utils/validations';
-import { getMembersWorkspaces, getMember, inviteMembers } from '@/services/api';
 import DetailUserModal from '@/components/user/DetailUserModal';
 export default {
   components: {
@@ -132,16 +62,8 @@ export default {
     },
   },
   data: () => ({
-    ...validations,
-    search: '',
     openUserDetailModal: false,
-    showAlert400: false,
-    showAlert: false,
-    loading: false,
     selected: [],
-    token: '',
-    page: 1,
-    members: [],
     joined: [
       {
         id: 1,
@@ -152,78 +74,36 @@ export default {
         name: 'anhtu',
       },
     ],
-    users: [],
+    users: [
+      {
+        id: 1,
+        name: 'tuanh',
+      },
+      {
+        id: 2,
+        name: 'anhtu',
+      },
+      {
+        id: 3,
+        name: 'Lnacgh',
+      },
+      {
+        id: 4,
+        name: 'Pcbwiqug',
+      },
+    ],
   }),
   computed: {
     unjoined() {
-      return this.users;
+      const names = [...this.joined].map((x) => x.name);
+      return [...this.users].filter((x) => {
+        if (!names.includes(x.name)) return x;
+      });
     },
-  },
-  created() {
-    if (typeof localStorage !== 'undefined' && localStorage.token) {
-      this.token = localStorage.token;
-    }
   },
   methods: {
     closeUserDetailModal() {
       this.openUserDetailModal = false;
-    },
-    async infiniteScroll($state) {
-      try {
-        const res = await getMembersWorkspaces(
-          this.token,
-          this.workspace.id,
-          this.page
-        );
-        const { status, data } = res.data;
-        if (status === 200) {
-          this.page += 1;
-          const { members } = data;
-          if (members.length) {
-            this.members.push(...members);
-            $state.loaded();
-          } else {
-            $state.complete();
-          }
-        }
-      } catch (error) {}
-    },
-    async searchMember() {
-      this.loading = true;
-      try {
-        const res = await getMember(this.token, this.search);
-        const { data } = res.data;
-        const { users } = data;
-        setTimeout(() => {
-          this.users.push({
-            id: users[0].id,
-            name: users[0].fullName,
-            email: users[0].email,
-          });
-          this.loading = false;
-        }, 2000);
-      } catch (error) {
-        console.log(error);
-        this.showAlert400 = true;
-        setTimeout(() => {
-          this.showAlert400 = false;
-          this.loading = false;
-        }, 2000);
-      }
-    },
-    async inviteMembers() {
-      this.loading = true;
-      try {
-        await inviteMembers(this.token, this.workspace.id, this.selected);
-        this.showAlert = true;
-        setTimeout(() => {
-          this.loading = false;
-          this.showAlert = false;
-          this.$emit('closeModalMembers');
-        }, 2000);
-      } catch (error) {
-        console.log(error);
-      }
     },
   },
 };
@@ -254,18 +134,12 @@ export default {
     }
   }
   &__header {
-    padding: 1vh 2rem;
+    padding: 1vh 4vh;
     .header-name {
       color: #909398;
       font-weight: 500;
     }
     .dialog-button {
-      padding: 1px 20px;
-    }
-  }
-  &__search {
-    padding: 1vh 4vh;
-    .search-button {
       padding: 1px 20px;
     }
   }
@@ -311,17 +185,6 @@ export default {
         padding: 1px 20px;
       }
     }
-    &__search {
-      padding: 1vh 3.5vh;
-      .search-input::v-deep label,
-      .search-input::v-deep input {
-        font-size: 15px;
-      }
-      .search-button {
-        font-size: 15px;
-        padding: 1px 20px;
-      }
-    }
     &__member {
       margin: 2vh 0;
       padding: 1vh 3.5vh;
@@ -361,17 +224,6 @@ export default {
         padding: 1px 20px;
       }
     }
-    &__search {
-      padding: 1vh 3vh;
-      .search-input::v-deep label,
-      .search-input::v-deep input {
-        font-size: 14px;
-      }
-      .search-button {
-        font-size: 14px;
-        padding: 1px 20px;
-      }
-    }
     &__member {
       .member-name {
         font-size: 14px;
@@ -406,19 +258,6 @@ export default {
       .dialog-button {
         font-size: 13px;
         padding: 1px 20px;
-      }
-    }
-    &__search {
-      padding: 1vh 3vh;
-      .search-input::v-deep label,
-      .search-input::v-deep input {
-        font-size: 13px;
-      }
-      .search-button {
-        margin-top: 7px;
-        width: 100%;
-        font-size: 13px;
-        padding: 8px 20px;
       }
     }
     &__member {

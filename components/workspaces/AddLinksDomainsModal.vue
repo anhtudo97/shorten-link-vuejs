@@ -121,12 +121,20 @@ export default {
       });
     },
   },
+  watch: {
+    domainSelected(value) {
+      console.log(value);
+    },
+  },
   created() {
     if (localStorage.token) {
       this.token = localStorage.token;
     }
   },
   methods: {
+    reload() {
+      window.location.reload();
+    },
     async infiniteScroll($state) {
       const { token, workspace, pageDomain, pageDomainWorkspace } = this;
       try {
@@ -177,9 +185,11 @@ export default {
           this.showAlert = true;
           setTimeout(() => {
             this.$emit('closeModalAddLinksDomain');
+            this.reload();
             this.loading = false;
           }, 2000);
         }
+        console.log(res);
       } catch (error) {
         this.domainSelected = [];
         console.log(error);

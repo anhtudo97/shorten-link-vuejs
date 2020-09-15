@@ -25,14 +25,14 @@
               <v-col cols="12" md="6" class="py-0">
                 <div class="modal-mask__sub-title">Branded domain</div>
                 <v-select
-                  v-model="form.domain.id"
+                  v-model="form.domain"
                   class="dialog-domain"
                   :items="tempDomains"
                   item-text="name"
                   item-value="id"
                   dense
                   outlined
-                  :label="form.domain.name"
+                  :label="form.domain"
                   :disabled="loading"
                 ></v-select>
               </v-col>
@@ -51,11 +51,11 @@
               <v-col cols="12" md="6" class="py-0">
                 <div class="modal-mask__sub-title">Workspace belong to</div>
                 <v-select
-                  v-model="form.workspace.id"
+                  v-model="form.workspace"
                   class="dialog-workspace"
                   :items="tempWorkspaces"
                   item-text="name"
-                  :label="form.workspace.name"
+                  label="Workspace"
                   item-value="id"
                   dense
                   outlined
@@ -178,11 +178,8 @@ export default {
       destinationUrl: '',
       title: '',
       slashTag: '',
-      domain: {
-        name: 'Domain',
-        id: '',
-      },
-      workspace: { name: 'Workspace', id: '' },
+      domain: 'Domain',
+      workspace: '',
       domainId: '',
     },
   }),
@@ -269,8 +266,6 @@ export default {
         const { domains } = resDomains.data.data;
         if (domains.length) {
           this.domains.push(...domains);
-          this.form.domain.name = this.domains[0].name;
-          this.form.domain.id = this.domains[0].id;
           $state.loaded();
         } else {
           $state.complete();
@@ -281,8 +276,6 @@ export default {
         const { workspaces } = resWorkspaces.data.data;
         if (workspaces.length) {
           this.workspaces.push(...workspaces);
-          this.form.workspace.name = this.workspaces[0].name;
-          this.form.workspace.id = this.workspaces[0].id;
           $state.loaded();
         } else {
           $state.complete();
@@ -309,12 +302,13 @@ export default {
           const resLink = await createNewLink(
             this.token,
             destinationUrl,
-            domain.id,
+            domain,
             slashTag,
             title,
-            workspace.id
+            workspace
           );
           const { status } = resLink.data;
+          console.log(status);
           if (status === 201) {
             this.showAlert = true;
             setTimeout(() => {
