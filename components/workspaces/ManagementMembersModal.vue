@@ -26,7 +26,7 @@
       </button>
     </div>
     <div
-      class="d-flex flex-wrap justify-space-between py-3 dialog-member-workspace__search"
+      class="d-flex flex-wrap justify-space-between py-3 dialog-member-workspace__search border-b"
     >
       <v-text-field
         v-model="search"
@@ -37,6 +37,7 @@
         hide-details="auto"
         outlined
         dense
+        @keyup.enter="searchMember"
       ></v-text-field>
       <button
         :disabled="loading"
@@ -49,7 +50,7 @@
     <div class="border-b">
       <transition-group name="fade" mode="in-out">
         <div
-          v-for="item in members"
+          v-for="item in joined"
           :key="item.id"
           class="d-flex justify-space-between dialog-member-workspace__member align-center"
         >
@@ -67,6 +68,11 @@
           </button>
         </div>
       </transition-group>
+      <div v-if="totalPage > 1" class="dialog-member-workspace__member">
+        <button class="button-normal member-action" @click="addMore">
+          Add more
+        </button>
+      </div>
     </div>
     <transition-group name="fade" mode="in-out">
       <div
@@ -84,12 +90,6 @@
         ></v-checkbox>
       </div>
     </transition-group>
-    <client-only>
-      <infinite-loading
-        spinner="waveDots"
-        @infinite="infiniteScroll"
-      ></infinite-loading>
-    </client-only>
     <v-dialog
       v-model="openUserDetailModal"
       :overlay="false"
@@ -141,20 +141,14 @@ export default {
     selected: [],
     token: '',
     page: 1,
+    totalPage: 1,
     members: [],
-    joined: [
-      {
-        id: 1,
-        name: 'tuanh',
-      },
-      {
-        id: 2,
-        name: 'anhtu',
-      },
-    ],
     users: [],
   }),
   computed: {
+    joined() {
+      return this.members;
+    },
     unjoined() {
       return this.users;
     },
@@ -164,11 +158,21 @@ export default {
       this.token = localStorage.token;
     }
   },
+  async mounted() {
+    await this.getMembersJoined();
+  },
   methods: {
+    async addMore() {
+      this.page++;
+      await this.getMembersJoined();
+    },
+    reload() {
+      this.$forceUpdate();
+    },
     closeUserDetailModal() {
       this.openUserDetailModal = false;
     },
-    async infiniteScroll($state) {
+    async getMembersJoined() {
       try {
         const res = await getMembersWorkspaces(
           this.token,
@@ -177,16 +181,15 @@ export default {
         );
         const { status, data } = res.data;
         if (status === 200) {
-          this.page += 1;
-          const { members } = data;
+          const { members, totalPage } = data;
+          this.totalPage = totalPage;
           if (members.length) {
             this.members.push(...members);
-            $state.loaded();
-          } else {
-            $state.complete();
           }
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     },
     async searchMember() {
       this.loading = true;
@@ -212,6 +215,9 @@ export default {
       }
     },
     async inviteMembers() {
+      await Promise.all([this.inviteMoreMembers(), this.getMembersJoined()]);
+    },
+    async inviteMoreMembers() {
       this.loading = true;
       try {
         await inviteMembers(this.token, this.workspace.id, this.selected);
@@ -219,10 +225,19 @@ export default {
         setTimeout(() => {
           this.loading = false;
           this.showAlert = false;
+          this.users = [];
+          this.search = '';
           this.$emit('closeModalMembers');
         }, 2000);
       } catch (error) {
         console.log(error);
+        this.showAlert400 = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.showAlert400 = false;
+          this.users = [];
+          this.search = '';
+        }, 2000);
       }
     },
   },
@@ -266,7 +281,8 @@ export default {
   &__search {
     padding: 1vh 4vh;
     .search-button {
-      padding: 1px 20px;
+      height: 40px;
+      padding: 0px 20px;
     }
   }
   &__member {

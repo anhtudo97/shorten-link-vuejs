@@ -37,7 +37,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <div v-if="links.length !== 0" class="link__management">
+    <div v-if="!loading" class="link__management">
       <transition-group name="slide-fade" mode="out-in" tag="ul" class="pa-0">
         <li v-for="link in links" :key="link.id">
           <Link
@@ -49,7 +49,7 @@
           />
         </li>
       </transition-group>
-      <v-row justify="center">
+      <v-row v-if="links.length !== 0" justify="center">
         <v-col cols="8">
           <v-container class="max-width">
             <v-pagination
@@ -106,6 +106,7 @@ export default {
   },
   data: () => ({
     keySort: 'Sort By',
+    loading: false,
     models: {
       base: false,
       modal: false,
@@ -168,6 +169,7 @@ export default {
       domainSelected,
       workspaceSelected
     ) {
+      this.loading = true;
       const { token } = this;
       const [resLink, linkError] = await handle(
         getLinks(
@@ -185,6 +187,7 @@ export default {
         const { links, total, totalPage } = data;
         this.total = total;
         this.totalPage = totalPage;
+        this.loading = false;
         if (links.length) {
           this.links = links;
         }

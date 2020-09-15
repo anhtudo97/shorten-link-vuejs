@@ -17,21 +17,7 @@
           </li>
         </ul>
         <v-spacer></v-spacer>
-        <nuxt-link to="/notifications">
-          <div class="header__notification align-self-center">
-            <svg viewBox="-10 0 35 35">
-              <path
-                class="notification--bell"
-                d="M14 12v1H0v-1l0.73-0.58c0.77-0.77 0.81-3.55 1.19-4.42 0.77-3.77 4.08-5 4.08-5 0-0.55 0.45-1 1-1s1 0.45 1 1c0 0 3.39 1.23 4.16 5 0.38 1.88 0.42 3.66 1.19 4.42l0.66 0.58z"
-              />
-              <path
-                class="notification--bellClapper"
-                d="M7 15.7c1.11 0 2-0.89 2-2H5c0 1.11 0.89 2 2 2z"
-              />
-            </svg>
-            <span class="notification--num">5</span>
-          </div>
-        </nuxt-link>
+
         <client-only>
           <div v-if="token === ''" class="d-flex align-center">
             <nuxt-link to="/login">
@@ -47,7 +33,23 @@
               </button>
             </nuxt-link>
           </div>
-          <div v-else>
+          <div v-else class="d-flex align-center">
+            <nuxt-link to="/notifications">
+              <div class="header__notification align-self-center">
+                <svg viewBox="-10 0 35 35">
+                  <path
+                    class="notification--bell"
+                    d="M14 12v1H0v-1l0.73-0.58c0.77-0.77 0.81-3.55 1.19-4.42 0.77-3.77 4.08-5 4.08-5 0-0.55 0.45-1 1-1s1 0.45 1 1c0 0 3.39 1.23 4.16 5 0.38 1.88 0.42 3.66 1.19 4.42l0.66 0.58z"
+                  />
+                  <path
+                    class="notification--bellClapper"
+                    d="M7 15.7c1.11 0 2-0.89 2-2H5c0 1.11 0.89 2 2 2z"
+                  />
+                </svg>
+                <span class="notification--num">5</span>
+              </div>
+            </nuxt-link>
+            <div class="pr-4 header__signup">{{ email }}</div>
             <button
               class="button-normal header__signup py-2 px-6 font-weight-bold"
               @click.prevent="logout"
@@ -104,10 +106,17 @@ export default {
       },
     ],
     token: '',
+    email: null,
   }),
   created() {
-    if (typeof localStorage !== 'undefined' && localStorage.token) {
+    if (
+      typeof localStorage !== 'undefined' &&
+      localStorage.token &&
+      localStorage.email
+    ) {
       this.token = localStorage.token;
+      this.email = localStorage.email;
+      console.log(this.token, this.user);
     }
   },
   methods: {

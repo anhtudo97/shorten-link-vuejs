@@ -305,11 +305,30 @@ export const removeDomainWorkspace = (token, workspaceId, domainId) => {
   );
 };
 
-
 export const inviteMembers = (token, workspaceId, userIds) => {
   return api.post(
     `workspaces/${workspaceId}/invite`,
     { userIds },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const getInvitations = (token, page = 1) => {
+  return api.get(`workspace-invitations?page=${page}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const answerInvitations = (token, invitationId, status = 'ACCEPTED') => {
+  return api.put(
+    `workspace-invitations/${invitationId}`,
+    { status },
     {
       headers: {
         Authorization: `Bearer ${token}`,
