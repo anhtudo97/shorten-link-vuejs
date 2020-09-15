@@ -294,6 +294,18 @@ export const getMember = (token, search) => {
   });
 };
 
+export const removeDomainWorkspace = (token, workspaceId, domainId) => {
+  return api.delete(
+    `workspaces/${workspaceId}/domains/${domainId}?deleteLink=false`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+
 export const inviteMembers = (token, workspaceId, userIds) => {
   return api.post(
     `workspaces/${workspaceId}/invite`,

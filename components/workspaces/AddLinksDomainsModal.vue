@@ -43,6 +43,7 @@
           <div class="member-name">{{ item.name }}</div>
 
           <button
+            :disabled="loading"
             class="button-warning member-action"
             @click="removeFromList(item.id)"
           >
@@ -71,6 +72,15 @@
         ></v-checkbox>
       </div>
     </transition-group>
+    <v-snackbar v-model="showAlert400" top>
+      Delete domain is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="pink" text v-bind="attrs" @click="showAlert400 = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+
     <client-only>
       <infinite-loading
         spinner="spiral"
@@ -85,6 +95,7 @@ import {
   getDomainsWorkspace,
   getDomains,
   addDomainsWorkspace,
+  removeDomainWorkspace,
 } from '@/services/api';
 export default {
   props: {
@@ -101,6 +112,7 @@ export default {
     domains: [],
     domainSelected: [],
     loading: false,
+    showAlert400: false,
   }),
   computed: {
     unjoined() {
@@ -173,6 +185,25 @@ export default {
         this.domainSelected = [];
         console.log(error);
       }
+    },
+    async removeFromList(id) {
+      this.loading = true;
+      try {
+        const res = await removeDomainWorkspace(
+          this.token,
+          this.workspace.id,
+          id
+        );
+        const { status } = res.data;
+        if (status === 204) {
+          this.showAlert400 = true;
+          setTimeout(() => {
+            this.$emit('closeModalAddLinksDomain');
+            this.loading = false;
+            this.showAlert400 = false;
+          }, 1000);
+        }
+      } catch (error) {}
     },
   },
 };

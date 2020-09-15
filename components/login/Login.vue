@@ -97,8 +97,11 @@ export default {
         if (status === 200) {
           this.showAlert = true;
           const { data } = res.data;
-          const { fullName, email, token } = data;
-          this.updateUser({ fullName, email, token });
+          const { token } = data;
+          this.$store.commit('setUser', data);
+          this.$store.commit('setToken', 'Bearer ' + token);
+          this.$store.commit('setHeaders', 'Bearer ' + token);
+
           localStorage.token = token;
 
           setTimeout(() => {
