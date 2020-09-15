@@ -25,7 +25,7 @@ export default {
   data: () => ({
     drawer: false,
   }),
-  beforeMount() {
+  created() {
     if (typeof localStorage !== 'undefined' && localStorage.token) {
     } else {
       this.$router.push('/login');

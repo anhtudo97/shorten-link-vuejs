@@ -1,17 +1,11 @@
 <template>
-  <v-app v-if="!token">
+  <v-app>
     <div id="header" class="relative">
       <Header class="header-fixed" @openModal="openModal" />
     </div>
     <nuxt />
     <Footer />
-    <v-navigation-drawer
-      v-model="drawer"
-      absolute
-      left
-      temporary
-      style="width: 60%;"
-    >
+    <v-navigation-drawer v-model="drawer" absolute left temporary style="width: 60%;">
       <Drawer />
     </v-navigation-drawer>
   </v-app>
@@ -29,16 +23,7 @@ export default {
   },
   data: () => ({
     drawer: false,
-    token: '',
   }),
-  beforeMount() {
-    if (typeof localStorage !== 'undefined' && localStorage.token) {
-      this.token = localStorage.token;
-      setTimeout(() => {
-        this.$router.push('/links');
-      }, 1000);
-    }
-  },
   methods: {
     openModal() {
       this.drawer = !this.drawer;

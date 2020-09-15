@@ -79,6 +79,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
 export default {
   data: () => ({
     menu: [
@@ -108,15 +109,20 @@ export default {
   created() {
     if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
+    } else {
+      this.$router.push('/login');
     }
   },
   methods: {
+    ...mapMutations(['updateUser']),
     logout() {
-      this.$store.commit('setUser', null);
-      this.$store.commit('setToken', 'Bearer ' + null);
-      this.$store.commit('setHeaders', 'Bearer ' + null);
+      this.updateUser({
+        fullName: '',
+        email: '',
+        token: '',
+      });
       window.localStorage.clear();
-      this.$router.push('/');
+      this.$router.push('/login');
     },
   },
 };

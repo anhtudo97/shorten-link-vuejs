@@ -305,14 +305,3 @@ export const inviteMembers = (token, workspaceId, userIds) => {
     }
   );
 };
-
-export const removeDomainWorkspace = (token, workspaceId, domainId) => {
-  return api.delete(
-    `workspaces/${workspaceId}/domains/${domainId}?deleteLink=false`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-};

@@ -43,7 +43,6 @@
           <div class="member-name">{{ item.name }}</div>
 
           <button
-            :disabled="loading"
             class="button-warning member-action"
             @click="removeFromList(item.id)"
           >
@@ -72,14 +71,6 @@
         ></v-checkbox>
       </div>
     </transition-group>
-    <v-snackbar v-model="showAlert400" top>
-      Delete workspace is successfully
-      <template v-slot:action="{ attrs }">
-        <v-btn color="pink" text v-bind="attrs" @click="showAlert = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
     <client-only>
       <infinite-loading
         spinner="spiral"
@@ -94,7 +85,6 @@ import {
   getDomainsWorkspace,
   getDomains,
   addDomainsWorkspace,
-  removeDomainWorkspace,
 } from '@/services/api';
 export default {
   props: {
@@ -111,7 +101,6 @@ export default {
     domains: [],
     domainSelected: [],
     loading: false,
-    showAlert400: false,
   }),
   computed: {
     unjoined() {
@@ -121,20 +110,12 @@ export default {
       });
     },
   },
-  watch: {
-    domainSelected(value) {
-      console.log(value);
-    },
-  },
   created() {
     if (localStorage.token) {
       this.token = localStorage.token;
     }
   },
   methods: {
-    reload() {
-      window.location.reload();
-    },
     async infiniteScroll($state) {
       const { token, workspace, pageDomain, pageDomainWorkspace } = this;
       try {
@@ -185,37 +166,13 @@ export default {
           this.showAlert = true;
           setTimeout(() => {
             this.$emit('closeModalAddLinksDomain');
-            this.reload();
             this.loading = false;
           }, 2000);
         }
-        console.log(res);
       } catch (error) {
         this.domainSelected = [];
         console.log(error);
       }
-    },
-    openModalRemove() {
-      this.isRemoveModal = true;
-    },
-    async removeFromList(id) {
-      this.loading = true;
-      try {
-        const res = await removeDomainWorkspace(
-          this.token,
-          this.workspace.id,
-          id
-        );
-        const { status } = res.data;
-        if (status === 204) {
-          this.showAlert400 = true;
-          setTimeout(() => {
-            this.$emit('closeModalAddLinksDomain');
-            this.loading = false;
-            this.showAlert400 = false;
-          }, 1000);
-        }
-      } catch (error) {}
     },
   },
 };

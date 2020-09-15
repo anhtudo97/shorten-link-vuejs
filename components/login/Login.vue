@@ -97,18 +97,15 @@ export default {
         if (status === 200) {
           this.showAlert = true;
           const { data } = res.data;
-          const { token } = data;
-          this.$store.commit('setUser', data);
-          this.$store.commit('setToken', 'Bearer ' + token);
-          this.$store.commit('setHeaders', 'Bearer ' + token);
+          const { fullName, email, token } = data;
+          this.updateUser({ fullName, email, token });
+          localStorage.token = token;
 
           setTimeout(() => {
             this.showAlert = false;
             this.isLoading = false;
             this.$router.push('/links');
           }, 500);
-          // localStorage.setItem('token', JSON.stringify(token));
-          localStorage.token = token;
         }
       } catch (error) {
         console.log(error);
