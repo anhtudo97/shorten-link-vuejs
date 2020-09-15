@@ -39,28 +39,30 @@
               </nuxt-link>
               <div class="login-title">Login</div>
             </div>
-            <v-text-field
-              v-model="form.email"
-              class="input-name mt-4 mt-sm-6"
-              label="Your email"
-              hide-details="auto"
-              :rules="[required('email'), emailFormat()]"
-            />
-            <v-text-field
-              v-model="form.password"
-              class="input-password mt-4 mt-sm-6"
-              label="Password"
-              type="password"
-              hide-details="auto"
-              :rules="[required('password')]"
-            />
-            <button
-              :disabled="isLoading"
-              class="button-normal login-button mt-8 mt-sm-10"
-              @click.prevent="login"
-            >
-              Login
-            </button>
+            <form action="" @keyup.enter="login">
+              <v-text-field
+                v-model="form.email"
+                class="input-name mt-4 mt-sm-6"
+                label="Your email"
+                hide-details="auto"
+                :rules="[required('email'), emailFormat()]"
+              />
+              <v-text-field
+                v-model="form.password"
+                class="input-password mt-4 mt-sm-6"
+                label="Password"
+                type="password"
+                hide-details="auto"
+                :rules="[required('password')]"
+              />
+              <button
+                :disabled="isLoading"
+                class="button-normal login-button mt-8 mt-sm-10"
+                @click.prevent="login"
+              >
+                Login
+              </button>
+            </form>
           </v-col>
         </v-row>
       </v-col>
@@ -86,7 +88,9 @@ export default {
   }),
   methods: {
     ...mapMutations({
-      updateUser: 'updateUser',
+      setUser: 'setUser',
+      setToken: 'setToken',
+      setHeaders: 'setHeaders',
     }),
     async login() {
       this.isLoading = true;
@@ -97,9 +101,13 @@ export default {
         if (status === 200) {
           this.showAlert = true;
           const { data } = res.data;
-          const { fullName, email, token } = data;
-          this.updateUser({ fullName, email, token });
+          const { token, email } = data;
+          this.setUser(data);
+          this.setToken('Bearer ' + token);
+          this.setHeaders('Bearer ' + token);
+
           localStorage.token = token;
+          localStorage.email = email;
 
           setTimeout(() => {
             this.showAlert = false;

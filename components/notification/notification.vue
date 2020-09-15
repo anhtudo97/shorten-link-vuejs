@@ -1,10 +1,22 @@
 <template>
   <div class="notification">
-    <v-row class="border-radius-10 py-4 mx-3 mx-sm-0 px-4 align-center justify-space-between mb-5">
-      <div class="notification__name">{{notification.name}}</div>
+    <v-row
+      class="border-radius-10 py-4 mx-3 mx-sm-0 px-4 align-center justify-space-between mb-5"
+    >
+      <div class="notification__name">{{ notification.workspace.name }}</div>
       <div class="notification__actions d-flex">
-        <button class="button-normal btn-accept mr-4">Accepts</button>
-        <button class="button-warning btn-decline">Decline</button>
+        <button
+          class="button-normal btn-accept mr-4"
+          @click="answerInvitations('ACCEPTED')"
+        >
+          Accept
+        </button>
+        <button
+          class="button-warning btn-decline"
+          @click="answerInvitations('DENIED')"
+        >
+          Decline
+        </button>
       </div>
     </v-row>
   </div>
@@ -16,6 +28,11 @@ export default {
     notification: {
       type: Object,
       default: () => {},
+    },
+  },
+  methods: {
+    answerInvitations(status) {
+      this.$emit('answerInvitations', this.notification.id, status);
     },
   },
 };

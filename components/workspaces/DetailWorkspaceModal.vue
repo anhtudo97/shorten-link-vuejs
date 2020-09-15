@@ -38,8 +38,10 @@
       </div>
       <div class="d-flex dialog-detail-workspace__info align-center mb-5">
         <img src="@/assets/svg/links.svg" alt="calendar" class="mr-3" />
-        <nuxt-link to="/links">
-          <div class="info-text info-link font-weight-medium">4 Links</div>
+        <nuxt-link :to="`/links/${workspace.id}`">
+          <div class="info-text info-link font-weight-medium">
+            {{ totalLinks }} Links
+          </div>
         </nuxt-link>
       </div>
       <div class="d-flex dialog-detail-workspace__info align-center mb-5">
@@ -48,7 +50,7 @@
           class="info-text font-weight-medium"
           @click.stop="openModalMemberModal = true"
         >
-          3 teammates
+          {{ totalMembers }} teammate(s)
         </div>
       </div>
       <div class="d-flex dialog-detail-workspace__info align-center mb-5">
@@ -57,11 +59,14 @@
           class="info-text info-link font-weight-medium"
           @click.stop="openAddLinkDomainModal = true"
         >
-          {{ total }} Branded domains included
+          {{ totalDomains }} Branded domains included
         </div>
       </div>
     </div>
-    <v-row class="align-center dialog-detail-workspace__button-remove">
+    <v-row
+      v-if="!workspace.isDefault"
+      class="align-center dialog-detail-workspace__button-remove"
+    >
       <v-col cols="12" sm="3">
         <div class="services-title">Delete this repository</div>
       </v-col>
@@ -82,6 +87,8 @@
     >
       <ManagementMemberModal
         :workspace="workspace"
+        :members="members"
+        @updateMember="updateMember"
         @closeModalMembers="closeModalMembers"
       />
     </v-dialog>
@@ -100,6 +107,7 @@
     >
       <AddLinksDomainsModal
         :workspace="workspace"
+        @updateDomains="updateDomains"
         @closeModalAddLinksDomain="closeModalAddLinksDomain"
       />
     </v-dialog>
@@ -128,7 +136,12 @@
 
 <script>
 import { format } from 'date-fns';
-import { deleteWorkspace, getDomainsWorkspace } from '@/services/api';
+import {
+  deleteWorkspace,
+  getDomainsWorkspace,
+  getLinksWorkspaces,
+  getMembersWorkspaces,
+} from '@/services/api';
 
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
 import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
@@ -146,22 +159,6 @@ export default {
       default: () => {},
     },
   },
-  async fetch() {
-    try {
-      const res = await getDomainsWorkspace(
-        this.token,
-        this.workspace.id,
-        this.pageDomainWorkspace
-      );
-      const { status } = res.data;
-      if (status === 200) {
-        const { total } = res.data.data;
-        this.total = total;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  },
   data: () => ({
     openModalMemberModal: false,
     openAddLinkDomainModal: false,
@@ -171,16 +168,22 @@ export default {
     token: '',
     showAlert: false,
     loading: false,
-    pageDomainWorkspace: 1,
-    total: 0,
+    page: 1,
+    totalDomains: 0,
+    totalLinks: 0,
+    totalMembers: 0,
+    members: [],
   }),
   computed: {
     createdDate() {
       return format(new Date(this.workspace.createdAt), 'MMMM dd, yyyy');
     },
   },
+  async mounted() {
+    await Promise.all([this.getMembers(), this.getLinks(), this.getDomains()]);
+  },
   created() {
-    if (localStorage.token) {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
   },
@@ -195,17 +198,75 @@ export default {
     reload() {
       window.location.reload();
     },
+    updateMember() {
+      this.getMembers();
+    },
+    updateDomains() {
+      this.getDomains();
+    },
     closeModalMembers() {
       this.openModalMemberModal = false;
+      this.getMembers();
     },
     closeRemoveModal() {
       this.isRemoveModal = false;
     },
     closeModalAddLinksDomain() {
       this.openAddLinkDomainModal = false;
+      this.getDomains();
     },
     closeEditWorkspace() {
       this.openEditWorkspace = false;
+    },
+    async getMembers() {
+      try {
+        const resMembers = await getMembersWorkspaces(
+          this.token,
+          this.workspace.id,
+          this.page
+        );
+        const statusMembers = resMembers.data.status;
+        if (statusMembers === 200) {
+          const { total, members } = resMembers.data.data;
+          this.totalMembers = total;
+          this.members = members;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getDomains() {
+      try {
+        const resDomains = await getDomainsWorkspace(
+          this.token,
+          this.workspace.id,
+          this.page
+        );
+        const statusDomains = resDomains.data.status;
+
+        if (statusDomains === 200) {
+          const { total } = resDomains.data.data;
+          this.totalDomains = total;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getLinks() {
+      try {
+        const resLinks = await getLinksWorkspaces(
+          this.token,
+          this.workspace.id,
+          this.page
+        );
+        const statusLinks = resLinks.data.status;
+        if (statusLinks === 200) {
+          const { total } = resLinks.data.data;
+          this.totalLinks = total;
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
     async removeWorkspace() {
       this.showAlert = false;

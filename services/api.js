@@ -63,12 +63,22 @@ export const loginUser = (email, password) => {
 };
 
 /* Link */
-export const getLinks = (token, page) => {
-  return api.get(`/links?page=${page}&perPage=10`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const getLinks = (
+  token,
+  page,
+  sort = 'created_at',
+  direction = 'DESC',
+  domainIds = [],
+  workspaceIds = []
+) => {
+  return api.get(
+    `/links?page=${page}&perPage=10&sort=${sort}&direction=${direction}&domainIds=${domainIds}&workspaceIds=${workspaceIds}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
 export const getLink = (token, id) => {
@@ -147,8 +157,6 @@ export const updateLink = (
     }
   );
 };
-
-
 
 /* Domain */
 export const createNewDomain = (token, name) => {
@@ -249,4 +257,90 @@ export const addDomainsWorkspace = (token, workspaceId, domainIds) => {
       },
     }
   );
+};
+
+export const getLinksWorkspaces = (
+  token,
+  workspaceId,
+  page,
+  sort = 'created_at',
+  direction = 'DESC',
+  domainIds = [],
+  userIds = []
+) => {
+  return api.get(
+    `workspaces/${workspaceId}/links?page=${page}&perPage=10&sort=${sort}&direction=${direction}&domainIds=${domainIds}&userIds=${userIds}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const getMembersWorkspaces = (token, workspaceId, page) => {
+  return api.get(`workspaces/${workspaceId}/members?page=${page}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const getMember = (token, search) => {
+  return api.get(`users?email=${search}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const removeDomainWorkspace = (token, workspaceId, domainId) => {
+  return api.delete(
+    `workspaces/${workspaceId}/domains/${domainId}?deleteLink=false`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const inviteMembers = (token, workspaceId, userIds) => {
+  return api.post(
+    `workspaces/${workspaceId}/invite`,
+    { userIds },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const getInvitations = (token, page = 1) => {
+  return api.get(`workspace-invitations?page=${page}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const answerInvitations = (token, invitationId, status = 'ACCEPTED') => {
+  return api.put(
+    `workspace-invitations/${invitationId}`,
+    { status },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const removeMemberWorkspace = (token, workspaceId, userId) => {
+  return api.delete(`workspaces/${workspaceId}/members/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };

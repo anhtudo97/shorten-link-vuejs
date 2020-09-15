@@ -7,9 +7,7 @@
       </div>
     </div>
     <div class="modal-mask">
-      <div class="modal-mask__title mb-5">
-        Shorten a new link
-      </div>
+      <div class="modal-mask__title mb-5">Shorten a new link</div>
       <v-textarea
         v-model="form.destinationUrl"
         auto-grow
@@ -18,74 +16,81 @@
         outlined
         dense
         rows="1"
-        @change="validURL(form.destinationUrl)"
+        @input="validURL(form.destinationUrl)"
       ></v-textarea>
       <transition name="slide-fade">
-        <div v-if="valid || edit">
-          <v-row>
-            <v-col cols="12" md="6" class="py-0">
-              <div class="modal-mask__sub-title">Branded domain</div>
-              <v-select
-                v-model="form.domain"
-                class="dialog-domain"
-                :items="tempDomains"
-                item-text="name"
-                item-value="id"
-                dense
-                outlined
-                :label="form.domain"
+        <div v-if="valid || edit || loading">
+          <div v-if="!loading">
+            <v-row>
+              <v-col cols="12" md="6" class="py-0">
+                <div class="modal-mask__sub-title">Branded domain</div>
+                <v-select
+                  v-model="form.domain.id"
+                  class="dialog-domain"
+                  :items="tempDomains"
+                  item-text="name"
+                  item-value="id"
+                  dense
+                  outlined
+                  :label="form.domain.name"
+                  :disabled="loading"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" md="6" class="py-0">
+                <div class="modal-mask__sub-title">Slash tag</div>
+                <v-text-field
+                  v-model="form.slashTag"
+                  class="dialog-slash-tag"
+                  outlined
+                  dense
+                  :disabled="loading"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="6" class="py-0">
+                <div class="modal-mask__sub-title">Workspace belong to</div>
+                <v-select
+                  v-model="form.workspace.id"
+                  class="dialog-workspace"
+                  :items="tempWorkspaces"
+                  item-text="name"
+                  :label="form.workspace.name"
+                  item-value="id"
+                  dense
+                  outlined
+                  menu-props="auto"
+                  :disabled="loading || edit"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" md="6" class="py-0">
+                <div class="modal-mask__sub-title">Web title</div>
+                <v-text-field
+                  v-model="form.title"
+                  class="dialog-web-title"
+                  placeholder="Web title"
+                  outlined
+                  dense
+                  :disabled="loading"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <div class="d-flex justify-space-between">
+              <div></div>
+              <div
                 :disabled="loading"
+                class="modal-mask__button"
+                @click="callAction"
               >
-              </v-select>
-            </v-col>
-            <v-col cols="12" md="6" class="py-0">
-              <div class="modal-mask__sub-title">Slash tag</div>
-              <v-text-field
-                v-model="form.slashTag"
-                class="dialog-slash-tag"
-                outlined
-                dense
-                :disabled="loading"
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" md="6" class="py-0">
-              <div class="modal-mask__sub-title">Workspace belong to</div>
-              <v-select
-                v-model="form.workspace"
-                class="dialog-workspace"
-                :items="tempWorkspaces"
-                item-text="name"
-                label="Workspace"
-                item-value="id"
-                dense
-                outlined
-                menu-props="auto"
-                :disabled="loading || edit"
-              ></v-select>
-            </v-col>
-            <v-col cols="12" md="6" class="py-0">
-              <div class="modal-mask__sub-title">Web title</div>
-              <v-text-field
-                v-model="form.title"
-                class="dialog-web-title"
-                placeholder="Web title"
-                outlined
-                dense
-                :disabled="loading"
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <div class="d-flex justify-space-between">
-            <div></div>
-            <div
-              :disabled="loading"
-              class="modal-mask__button"
-              @click="callAction"
-            >
-              {{ edit ? 'Update Link' : 'Create link' }}
+                {{ edit ? 'Update Link' : 'Create link' }}
+              </div>
             </div>
+          </div>
+          <div v-else class="d-flex justify-center">
+            <v-progress-circular
+              indeterminate
+              color="primary"
+            ></v-progress-circular>
           </div>
         </div>
       </transition>
@@ -99,24 +104,27 @@
     <v-snackbar v-model="showAlert" top color="success">
       {{ edit ? 'Update link successfully' : 'Create new link successfully' }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">
-          Close
-        </v-btn>
+        <v-btn color="white" text v-bind="attrs" @click="showAlert = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
     <v-snackbar v-model="showAlert403" top color="error">
-      Slash tag is exist
+      {{
+        domainCheck
+          ? 'The workspace has no permission this domain'
+          : 'Slash tag is exist'
+      }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">
-          Close
-        </v-btn>
+        <v-btn color="white" text v-bind="attrs" @click="showAlert = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
   </v-list>
 </template>
 
 <script>
-import debounce from 'lodash.debounce';
 import {
   getDomains,
   getWorkspaces,
@@ -140,16 +148,18 @@ export default {
     },
   },
   async fetch() {
-    const [resLink, linkError] = await handle(getLink(this.token, this.id));
-    if (linkError) throw new Error('Could not fetch delete link');
-    const { status, data } = resLink.data;
-    if (status === 200) {
-      const { title, destination, domain, slashtag, domainID } = data;
-      this.form.destinationUrl = destination;
-      this.form.title = title;
-      this.form.slashTag = slashtag;
-      this.form.domain = domain.name;
-      this.form.domainId = domainID;
+    if (this.edit) {
+      const [resLink, linkError] = await handle(getLink(this.token, this.id));
+      if (linkError) throw new Error('Could not fetch delete link');
+      const { status, data } = resLink.data;
+      if (status === 200) {
+        const { title, destination, domain, slashtag, domainID } = data;
+        this.form.destinationUrl = destination;
+        this.form.title = title;
+        this.form.slashTag = slashtag;
+        this.form.domain = domain.name;
+        this.form.domainId = domainID;
+      }
     }
   },
   data: () => ({
@@ -163,12 +173,16 @@ export default {
     showAlert403: false,
     valid: false,
     checkSlash: false,
+    domainCheck: false,
     form: {
       destinationUrl: '',
       title: '',
       slashTag: '',
-      domain: 'Domain',
-      workspace: '',
+      domain: {
+        name: 'Domain',
+        id: '',
+      },
+      workspace: { name: 'Workspace', id: '' },
       domainId: '',
     },
   }),
@@ -199,7 +213,7 @@ export default {
     reload() {
       window.location.reload();
     },
-    validURL: debounce(async function(str) {
+    async validURL(str) {
       const pattern = new RegExp(
         '^(https?:\\/\\/)?' + // protocol
         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
@@ -211,10 +225,12 @@ export default {
       ); // fragment locator
       this.valid = !!pattern.test(str);
       if (this.valid) {
+        this.loading = true;
         await Promise.all([this.getTitle(str), this.getSlashTag(str)]);
+        this.loading = false;
       }
       return this.valid;
-    }, 300),
+    },
     async getTitle(url) {
       const [resTitle, titleError] = await handle(getTitleUrl(url));
       if (titleError) throw new Error('Could not fetch title details');
@@ -233,7 +249,6 @@ export default {
       const { data } = resSlashTag.data;
       this.checkSlash = data.exists;
     },
-
     async infiniteScroll($state) {
       const { token, pageDomains, pageWorkspaces } = this;
       const [resDomains, domainsError] = await handle(
@@ -254,6 +269,8 @@ export default {
         const { domains } = resDomains.data.data;
         if (domains.length) {
           this.domains.push(...domains);
+          this.form.domain.name = this.domains[0].name;
+          this.form.domain.id = this.domains[0].id;
           $state.loaded();
         } else {
           $state.complete();
@@ -264,6 +281,8 @@ export default {
         const { workspaces } = resWorkspaces.data.data;
         if (workspaces.length) {
           this.workspaces.push(...workspaces);
+          this.form.workspace.name = this.workspaces[0].name;
+          this.form.workspace.id = this.workspaces[0].id;
           $state.loaded();
         } else {
           $state.complete();
@@ -286,34 +305,37 @@ export default {
       if (slashTagError) throw new Error('Could not fetch slashTag details');
       const { data } = resSlashTag.data;
       if (!data.exists) {
-        const [resLink, linkError] = await handle(
-          createNewLink(
+        try {
+          const resLink = await createNewLink(
             this.token,
             destinationUrl,
-            domain,
+            domain.id,
             slashTag,
             title,
-            workspace
-          )
-        );
-        if (linkError) throw new Error('Could not fetch user link');
-        const { status } = resLink.data;
-        if (status === 201) {
-          this.showAlert = true;
-          setTimeout(() => {
-            this.$emit('closeModalAddNewLink');
-            this.reload();
-            this.loading = false;
-          }, 2000);
-        }
-        if (status === 403) {
+            workspace.id
+          );
+          const { status } = resLink.data;
+          if (status === 201) {
+            this.showAlert = true;
+            setTimeout(() => {
+              this.$emit('closeModalAddNewLink');
+              this.reload();
+              this.loading = false;
+            }, 2000);
+          }
+        } catch (error) {
           this.showAlert403 = true;
+          this.domainCheck = true;
           setTimeout(() => {
-            this.$emit('closeModalAddNewLink');
-            this.reload();
             this.loading = false;
           }, 2000);
         }
+      } else {
+        this.showAlert403 = true;
+        this.domainCheck = false;
+        setTimeout(() => {
+          this.loading = false;
+        }, 2000);
       }
     },
     async updateLink() {

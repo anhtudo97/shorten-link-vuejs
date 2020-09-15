@@ -37,7 +37,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <div v-if="!loading" class="link__management">
+    <div v-if="links.length !== 0" class="link__management">
       <transition-group name="slide-fade" mode="out-in" tag="ul" class="pa-0">
         <li v-for="link in links" :key="link.id">
           <Link
@@ -49,7 +49,7 @@
           />
         </li>
       </transition-group>
-      <v-row v-if="links.length !== 0" justify="center">
+      <v-row justify="center">
         <v-col cols="8">
           <v-container class="max-width">
             <v-pagination
@@ -79,7 +79,7 @@
       />
     </v-dialog>
     <v-dialog v-model="models.filterModal" max-width="700">
-      <FilterModal
+      <MemberModal
         @updateFilter="updateFilter"
         @closeModal="models.filterModal = false"
       />
@@ -92,9 +92,9 @@ import { mapGetters, mapMutations } from 'vuex';
 import Link from '@/components/links/Link';
 import CreateNewLink from '@/components/links/CreateNewLink';
 import SortModal from '@/components/links/SortModal';
-import FilterModal from '@/components/links/FilterModal';
+import MemberModal from '@/components/links/MemberModal';
 
-import { getLinks } from '@/services/api';
+import { getLinksWorkspaces } from '@/services/api';
 import { handle } from '@/utils/promise';
 
 export default {
@@ -102,11 +102,10 @@ export default {
     Link,
     CreateNewLink,
     SortModal,
-    FilterModal,
+    MemberModal,
   },
   data: () => ({
     keySort: 'Sort By',
-    loading: false,
     models: {
       base: false,
       modal: false,
@@ -116,11 +115,12 @@ export default {
     width: 0,
     links: [],
     page: 1,
+    workspaceId: '',
     token: '',
     total: 0,
     totalPage: 0,
     domainSelected: [],
-    workspaceSelected: [],
+    userIdsSelected: [],
   }),
   computed: {
     ...mapGetters({ sort: 'links/getSort', direction: 'links/getDirection' }),
@@ -142,6 +142,7 @@ export default {
     }
   },
   mounted() {
+    this.workspaceId = this.$route.params.id;
     this.getListLinks(
       1,
       this.sort,
@@ -162,23 +163,17 @@ export default {
       setSort: 'links/setSort',
       setDirection: 'links/setDirection',
     }),
-    async getListLinks(
-      page,
-      sort,
-      direction,
-      domainSelected,
-      workspaceSelected
-    ) {
-      this.loading = true;
-      const { token } = this;
+    async getListLinks(page, sort, direction, domainSelected, userIdsSelected) {
+      const { token, workspaceId } = this;
       const [resLink, linkError] = await handle(
-        getLinks(
+        getLinksWorkspaces(
           token,
+          workspaceId,
           page,
           sort,
           direction,
           domainSelected,
-          workspaceSelected
+          userIdsSelected
         )
       );
       if (linkError) throw new Error('Could not fetch link');
@@ -187,7 +182,6 @@ export default {
         const { links, total, totalPage } = data;
         this.total = total;
         this.totalPage = totalPage;
-        this.loading = false;
         if (links.length) {
           this.links = links;
         }
@@ -205,15 +199,15 @@ export default {
       );
       this.$forceUpdate();
     },
-    updateFilter(domainSelected, workspaceSelected) {
+    updateFilter(domainSelected, userIdsSelected) {
       this.domainSelected = domainSelected;
-      this.workspaceSelected = workspaceSelected;
+      this.userIdsSelected = userIdsSelected;
       this.getListLinks(
         this.page,
         this.sort,
         this.direction,
         this.domainSelected,
-        this.workspaceSelected
+        this.userIdsSelected
       );
     },
     closeModalAddNewLink() {

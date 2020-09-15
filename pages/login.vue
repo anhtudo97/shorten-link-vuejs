@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Login :submit-form="loginUser"/>
+    <Login />
   </div>
 </template>
 
@@ -10,12 +10,5 @@ export default {
   components: {
     Login,
   },
-  methods: {
-      loginUser(loginInfo){
-        this.$auth.loginWith('local', {
-          data: loginInfo
-        })
-      }
-    }
 };
 </script>
