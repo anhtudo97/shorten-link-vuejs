@@ -1,5 +1,5 @@
 <template>
-  <v-app v-if="!token">
+  <v-app>
     <div id="header" class="relative">
       <Header class="header-fixed" @openModal="openModal" />
     </div>

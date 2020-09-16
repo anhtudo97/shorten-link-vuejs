@@ -98,7 +98,7 @@ export default {
         this.domainURL = name;
         this.date = format(parseISO(createdAt), 'MMM dd, yyyy');
         this.works = [...workspaces].map((x) => {
-          return x.name.String;
+          return x.name;
         });
       }
     } catch (error) {
@@ -115,7 +115,7 @@ export default {
     loading: false,
   }),
   created() {
-    if (localStorage.token) {
+   if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
   },
@@ -132,7 +132,6 @@ export default {
           this.showAlert = true;
           setTimeout(() => {
             this.closeRemoveModal();
-            this.reload();
             this.showAlert = false;
             this.loading = false;
           }, 1000);
@@ -143,6 +142,7 @@ export default {
     },
     closeRemoveModal() {
       this.isRemoveModal = false;
+      this.$emit('closeModalDetailDomain')
     },
   },
 };

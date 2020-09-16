@@ -37,7 +37,10 @@
         </v-row>
       </v-col>
     </v-row>
-    <div v-if="!loading" class="link__management">
+    <div v-if="$fetchState.pending" class="d-flex justify-center">
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+    </div>
+    <div v-else class="link__management">
       <transition-group name="fade" tag="ul" class="pa-0">
         <li v-for="link in links" :key="link.id">
           <Link
@@ -46,6 +49,7 @@
             :slashtag="link.slashtag"
             :clicks="link.clicks"
             :date="link.createdAt"
+            :link-detail="link"
             @closeModalAddNewLink="closeModalAddNewLink"
           />
         </li>
@@ -61,9 +65,6 @@
           </v-container>
         </v-col>
       </v-row>
-    </div>
-    <div v-else class="d-flex justify-center">
-      <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </div>
     <v-dialog
       v-model="models.modal"
@@ -96,7 +97,6 @@ import SortModal from '@/components/links/SortModal';
 import FilterModal from '@/components/links/FilterModal';
 
 import { getLinks } from '@/services/api';
-import { handle } from '@/utils/promise';
 
 export default {
   components: {
@@ -107,7 +107,6 @@ export default {
   },
   data: () => ({
     keySort: 'Sort By',
-    loading: false,
     models: {
       base: false,
       modal: false,
@@ -142,9 +141,9 @@ export default {
       this.token = localStorage.token;
     }
   },
-  mounted() {
+  fetch() {
     this.getListLinks(
-      1,
+      this.page,
       this.sort,
       this.direction,
       this.domainSelected,
@@ -170,28 +169,25 @@ export default {
       domainSelected,
       workspaceSelected
     ) {
-      this.loading = true;
       const { token } = this;
-      const [resLink, linkError] = await handle(
-        getLinks(
+      try {
+        const resLink = await getLinks(
           token,
           page,
           sort,
           direction,
           domainSelected,
           workspaceSelected
-        )
-      );
-      if (linkError) throw new Error('Could not fetch link');
-      const { status, data } = resLink.data;
-      if (status === 200) {
-        const { links, total, totalPage } = data;
-        this.total = total;
-        this.totalPage = totalPage;
-        this.loading = false;
-        if (links.length) {
+        );
+        const { status, data } = resLink.data;
+        if (status === 200) {
+          const { links, total, totalPage } = data;
+          this.total = total;
+          this.totalPage = totalPage;
           this.links = links;
         }
+      } catch (error) {
+        console.log(error);
       }
     },
     updateSort(sort, direction) {
@@ -204,7 +200,6 @@ export default {
         this.domainSelected,
         this.workspaceSelected
       );
-      this.$forceUpdate();
     },
     updateFilter(domainSelected, workspaceSelected) {
       this.domainSelected = domainSelected;
@@ -216,6 +211,8 @@ export default {
         this.domainSelected,
         this.workspaceSelected
       );
+      this.domainSelected = [];
+      this.workspaceSelected = [];
     },
     closeModalAddNewLink() {
       this.models.modal = false;

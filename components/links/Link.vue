@@ -3,7 +3,7 @@
     <v-col cols="12" sm="10" md="8" class="mx-auto px-0 border-radius-10">
       <v-row class="align-center mx-0">
         <v-col cols="12" md="8" @click.stop="models.isOpen = true">
-          <div class="shortened-link text-overflow-hidden">{{ slashtag }}</div>
+          <div class="shortened-link text-overflow-hidden">{{ shorten }}</div>
           <div class="origin-link pt-2 text-overflow-hidden">{{ link }}</div>
         </v-col>
         <v-col cols="12" md="4">
@@ -14,7 +14,7 @@
               <div class="d-flex link-services">
                 <v-tooltip top nudge-left="10">
                   <template v-slot:activator="{ on, attrs }">
-                    <a :href="slashtag">
+                    <a :href="shorten">
                       <img
                         :src="require('@/assets/icons/route-solid.svg')"
                         alt="route"
@@ -28,7 +28,7 @@
                 </v-tooltip>
                 <v-tooltip top nudge-left="10">
                   <template v-slot:activator="{ on, attrs }">
-                    <div v-clipboard="slashtag">
+                    <div v-clipboard="shorten">
                       <img
                         :src="require('@/assets/icons/clone-solid.svg')"
                         alt="route"
@@ -95,7 +95,6 @@
       <CreateNewLink
         :id="id"
         :edit="true"
-        :form-update="form"
         @closeModalAddNewLink="closeModalAddNewLink"
       />
     </v-dialog>
@@ -152,6 +151,10 @@ export default {
       type: String,
       default: '',
     },
+    linkDetail: {
+      type: Object,
+      default: () => {},
+    },
   },
   data: () => ({
     models: {
@@ -161,16 +164,11 @@ export default {
     modalEditLink: false,
     width: 0,
     showAlert: false,
-    form: {
-      destinationUrl: '',
-      title: '',
-      slashTag: '',
-      domain: 'Domain',
-      workspace: '',
-      domainId: '',
-    },
   }),
   computed: {
+    shorten() {
+      return `https://${this.linkDetail.domain.name}/${this.slashtag}`;
+    },
     createAt() {
       const today = Date.parse(new Date());
       const createdAt = Date.parse(this.date);

@@ -20,7 +20,7 @@
             >{{ shorten }}</a
           >
           <div class="d-flex dialog-link-service align-center">
-            <div v-clipboard="slashtag" class="dialog-button-copy mr-3">
+            <div v-clipboard="`https://${shorten}`" class="dialog-button-copy mr-3">
               Copy
             </div>
             <button

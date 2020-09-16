@@ -64,6 +64,7 @@ export default {
   methods: {
     closeModalDetailDomain() {
       this.models.isOpen = false;
+      this.$emit('closeModalCreateNewDomain');
     },
     handleResize() {
       if (process.client) {
