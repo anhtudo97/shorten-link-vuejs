@@ -151,9 +151,9 @@ export default {
       type: String,
       default: '',
     },
-    linkDetail: {
-      type: Object,
-      default: () => {},
+    domain: {
+      type: String,
+      default: '',
     },
   },
   data: () => ({
@@ -167,7 +167,7 @@ export default {
   }),
   computed: {
     shorten() {
-      return `https://${this.linkDetail.domain.name}/${this.slashtag}`;
+      return `https://${this.name}/${this.slashtag}`;
     },
     createAt() {
       const today = Date.parse(new Date());

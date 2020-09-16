@@ -20,7 +20,10 @@
             >{{ shorten }}</a
           >
           <div class="d-flex dialog-link-service align-center">
-            <div v-clipboard="`https://${shorten}`" class="dialog-button-copy mr-3">
+            <div
+              v-clipboard="`https://${shorten}`"
+              class="dialog-button-copy mr-3"
+            >
               Copy
             </div>
             <button
@@ -127,16 +130,7 @@ export default {
     },
   },
   async fetch() {
-    const [resLink, linkError] = await handle(getLink(this.token, this.id));
-    if (linkError) throw new Error('Could not fetch link');
-    const { status, data } = resLink.data;
-    if (status === 200) {
-      const { createdAt, title, destination, domain, slashtag } = data;
-      this.date = createdAt;
-      this.title = title;
-      this.destination = destination;
-      this.shorten = `${domain.name}/${slashtag}`;
-    }
+    await this.getLink()
   },
   data: () => ({
     isRemove: false,
@@ -174,16 +168,28 @@ export default {
     reload() {
       window.location.reload();
     },
-
     closeRemoveModal() {
       this.isRemoveModal = false;
     },
     closeModalAddNewLink() {
       this.modalEditLink = false;
+      this.getLink()
     },
     handleResize() {
       if (process.client) {
         this.width = window.innerWidth;
+      }
+    },
+    async getLink() {
+      const [resLink, linkError] = await handle(getLink(this.token, this.id));
+      if (linkError) throw new Error('Could not fetch link');
+      const { status, data } = resLink.data;
+      if (status === 200) {
+        const { createdAt, title, destination, domain, slashtag } = data;
+        this.date = createdAt;
+        this.title = title;
+        this.destination = destination;
+        this.shorten = `${domain.name}/${slashtag}`;
       }
     },
     async removeLink() {

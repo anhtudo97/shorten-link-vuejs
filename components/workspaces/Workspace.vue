@@ -27,26 +27,6 @@
         class="text-md-center text-right workspace__content"
       >
         <div class="date">{{ createdDate }}</div>
-        <!-- <div class="modify d-flex align-center justify-end justify-md-center">
-          <img
-            src="@/assets/svg/addlink.svg"
-            alt="add link"
-            class="ml-4"
-            @click.stop="openAddLinkDomainModal = true"
-          />
-          <img
-            src="@/assets/svg/member.svg"
-            alt="member"
-            class="ml-4 opacity-06"
-            @click.stop="openModalMemberModal = true"
-          />
-          <img
-            src="@/assets/svg/trash.svg"
-            alt="trash"
-            class="ml-4 opacity-06"
-            @click.stop="isRemoveModal = true"
-          />
-        </div> -->
       </v-col>
 
       <v-dialog
@@ -110,7 +90,7 @@ export default {
     DetailWorkspaceModal,
     ManagementMemberModal,
     AddLinksDomainsModal,
-    SnackbarSuccess
+    SnackbarSuccess,
   },
   props: {
     workspace: {
@@ -151,6 +131,7 @@ export default {
     },
     closeModalDetailWorkspace() {
       this.openModalDetailModal = false;
+      this.$emit('closeCreateNewWorkspace');
     },
     closeModalMembers() {
       this.openModalMemberModal = false;
@@ -176,7 +157,9 @@ export default {
           }, 1000);
         }
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
     handleResize() {

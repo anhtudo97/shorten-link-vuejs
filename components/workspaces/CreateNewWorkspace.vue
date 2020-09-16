@@ -128,7 +128,9 @@ export default {
           }, 2000);
         }
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
         this.showAlert400 = true;
         setTimeout(() => {
           this.showAlert400 = false;
@@ -156,7 +158,9 @@ export default {
           }, 2000);
         }
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       } finally {
         this.workspaceName = '';
       }

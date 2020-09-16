@@ -9,7 +9,7 @@
     <div class="modal-mask">
       <div class="modal-mask__title mb-5">Shorten a new link</div>
       <v-textarea
-        v-model="form.destinationUrl"
+        v-model.lazy="form.destinationUrl"
         auto-grow
         label="Destination your URL"
         hint="Type or paste your URL"
@@ -122,6 +122,7 @@
 </template>
 
 <script>
+import { debounce } from 'debounce';
 import {
   getDomains,
   getWorkspaces,
@@ -214,7 +215,7 @@ export default {
     }
   },
   methods: {
-    async validURL(str) {
+    validURL: debounce(async function(str) {
       const pattern = new RegExp(
         '^(https?:\\/\\/)?' + // protocol
         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
@@ -225,24 +226,33 @@ export default {
         'i'
       ); // fragment locator
       this.valid = !!pattern.test(str);
+      if (!str.includes('http') || !str.includes('https'))
+        str = 'https://' + str;
       if (this.valid) {
         this.loading = true;
         await Promise.all([this.getTitle(str), this.getSlashTag(str)]);
         this.loading = false;
       }
+
       return this.valid;
-    },
+    }, 1000),
     async getTitle(url) {
-      const [resTitle, titleError] = await handle(getTitleUrl(url));
-      if (titleError) throw new Error('Could not fetch title details');
-      const { title } = resTitle.data.data;
-      this.form.title = title;
+      try {
+        const resTitle = await getTitleUrl(url);
+        const { title } = resTitle.data.data;
+        this.form.title = title;
+      } catch (error) {
+        console.log(error);
+      }
     },
     async getSlashTag(url) {
-      const [resSlashTag, slashTagError] = await handle(getSlashTag(url));
-      if (slashTagError) throw new Error('Could not fetch slash tag');
-      const { data } = resSlashTag.data;
-      this.form.slashTag = data;
+      try {
+        const resSlashTag = await getSlashTag(url);
+        const { data } = resSlashTag.data;
+        this.form.slashTag = data;
+      } catch (error) {
+        console.log(error);
+      }
     },
     async checkSlashTagValid(tag) {
       const [resSlashTag, slashTagError] = await handle(checkSlashTag(tag));

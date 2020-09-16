@@ -193,9 +193,6 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
-    reload() {
-      window.location.reload();
-    },
     updateMember() {
       this.getMembers();
     },
@@ -230,7 +227,9 @@ export default {
           this.members = members;
         }
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
     async getDomains() {
@@ -247,7 +246,9 @@ export default {
           this.totalDomains = total;
         }
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
     async getLinks() {
@@ -263,7 +264,9 @@ export default {
           this.totalLinks = total;
         }
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
     async removeWorkspace() {
@@ -275,14 +278,15 @@ export default {
         if (status === 200) {
           this.showAlert = true;
           setTimeout(() => {
-            this.reload();
+            this.$emit('closeCreateNewWorkspace');
             this.showAlert = false;
             this.loading = false;
           }, 1000);
         }
       } catch (error) {
-        console.log(error);
-      } finally {
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
     handleResize() {

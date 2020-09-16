@@ -16,18 +16,6 @@
         </div>
       </div>
     </div>
-    <v-row
-      class="mx-0 justify-space-between py-3 align-center dialog-add-links-domains__menu border-b"
-    >
-      <div class="menu-title">Domains</div>
-      <button
-        :disabled="loading"
-        class="button-normal add-button"
-        @click="addDomainsToWorkspace"
-      >
-        Add more
-      </button>
-    </v-row>
     <div class="border-b">
       <transition-group
         v-if="domain_joined.length > 0"
@@ -69,6 +57,18 @@
         </button>
       </div>
     </div>
+    <v-row
+      class="mx-0 justify-space-between py-3 align-center dialog-add-links-domains__menu border-b"
+    >
+      <div class="menu-title">Domains</div>
+      <button
+        :disabled="loading || !domainSelected || !domainSelected.length"
+        class="button-normal add-button"
+        @click="addDomainsToWorkspace"
+      >
+        Add more
+      </button>
+    </v-row>
     <transition-group name="slide-fade" mode="out-in">
       <div
         v-for="(item, index) in unjoined"
@@ -149,6 +149,7 @@ export default {
   async mounted() {
     await this.getDomains();
     await this.getDomainsWorkspace();
+    this.domainSelected = [];
   },
   methods: {
     async getDomains() {
@@ -163,7 +164,9 @@ export default {
           this.totalDomains = resDomain.data.totalDomains;
         }
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
     async addMoreDomains() {
@@ -186,7 +189,9 @@ export default {
           this.totalJoined = resDomainWorkspace.data.totalJoined;
         }
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
     async addMoreDomainsWorkspace() {
@@ -209,14 +214,16 @@ export default {
         if (status === 200) {
           this.showAlert = true;
           setTimeout(() => {
-            this.domainSelected = [];
             this.$emit('updateDomains');
+            this.domainSelected = [];
             this.loading = false;
           }, 500);
         }
       } catch (error) {
         this.domainSelected = [];
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
     async removeDomainsToWorkspace(id) {
@@ -234,14 +241,17 @@ export default {
         const { status } = res.data;
         if (status === 204) {
           this.showAlert400 = true;
+          this.$emit('updateDomains');
           setTimeout(() => {
-            this.$emit('updateDomains');
+            this.domainSelected = [];
             this.loading = false;
             this.showAlert400 = false;
           }, 500);
         }
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
   },

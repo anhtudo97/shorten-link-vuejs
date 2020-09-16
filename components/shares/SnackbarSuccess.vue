@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-snackbar v-model="isShow" top color="success">
+    <v-snackbar v-model="show" top color="success">
       {{ message }}
       <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="$emit('closeSnackbar')"
@@ -23,10 +23,11 @@ export default {
       default: false,
     },
   },
-  computed: {
-    isShow() {
-      return this.showAlert;
-    },
+  data: () => ({
+    show: false,
+  }),
+  beforeMount() {
+    this.show = this.showAlert;
   },
 };
 </script>

@@ -192,7 +192,9 @@ export default {
           this.members = members;
         }
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
     async searchMember() {
@@ -210,12 +212,14 @@ export default {
           this.loading = false;
         }, 2000);
       } catch (error) {
-        console.log(error);
         this.showAlert400 = true;
         setTimeout(() => {
           this.showAlert400 = false;
           this.loading = false;
         }, 2000);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
     async inviteMembers() {
@@ -235,7 +239,9 @@ export default {
           this.$emit('updateMember');
         }, 2000);
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
         this.showAlert400 = true;
         setTimeout(() => {
           this.loading = false;
@@ -258,7 +264,9 @@ export default {
           this.$emit('updateMember');
         }, 2000);
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
         setTimeout(() => {
           this.loading = false;
         }, 2000);
@@ -283,7 +291,9 @@ export default {
           createdAt: users[0].createdAt,
         };
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
   },

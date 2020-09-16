@@ -38,7 +38,10 @@
     <div v-else class="domain__management">
       <transition-group name="slide-fade" tag="ul" class="pa-0">
         <li v-for="domain in domains" :key="domain.id">
-          <Domain :domain="domain" @closeModalCreateNewDomain="closeModalCreateNewDomain"/>
+          <Domain
+            :domain="domain"
+            @closeModalCreateNewDomain="closeModalCreateNewDomain"
+          />
         </li>
       </transition-group>
       <v-row v-if="domains.length !== 0" justify="center">
@@ -73,8 +76,12 @@ export default {
     Domain,
     CreateNewDomain,
   },
-  fetch() {
-    this.getDomains(1);
+  fetchOnServer: false,
+  async fetch() {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+      this.token = localStorage.token;
+    }
+    await this.getDomains(1);
   },
   data: () => ({
     openModalCreateNewDomain: false,
@@ -90,11 +97,6 @@ export default {
       this.getDomains(val);
     },
   },
-  created() {
-    if (typeof localStorage !== 'undefined' && localStorage.token) {
-      this.token = localStorage.token;
-    }
-  },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);
     this.handleResize();
@@ -107,7 +109,7 @@ export default {
       this.openModalCreateNewDomain = false;
       this.getDomains(1);
     },
-    async getDomains(page) {
+    async getDomains(page = 1) {
       const { token } = this;
       try {
         const resDomain = await getDomains(token, page);

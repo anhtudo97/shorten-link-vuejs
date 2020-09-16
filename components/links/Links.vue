@@ -38,7 +38,12 @@
       </v-col>
     </v-row>
     <div v-if="$fetchState.pending" class="d-flex justify-center">
-      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      <v-progress-circular
+
+        indeterminate
+        color="primary"
+      ></v-progress-circular>
+
     </div>
     <div v-else class="link__management">
       <transition-group name="fade" tag="ul" class="pa-0">
@@ -49,7 +54,7 @@
             :slashtag="link.slashtag"
             :clicks="link.clicks"
             :date="link.createdAt"
-            :link-detail="link"
+            :domain="link.domain.name"
             @closeModalAddNewLink="closeModalAddNewLink"
           />
         </li>
@@ -126,6 +131,7 @@ export default {
     ...mapGetters({ sort: 'links/getSort', direction: 'links/getDirection' }),
   },
   watch: {
+    '$route.query': '$fetch',
     page(val) {
       this.getListLinks(
         val,
@@ -136,13 +142,13 @@ export default {
       );
     },
   },
-  created() {
+  fetchOnServer: false,
+  async fetch() {
     if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
-  },
-  fetch() {
-    this.getListLinks(
+    console.log(this.token);
+    await this.getListLinks(
       this.page,
       this.sort,
       this.direction,
@@ -163,9 +169,9 @@ export default {
       setDirection: 'links/setDirection',
     }),
     async getListLinks(
-      page,
-      sort,
-      direction,
+      page = 1,
+      sort = 'created_at',
+      direction = 'DESC',
       domainSelected,
       workspaceSelected
     ) {

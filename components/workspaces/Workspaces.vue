@@ -6,9 +6,7 @@
           class="align-center justify-space-between main-menu px-3 px-sm-0"
         >
           <v-col cols class="px-0">
-            <button class="menu-text">
-              {{ total }} Workspace(s)
-            </button>
+            <button class="menu-text">{{ total }} Workspace(s)</button>
           </v-col>
           <v-col class="text-right px-0">
             <button
@@ -40,8 +38,20 @@
             v-for="workspace in workspaces"
             :key="workspace.id"
             :workspace="workspace"
+            @closeCreateNewWorkspace="closeCreateNewWorkspace"
           />
         </transition-group>
+        <v-row v-if="workspaces.length !== 0" justify="center">
+          <v-col cols="8">
+            <v-container class="max-width">
+              <v-pagination
+                v-model="page"
+                class="my-4"
+                :length="totalPage"
+              ></v-pagination>
+            </v-container>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
     <v-dialog
@@ -57,6 +67,7 @@
 </template>
 
 <script>
+import { getWorkspaces } from '@/services/api';
 import Workspace from '@/components/workspaces/Workspace';
 import CreateNewWorkspaceModal from '@/components/workspaces/CreateNewWorkspace';
 export default {
@@ -64,20 +75,27 @@ export default {
     Workspace,
     CreateNewWorkspaceModal,
   },
-  props: {
-    workspaces: {
-      type: Array,
-      default: () => [],
-    },
-    total: {
-      type: Number,
-      default: 0,
-    },
+  async fetch() {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+      this.token = localStorage.token;
+    }
+    await this.getWorkspaces(1);
   },
   data: () => ({
     openCreateNewWorkspace: false,
     width: 0,
+    workspaces: [],
+    page: 1,
+    token: '',
+    total: 0,
+    totalPage: 1,
   }),
+  fetchOnServer: false,
+  watch: {
+    page(val) {
+      this.getWorkspaces(val);
+    },
+  },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);
     this.handleResize();
@@ -88,10 +106,28 @@ export default {
   methods: {
     closeCreateNewWorkspace() {
       this.openCreateNewWorkspace = false;
+      this.getWorkspaces(1);
     },
     handleResize() {
       if (process.client) {
         this.width = window.innerWidth;
+      }
+    },
+    async getWorkspaces(page) {
+      const { token } = this;
+      try {
+        const resWorkspace = await getWorkspaces(token, page);
+        const { status, data } = resWorkspace.data;
+        if (status === 200) {
+          const { workspaces, total, totalPage } = data;
+          this.total = total;
+          this.totalPage = totalPage;
+          this.workspaces = workspaces;
+        }
+      } catch (error) {
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
   },

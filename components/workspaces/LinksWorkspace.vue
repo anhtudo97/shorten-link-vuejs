@@ -37,7 +37,10 @@
         </v-row>
       </v-col>
     </v-row>
-    <div v-if="links.length !== 0" class="link__management">
+    <div v-if="$fetchState.pending" class="d-flex justify-center">
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+    </div>
+    <div v-else class="link__management">
       <transition-group name="slide-fade" mode="out-in" tag="ul" class="pa-0">
         <li v-for="link in links" :key="link.id">
           <Link
@@ -49,7 +52,7 @@
           />
         </li>
       </transition-group>
-      <v-row justify="center">
+      <v-row v-if="links.length !== 0" justify="center">
         <v-col cols="8">
           <v-container class="max-width">
             <v-pagination
@@ -60,9 +63,6 @@
           </v-container>
         </v-col>
       </v-row>
-    </div>
-    <div v-else class="d-flex justify-center">
-      <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </div>
     <v-dialog
       v-model="models.modal"
@@ -95,7 +95,6 @@ import SortModal from '@/components/links/SortModal';
 import MemberModal from '@/components/links/MemberModal';
 
 import { getLinksWorkspaces } from '@/services/api';
-import { handle } from '@/utils/promise';
 
 export default {
   components: {
@@ -126,6 +125,7 @@ export default {
     ...mapGetters({ sort: 'links/getSort', direction: 'links/getDirection' }),
   },
   watch: {
+    '$route.query': '$fetch',
     page(val) {
       this.getListLinks(
         val,
@@ -136,14 +136,13 @@ export default {
       );
     },
   },
-  created() {
+  fetchOnServer: false,
+  async fetch() {
+    this.workspaceId = this.$route.params.id;
     if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
-  },
-  mounted() {
-    this.workspaceId = this.$route.params.id;
-    this.getListLinks(
+    await this.getListLinks(
       1,
       this.sort,
       this.direction,
@@ -165,8 +164,8 @@ export default {
     }),
     async getListLinks(page, sort, direction, domainSelected, userIdsSelected) {
       const { token, workspaceId } = this;
-      const [resLink, linkError] = await handle(
-        getLinksWorkspaces(
+      try {
+        const resLink = await getLinksWorkspaces(
           token,
           workspaceId,
           page,
@@ -174,17 +173,20 @@ export default {
           direction,
           domainSelected,
           userIdsSelected
-        )
-      );
-      if (linkError) throw new Error('Could not fetch link');
-      const { status, data } = resLink.data;
-      if (status === 200) {
-        const { links, total, totalPage } = data;
-        this.total = total;
-        this.totalPage = totalPage;
-        if (links.length) {
-          this.links = links;
+        );
+        const { status, data } = resLink.data;
+        if (status === 200) {
+          const { links, total, totalPage } = data;
+          this.total = total;
+          this.totalPage = totalPage;
+          if (links.length) {
+            this.links = links;
+          }
         }
+      } catch (error) {
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
     updateSort(sort, direction) {
@@ -212,8 +214,13 @@ export default {
     },
     closeModalAddNewLink() {
       this.models.modal = false;
-
-      this.$forceUpdate();
+      this.getListLinks(
+        this.page,
+        this.sort,
+        this.direction,
+        this.domainSelected,
+        this.workspaceSelected
+      );
     },
     handleResize() {
       if (process.client) {
