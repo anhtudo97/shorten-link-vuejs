@@ -129,7 +129,7 @@ export default {
     DetailLinkModal,
     RemoveModal,
     CreateNewLink,
-    SnackbarError
+    SnackbarError,
   },
   props: {
     id: {
@@ -229,7 +229,7 @@ export default {
         this.showAlert = true;
         setTimeout(() => {
           this.closeRemoveModal();
-          this.reload();
+          this.$emit('closeModalAddNewLink');
           this.showAlert = false;
           this.loading = false;
         }, 1000);

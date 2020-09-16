@@ -34,7 +34,8 @@
                   outlined
                   :label="form.domain.name"
                   :disabled="loading"
-                ></v-select>
+                  item-disabled="isUse"
+                />
               </v-col>
               <v-col cols="12" md="6" class="py-0">
                 <div class="modal-mask__sub-title">Slash tag</div>
@@ -44,7 +45,7 @@
                   outlined
                   dense
                   :disabled="loading"
-                ></v-text-field>
+                />
               </v-col>
             </v-row>
             <v-row>
@@ -61,7 +62,7 @@
                   outlined
                   menu-props="auto"
                   :disabled="loading || edit"
-                ></v-select>
+                />
               </v-col>
               <v-col cols="12" md="6" class="py-0">
                 <div class="modal-mask__sub-title">Web title</div>
@@ -72,7 +73,7 @@
                   outlined
                   dense
                   :disabled="loading"
-                ></v-text-field>
+                />
               </v-col>
             </v-row>
             <div class="d-flex justify-space-between">
@@ -194,6 +195,7 @@ export default {
         return {
           id: x.id,
           name: x.name,
+          isUse: !x.dnsVerified,
         };
       });
     },

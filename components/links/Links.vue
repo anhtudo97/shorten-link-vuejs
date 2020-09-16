@@ -46,6 +46,7 @@
             :slashtag="link.slashtag"
             :clicks="link.clicks"
             :date="link.createdAt"
+            @closeModalAddNewLink="closeModalAddNewLink"
           />
         </li>
       </transition-group>
@@ -218,8 +219,13 @@ export default {
     },
     closeModalAddNewLink() {
       this.models.modal = false;
-
-      this.$forceUpdate();
+      this.getListLinks(
+        this.page,
+        this.sort,
+        this.direction,
+        this.domainSelected,
+        this.workspaceSelected
+      );
     },
     handleResize() {
       if (process.client) {
