@@ -28,7 +28,6 @@
         Add more
       </button>
     </v-row>
-
     <div class="border-b">
       <transition-group
         v-if="domain_joined.length > 0"
@@ -96,14 +95,11 @@
         Add More
       </button>
     </div>
-    <v-snackbar v-model="showAlert400" top>
-      Delete domain is successfully
-      <template v-slot:action="{ attrs }">
-        <v-btn color="pink" text v-bind="attrs" @click="showAlert400 = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
+    <SnackbarError
+      message="Delete domain is successfully"
+      :show-alert="showAlert400"
+      @closeSnackbar="showAlert400 = false"
+    />
   </v-list>
 </template>
 
@@ -114,7 +110,11 @@ import {
   addDomainsWorkspace,
   removeDomainWorkspace,
 } from '@/services/api';
+import SnackbarError from '@/components/shares/SnackbarError';
 export default {
+  components: {
+    SnackbarError,
+  },
   props: {
     workspace: {
       type: Object,
@@ -142,7 +142,7 @@ export default {
     },
   },
   created() {
-    if (localStorage.token) {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
   },

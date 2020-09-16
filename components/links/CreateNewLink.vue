@@ -101,26 +101,22 @@
         @infinite="infiniteScroll"
       ></infinite-loading>
     </client-only>
-    <v-snackbar v-model="showAlert" top color="success">
-      {{ edit ? 'Update link successfully' : 'Create new link successfully' }}
-      <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false"
-          >Close</v-btn
-        >
-      </template>
-    </v-snackbar>
-    <v-snackbar v-model="showAlert403" top color="error">
-      {{
+    <SnackbarSuccess
+      :message="
+        edit ? 'Update link successfully' : 'Create new link successfully'
+      "
+      :show-alert="showAlert"
+      @closeSnackbar="showAlert = false"
+    />
+    <SnackbarError
+      :message="
         domainCheck
           ? 'The workspace has no permission this domain'
           : 'Slash tag is exist'
-      }}
-      <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false"
-          >Close</v-btn
-        >
-      </template>
-    </v-snackbar>
+      "
+      :show-alert="showAlert403"
+      @closeSnackbar="showAlert403 = false"
+    />
   </v-list>
 </template>
 
@@ -136,7 +132,13 @@ import {
   getLink,
 } from '@/services/api';
 import { handle } from '@/utils/promise';
+import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
+import SnackbarError from '@/components/shares/SnackbarError';
 export default {
+  components: {
+    SnackbarSuccess,
+    SnackbarError,
+  },
   props: {
     edit: {
       type: Boolean,
@@ -150,14 +152,14 @@ export default {
   async fetch() {
     if (this.edit) {
       const [resLink, linkError] = await handle(getLink(this.token, this.id));
-      if (linkError) throw new Error('Could not fetch delete link');
+      if (linkError) throw new Error('Could not fetch link');
       const { status, data } = resLink.data;
       if (status === 200) {
         const { title, destination, domain, slashtag, domainID } = data;
         this.form.destinationUrl = destination;
         this.form.title = title;
         this.form.slashTag = slashtag;
-        this.form.domain = domain.name;
+        this.form.domain = domain;
         this.form.domainId = domainID;
       }
     }
@@ -210,9 +212,6 @@ export default {
     }
   },
   methods: {
-    reload() {
-      window.location.reload();
-    },
     async validURL(str) {
       const pattern = new RegExp(
         '^(https?:\\/\\/)?' + // protocol
@@ -319,7 +318,6 @@ export default {
             this.showAlert = true;
             setTimeout(() => {
               this.$emit('closeModalAddNewLink');
-              this.reload();
               this.loading = false;
             }, 2000);
           }
@@ -358,7 +356,6 @@ export default {
           this.showAlert = true;
           setTimeout(() => {
             this.$emit('closeModalAddNewLink');
-            this.reload();
             this.loading = false;
           }, 2000);
         }

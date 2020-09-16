@@ -89,14 +89,11 @@
         />
       </v-dialog>
     </v-row>
-    <v-snackbar v-model="showAlert" top>
-      Delete workspace is successfully
-      <template v-slot:action="{ attrs }">
-        <v-btn color="pink" text v-bind="attrs" @click="showAlert = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
+    <SnackbarSuccess
+      message="Delete workspace is successfully"
+      :show-alert="showAlert"
+      @closeSnackbar="showAlert = false"
+    />
   </div>
 </template>
 
@@ -107,12 +104,13 @@ import { deleteWorkspace } from '@/services/api';
 import DetailWorkspaceModal from '@/components/workspaces/DetailWorkspaceModal';
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
 import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
-
+import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
 export default {
   components: {
     DetailWorkspaceModal,
     ManagementMemberModal,
     AddLinksDomainsModal,
+    SnackbarSuccess
   },
   props: {
     workspace: {

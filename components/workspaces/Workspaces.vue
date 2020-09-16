@@ -35,7 +35,7 @@
     </v-row>
     <v-row class="workspaces__management">
       <v-col cols="12" sm="10" md="8" class="mx-auto">
-        <transition-group name="list" tag="section" class="pa-0">
+        <transition-group name="slide-fade" tag="section" class="pa-0">
           <Workspace
             v-for="workspace in workspaces"
             :key="workspace.id"
@@ -78,16 +78,6 @@ export default {
     openCreateNewWorkspace: false,
     width: 0,
   }),
-  computed: {
-    // ...mapGetters({
-    //   workspaces: 'workspaces/getWorkspaces',
-    // }),
-    // tempWorkspaces() {
-    //   return [...this.workspaces].sort((a, b) => {
-    //     return new Date(b.createdAt) - new Date(a.createdAt);
-    //   });
-    // },
-  },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);
     this.handleResize();

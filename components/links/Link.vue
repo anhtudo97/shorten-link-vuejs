@@ -106,14 +106,11 @@
         @removeElement="removeLink"
       />
     </v-dialog>
-    <v-snackbar v-model="showAlert" top>
-      Delete link is successfully
-      <template v-slot:action="{ attrs }">
-        <v-btn color="pink" text v-bind="attrs" @click="showAlert = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
+    <SnackbarError
+      message="Delete link is successfully"
+      :show-alert="showAlert"
+      @closeSnackbar="showAlert = false"
+    />
   </v-row>
 </template>
 
@@ -125,12 +122,14 @@ import { handle } from '@/utils/promise';
 import DetailLinkModal from '@/components/links/DetailLinkModal';
 import CreateNewLink from '@/components/links/CreateNewLink';
 import RemoveModal from '@/components/shares/RemoveModal';
+import SnackbarError from '@/components/shares/SnackbarError';
 export default {
   directives: { clipboard },
   components: {
     DetailLinkModal,
     RemoveModal,
     CreateNewLink,
+    SnackbarError
   },
   props: {
     id: {

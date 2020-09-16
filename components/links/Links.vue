@@ -38,7 +38,7 @@
       </v-col>
     </v-row>
     <div v-if="!loading" class="link__management">
-      <transition-group name="slide-fade" mode="out-in" tag="ul" class="pa-0">
+      <transition-group name="fade" tag="ul" class="pa-0">
         <li v-for="link in links" :key="link.id">
           <Link
             :id="link.id"

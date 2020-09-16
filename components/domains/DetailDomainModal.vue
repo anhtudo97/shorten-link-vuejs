@@ -67,21 +67,22 @@
         @closeRemoveModal="closeRemoveModal"
       />
     </v-dialog>
-    <v-snackbar v-model="showAlert" top>
-      Delete domains is successfully
-      <template v-slot:action="{ attrs }">
-        <v-btn color="pink" text v-bind="attrs" @click="showAlert = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
+    <SnackbarSuccess
+      message="Delete domains is successfully"
+      :show-alert="showAlert"
+      @closeSnackbar="showAlert = false"
+    />
   </v-list>
 </template>
 
 <script>
 import { format, parseISO } from 'date-fns';
 import { getDomain, deleteDomain } from '@/services/api';
+import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
 export default {
+  components:{
+    SnackbarSuccess
+  },
   props: {
     domain: {
       type: Object,
