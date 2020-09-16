@@ -173,13 +173,13 @@ export default {
             this.$router.push('/login');
           }, 2000);
         }
-      } catch (e) {
+      } catch (error) {
+        console.log(error);
         this.showAlertError = true;
         setTimeout(() => {
           this.showAlertError = false;
           this.isLoading = false;
         }, 1000);
-        console.log(e);
       }
     },
   },

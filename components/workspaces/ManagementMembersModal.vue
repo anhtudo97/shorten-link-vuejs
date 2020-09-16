@@ -54,10 +54,10 @@
           :key="item.id"
           class="d-flex justify-space-between dialog-member-workspace__member align-center"
         >
-          <div class="member-name" @click.stop="openUserDetailModal = true">
+          <div class="member-name" @click.stop="openDetailModal(item.email)">
             {{ item.fullName }}
           </div>
-          <div class="member-name" @click.stop="openUserDetailModal = true">
+          <div class="member-name">
             {{ item.status }}
           </div>
           <button
@@ -97,39 +97,40 @@
       max-width="700px"
       transition="dialog-transition"
     >
-      <DetailUserModal @closeUserDetailModal="closeUserDetailModal" />
+      <DetailUserModal
+        :user="user"
+        @closeUserDetailModal="closeUserDetailModal"
+      />
     </v-dialog>
-    <v-snackbar v-model="showAlert" top color="success">
-      Send the invitations is successful
-      <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false"
-          >Close</v-btn
-        >
-      </template>
-    </v-snackbar>
-    <v-snackbar v-model="showAlert400" top color="error">
-      Email is not exited
-      <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false"
-          >Close</v-btn
-        >
-      </template>
-    </v-snackbar>
+    <SnackbarSuccess
+      message="Send the invitations is successfully"
+      :show-alert="showAlert"
+      @closeSnackbar="showAlert = false"
+    />
+    <SnackbarError
+      message="Email is not exited"
+      :show-alert="showAlert400"
+      @closeSnackbar="showAlert400 = false"
+    />
   </v-list>
 </template>
 
 <script>
-import validations from '@/utils/validations';
 import {
   getMembersWorkspaces,
   getMember,
   inviteMembers,
   removeMemberWorkspace,
 } from '@/services/api';
+import validations from '@/utils/validations';
 import DetailUserModal from '@/components/user/DetailUserModal';
+import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
+import SnackbarError from '@/components/shares/SnackbarError';
 export default {
   components: {
     DetailUserModal,
+    SnackbarSuccess,
+    SnackbarError,
   },
   props: {
     workspace: {
@@ -150,6 +151,11 @@ export default {
     totalPage: 1,
     members: [],
     users: [],
+    user: {
+      fullname: '',
+      email: '',
+      createdAt: '2020-08-26T10:11:25.704675+07:00',
+    },
   }),
   computed: {
     joined() {
@@ -171,9 +177,6 @@ export default {
     async addMore() {
       this.page++;
       await this.getMembersJoined();
-    },
-    closeUserDetailModal() {
-      this.openUserDetailModal = false;
     },
     async getMembersJoined() {
       try {
@@ -259,6 +262,28 @@ export default {
         setTimeout(() => {
           this.loading = false;
         }, 2000);
+      }
+    },
+    closeUserDetailModal() {
+      this.openUserDetailModal = false;
+    },
+    openDetailModal(email) {
+      this.openUserDetailModal = true;
+      this.getMemberDetail(email);
+    },
+    async getMemberDetail(email) {
+      try {
+        const res = await getMember(this.token, email);
+        const { data } = res.data;
+        const { users } = data;
+
+        this.user = {
+          fullname: users[0].fullName,
+          email: users[0].email,
+          createdAt: users[0].createdAt,
+        };
+      } catch (error) {
+        console.log(error);
       }
     },
   },

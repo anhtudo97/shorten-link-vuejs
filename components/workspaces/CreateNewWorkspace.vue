@@ -59,18 +59,21 @@
         </v-btn>
       </template>
     </v-snackbar>
-    <v-snackbar v-model="showAlert400" top color="error">
-      Workspace is existed
-      <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">Close</v-btn>
-      </template>
-    </v-snackbar>
+    <SnackbarError
+      message="Workspace is existed"
+      :show-alert="showAlert400"
+      @closeSnackbar="showAlert400 = false"
+    />
   </v-list>
 </template>
 
 <script>
 import { createNewWorkspace, updateWorkspace } from '@/services/api';
+import SnackbarError from '@/components/shares/SnackbarError';
 export default {
+  components: {
+    SnackbarError,
+  },
   props: {
     edit: {
       type: Boolean,

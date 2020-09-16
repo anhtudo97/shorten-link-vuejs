@@ -81,6 +81,7 @@
       :fullscreen="width < 600 ? true : false"
     >
       <CreateNewLink
+        :id="id"
         :edit="true"
         @closeModalAddNewLink="closeModalAddNewLink"
       />
@@ -92,14 +93,11 @@
         @removeElement="removeLink"
       />
     </v-dialog>
-    <v-snackbar v-model="showAlert" top>
-      Delete link is successfully
-      <template v-slot:action="{ attrs }">
-        <v-btn color="pink" text v-bind="attrs" @click="showAlert = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
+    <SnackbarError
+      message="Delete link is successfully"
+      :show-alert="showAlert"
+      @closeSnackbar="showAlert = false"
+    />
   </v-list>
 </template>
 
@@ -110,11 +108,13 @@ import { getLink, deleteLink } from '@/services/api';
 
 import CreateNewLink from '@/components/links/CreateNewLink';
 import RemoveModal from '@/components/shares/RemoveModal';
+import SnackbarError from '@/components/shares/SnackbarError';
 export default {
   directives: { clipboard },
   components: {
     RemoveModal,
     CreateNewLink,
+    SnackbarError,
   },
   props: {
     slashtag: {

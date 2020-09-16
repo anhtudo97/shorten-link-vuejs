@@ -2,7 +2,10 @@
   <v-list class="dialog-detail-user">
     <div class="d-flex justify-space-between">
       <div></div>
-      <div class="dialog-detail-user__dialog-icon pa-2" @click.stop="$emit('closeUserDetailModal')">
+      <div
+        class="dialog-detail-user__dialog-icon pa-2"
+        @click.stop="$emit('closeUserDetailModal')"
+      >
         <img src="@/assets/svg/close.svg" alt="close" />
       </div>
     </div>
@@ -13,9 +16,9 @@
           src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
         />
         <div>
-          <div class="dialog-name-text px-5">Nguyen Van A</div>
+          <div class="dialog-name-text px-5">{{ user.fullname }}</div>
           <div class="dialog-email-text px-5">
-            <button disabled class="date-text">nguyenvaana@gmail.com</button>
+            <button disabled class="date-text">{{ user.email }}</button>
           </div>
         </div>
       </div>
@@ -23,19 +26,7 @@
     <div class="mt-16 mb-4 border-b">
       <div class="d-flex dialog-detail-user__info align-center mb-5">
         <img src="@/assets/svg/calendar.svg" alt="calendar" class="mr-3" />
-        <div class="info-text">Joined on {{createdDate}}</div>
-      </div>
-      <div class="d-flex dialog-detail-user__info align-center mb-5">
-        <img src="@/assets/svg/links.svg" alt="calendar" class="mr-3" />
-        <nuxt-link to="/links">
-          <div class="info-text info-link font-weight-medium">{{user.links.length}} Links</div>
-        </nuxt-link>
-      </div>
-      <div class="d-flex dialog-detail-user__info align-center mb-5">
-        <img src="@/assets/svg/workspaces.svg" alt="workspaces" class="mr-3" />
-        <nuxt-link to="/links">
-          <div class="info-text info-link font-weight-medium">Workspace name</div>
-        </nuxt-link>
+        <div class="info-text">Joined on {{ createdDate }}</div>
       </div>
     </div>
   </v-list>
@@ -43,17 +34,13 @@
 
 <script>
 import { format } from 'date-fns';
-
 export default {
-  data: () => ({
+  props: {
     user: {
-      fullname: '',
-      email: '',
-      createdAt: '2020-08-26T10:11:25.704675+07:00',
-      links: [],
-      workspace: '',
+      type: Object,
+      default: () => {},
     },
-  }),
+  },
   computed: {
     createdDate() {
       return format(new Date(this.user.createdAt), 'MMMM dd, yyyy');

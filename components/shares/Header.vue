@@ -116,7 +116,6 @@ export default {
     ) {
       this.token = localStorage.token;
       this.email = localStorage.email;
-      console.log(this.token, this.user);
     }
   },
   methods: {

@@ -35,7 +35,7 @@
       </v-col>
     </v-row>
     <div class="domain__management">
-      <transition-group name="list" tag="ul" class="pa-0">
+      <transition-group name="slide-fade" tag="ul" class="pa-0">
         <li v-for="domain in domains" :key="domain.id">
           <Domain :domain="domain" />
         </li>
