@@ -219,6 +219,14 @@ export const getWorkspaces = (token, page) => {
   });
 };
 
+export const getWorkspacesJoined = (token, page) => {
+  return api.get(`/joined-workspaces?page=${page}&perPage=10`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 export const updateWorkspace = (token, id, name) => {
   return api.put(
     `/workspaces/${id}`,

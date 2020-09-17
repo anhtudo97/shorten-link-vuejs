@@ -18,64 +18,48 @@
         <div>
           <div class="dialog-name-text px-5">{{ workspace.name }}</div>
           <div class="dialog-date-text px-5">
-            <button disabled class="date-text">Default</button>
+            <button v-if="workspace.isDefault" disabled class="date-text">Default</button>
           </div>
         </div>
       </div>
       <button
         class="dialog-detail-workspace__button button-normal"
         @click="openEditWorkspace = true"
-      >
-        Edit
-      </button>
+      >Edit</button>
     </div>
     <div class="mt-16 mb-4 border-b">
       <div class="d-flex dialog-detail-workspace__info align-center mb-5">
         <img src="@/assets/svg/calendar.svg" alt="calendar" class="mr-3" />
-        <div class="info-text">
-          Created on {{ createdDate }} by anhtudo97@gmail.com
-        </div>
+        <div class="info-text">Created on {{ createdDate }} by anhtudo97@gmail.com</div>
       </div>
       <div class="d-flex dialog-detail-workspace__info align-center mb-5">
         <img src="@/assets/svg/links.svg" alt="calendar" class="mr-3" />
         <nuxt-link :to="`/links/${workspace.id}`">
-          <div class="info-text info-link font-weight-medium">
-            {{ totalLinks }} Links
-          </div>
+          <div class="info-text info-link font-weight-medium">{{ totalLinks }} Links</div>
         </nuxt-link>
       </div>
-      <div class="d-flex dialog-detail-workspace__info align-center mb-5">
+      <div v-if="!joined" class="d-flex dialog-detail-workspace__info align-center mb-5">
         <img src="@/assets/svg/members.svg" alt="calendar" class="mr-3" />
         <div
           class="info-text font-weight-medium"
           @click.stop="openModalMemberModal = true"
-        >
-          {{ totalMembers }} teammate(s)
-        </div>
+        >{{ totalMembers }} teammate(s)</div>
       </div>
-      <div class="d-flex dialog-detail-workspace__info align-center mb-5">
+      <div v-if="!joined" class="d-flex dialog-detail-workspace__info align-center mb-5">
         <img src="@/assets/svg/domains.svg" alt="calendar" class="mr-3" />
         <div
           class="info-text info-link font-weight-medium"
           @click.stop="openAddLinkDomainModal = true"
-        >
-          {{ totalDomains }} Branded domains included
-        </div>
+        >{{ totalDomains }} Branded domains included</div>
       </div>
     </div>
-    <v-row
-      v-if="!workspace.isDefault"
-      class="align-center dialog-detail-workspace__button-remove"
-    >
+    <v-row v-if="!workspace.isDefault ^ joined" class="align-center dialog-detail-workspace__button-remove">
       <v-col cols="12" sm="3">
         <div class="services-title">Delete this repository</div>
       </v-col>
       <v-col cols="12" sm="9" class="text-md-right text-left">
-        <button
-          class="button-warning button-remove"
-          @click.stop="isRemoveModal = true"
-        >
-          <div class="button-text">Remove this domain</div>
+        <button class="button-warning button-remove" @click.stop="isRemoveModal = true">
+          <div class="button-text">Remove this workspace</div>
         </button>
       </v-col>
     </v-row>
@@ -111,11 +95,7 @@
         @closeModalAddLinksDomain="closeModalAddLinksDomain"
       />
     </v-dialog>
-    <v-dialog
-      v-model="openEditWorkspace"
-      max-width="850"
-      :fullscreen="width < 600 ? true : false"
-    >
+    <v-dialog v-model="openEditWorkspace" max-width="850" :fullscreen="width < 600 ? true : false">
       <CreateNewWorkspaceModal
         :id="workspace.id"
         :edit="true"
@@ -155,6 +135,10 @@ export default {
     workspace: {
       type: Object,
       default: () => {},
+    },
+    joined: {
+      type: Boolean,
+      default: false,
     },
   },
   data: () => ({

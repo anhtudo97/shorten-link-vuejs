@@ -12,9 +12,7 @@
             <button
               class="button-normal add-new-domain"
               @click.stop="openModalCreateNewDomain = true"
-            >
-              New domain
-            </button>
+            >New domain</button>
           </v-col>
         </v-row>
       </v-col>
@@ -38,20 +36,13 @@
     <div v-else class="domain__management">
       <transition-group name="slide-fade" tag="ul" class="pa-0">
         <li v-for="domain in domains" :key="domain.id">
-          <Domain
-            :domain="domain"
-            @closeModalCreateNewDomain="closeModalCreateNewDomain"
-          />
+          <Domain :domain="domain" @closeModalCreateNewDomain="closeModalCreateNewDomain" />
         </li>
       </transition-group>
       <v-row v-if="domains.length !== 0" justify="center">
         <v-col cols="8">
           <v-container class="max-width">
-            <v-pagination
-              v-model="page"
-              class="my-4"
-              :length="totalPage"
-            ></v-pagination>
+            <v-pagination v-model="page" class="my-4" :length="totalPage"></v-pagination>
           </v-container>
         </v-col>
       </v-row>
@@ -71,7 +62,6 @@
 import Domain from '@/components/domains/Domain';
 import CreateNewDomain from '@/components/domains/CreateNewDomain';
 import { getDomains } from '@/services/api';
-import { handle } from '~/utils/promise';
 export default {
   components: {
     Domain,
@@ -112,21 +102,21 @@ export default {
     },
     async getDomains(page = 1) {
       const { token } = this;
-      const [resDomain, domainError] = await handle(getDomains(token, page));
-      if (domainError) {
-        console.error(domainError.response);
-        const { status } = domainError.response;
+      try {
+        const resDomain = await getDomains(token, page);
+        const { status, data } = resDomain.data;
+        if (status === 200) {
+          const { domains, total, totalPage } = data;
+          this.total = total;
+          this.totalPage = totalPage;
+          this.domains = domains;
+        }
+      } catch (error) {
+        const { status } = error.response.data;
         if (status === 401) {
           this.$router.push('/login');
-          return;
+
         }
-      }
-      const { status, data } = resDomain.data;
-      if (status === 200) {
-        const { domains, total, totalPage } = data;
-        this.total = total;
-        this.totalPage = totalPage;
-        this.domains = domains;
       }
     },
     handleResize() {

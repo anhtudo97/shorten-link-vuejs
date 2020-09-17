@@ -8,20 +8,13 @@
       </div>
       <div class="d-flex justify-space-between">
         <div></div>
-        <div
-          class="header-dialog-icon pa-2"
-          @click.stop="$emit('closeModalAddLinksDomain')"
-        >
+        <div class="header-dialog-icon pa-2" @click.stop="$emit('closeModalAddLinksDomain')">
           <img src="@/assets/svg/close.svg" alt="close" />
         </div>
       </div>
     </div>
     <div class="border-b">
-      <transition-group
-        v-if="domain_joined.length > 0"
-        name="slide-fade"
-        mode="out-in"
-      >
+      <transition-group v-if="domain_joined.length > 0" name="slide-fade" mode="out-in">
         <div
           v-for="(item, index) in domain_joined"
           :key="`Domain__${index}`"
@@ -33,9 +26,7 @@
             :disabled="loading"
             class="button-warning member-action"
             @click="removeDomainsToWorkspace(item.id)"
-          >
-            Remove
-          </button>
+          >Remove</button>
         </div>
       </transition-group>
       <div
@@ -44,17 +35,12 @@
       >
         <div class="member-name">Dont have any domains</div>
       </div>
-      <div
-        v-if="totalJoined > 1"
-        class="dialog-add-links-domains__domain d-flex justify-center"
-      >
+      <div v-if="totalJoined > 1" class="dialog-add-links-domains__domain d-flex justify-center">
         <button
           :disabled="loading"
           class="button-normal member-action"
           @click="addMoreDomainsWorkspace"
-        >
-          Add More
-        </button>
+        >Add More</button>
       </div>
     </div>
     <v-row
@@ -65,9 +51,7 @@
         :disabled="loading || !domainSelected || !domainSelected.length"
         class="button-normal add-button"
         @click="addDomainsToWorkspace"
-      >
-        Add more
-      </button>
+      >Add more</button>
     </v-row>
     <transition-group name="slide-fade" mode="out-in">
       <div
@@ -78,22 +62,18 @@
         <v-checkbox
           v-model="domainSelected"
           class="checkbox-member"
+          :disabled="loading"
           :label="item.name"
           :value="item.id"
         ></v-checkbox>
       </div>
     </transition-group>
-    <div
-      v-if="totalDomains > 1"
-      class="dialog-add-links-domains__domain d-flex justify-center"
-    >
+    <div v-if="totalDomains > 1" class="dialog-add-links-domains__domain d-flex justify-center">
       <button
         :disabled="loading"
         class="button-normal member-action"
         @click="addMoreDomains"
-      >
-        Add More
-      </button>
+      >Add More</button>
     </div>
     <SnackbarError
       message="Delete domain is successfully"
@@ -121,6 +101,14 @@ export default {
       default: () => {},
     },
   },
+  async fetch() {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+      this.token = localStorage.token;
+    }
+    await this.getDomains();
+    await this.getDomainsWorkspace();
+    this.domainSelected = [];
+  },
   data: () => ({
     tabs: null,
     pageDomain: 1,
@@ -136,20 +124,15 @@ export default {
   computed: {
     unjoined() {
       const names = [...this.domain_joined].map((x) => x.name);
-      return [...this.domains].filter((x) => {
+      return this.domains.filter((x) => {
         if (!names.includes(x.name)) return x;
       });
     },
   },
-  created() {
-    if (typeof localStorage !== 'undefined' && localStorage.token) {
-      this.token = localStorage.token;
-    }
-  },
-  async mounted() {
-    await this.getDomains();
-    await this.getDomainsWorkspace();
-    this.domainSelected = [];
+  watch: {
+    domainSelected(val) {
+      console.log({ val });
+    },
   },
   methods: {
     async getDomains() {
@@ -215,8 +198,8 @@ export default {
           this.showAlert = true;
           setTimeout(() => {
             this.$emit('updateDomains');
-            this.domainSelected = [];
             this.loading = false;
+            this.domainSelected = [];
           }, 500);
         }
       } catch (error) {
@@ -243,9 +226,9 @@ export default {
           this.showAlert400 = true;
           this.$emit('updateDomains');
           setTimeout(() => {
-            this.domainSelected = [];
             this.loading = false;
             this.showAlert400 = false;
+            this.domainSelected = [];
           }, 500);
         }
       } catch (error) {

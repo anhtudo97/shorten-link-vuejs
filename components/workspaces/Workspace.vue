@@ -1,8 +1,6 @@
 <template>
   <div class="workspace mb-5">
-    <v-row
-      class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0"
-    >
+    <v-row class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0">
       <v-col
         cols="7"
         sm="8"
@@ -15,17 +13,10 @@
             class="img"
             src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
           />
-          <div class="name-text px-5 text-overflow-hidden">
-            {{ workspace.name }}
-          </div>
+          <div class="name-text px-5 text-overflow-hidden">{{ workspace.name }}</div>
         </div>
       </v-col>
-      <v-col
-        cols="5"
-        sm="4"
-        md="3"
-        class="text-md-center text-right workspace__content"
-      >
+      <v-col cols="5" sm="4" md="3" class="text-md-center text-right workspace__content">
         <div class="date">{{ createdDate }}</div>
       </v-col>
 
@@ -36,6 +27,7 @@
       >
         <DetailWorkspaceModal
           :workspace="workspace"
+          :joined="joined"
           @closeModalDetailWorkspace="closeModalDetailWorkspace"
         />
       </v-dialog>
@@ -46,10 +38,7 @@
         max-width="650"
         :fullscreen="width < 600 ? true : false"
       >
-        <ManagementMemberModal
-          :workspace="workspace"
-          @closeModalMembers="closeModalMembers"
-        />
+        <ManagementMemberModal :workspace="workspace" @closeModalMembers="closeModalMembers" />
       </v-dialog>
       <v-dialog v-model="isRemoveModal" persistent max-width="500">
         <RemoveModal
@@ -64,9 +53,7 @@
         max-width="700"
         :fullscreen="width < 600 ? true : false"
       >
-        <AddLinksDomainsModal
-          @closeModalAddLinksDomain="closeModalAddLinksDomain"
-        />
+        <AddLinksDomainsModal @closeModalAddLinksDomain="closeModalAddLinksDomain" />
       </v-dialog>
     </v-row>
     <SnackbarSuccess
@@ -96,6 +83,10 @@ export default {
     workspace: {
       type: Object,
       default: () => {},
+    },
+    joined: {
+      type: Boolean,
+      default: false,
     },
   },
   data: () => ({

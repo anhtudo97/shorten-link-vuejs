@@ -26,11 +26,7 @@
               </div>
             </nuxt-link>
             <nuxt-link to="/sign-up">
-              <button
-                class="button-normal header__signup py-2 px-6 font-weight-bold"
-              >
-                Sign up
-              </button>
+              <button class="button-normal header__signup py-2 px-6 font-weight-bold">Sign up</button>
             </nuxt-link>
           </div>
           <div v-else class="d-flex align-center">
@@ -46,16 +42,14 @@
                     d="M7 15.7c1.11 0 2-0.89 2-2H5c0 1.11 0.89 2 2 2z"
                   />
                 </svg>
-                <span class="notification--num">5</span>
+                <span class="notification--num">{{total}}</span>
               </div>
             </nuxt-link>
             <div class="pr-4 header__signup">{{ email }}</div>
             <button
               class="button-normal header__signup py-2 px-6 font-weight-bold"
               @click.prevent="logout"
-            >
-              Logout
-            </button>
+            >Logout</button>
           </div>
         </client-only>
       </div>
@@ -70,9 +64,7 @@
               </div>
             </nuxt-link>
             <v-spacer></v-spacer>
-            <v-app-bar-nav-icon
-              @click.stop="$emit('openModal')"
-            ></v-app-bar-nav-icon>
+            <v-app-bar-nav-icon @click.stop="$emit('openModal')"></v-app-bar-nav-icon>
           </v-row>
         </v-col>
       </v-row>
@@ -81,7 +73,29 @@
 </template>
 
 <script>
+import { getInvitations } from '@/services/api';
 export default {
+  async fetch() {
+    if (
+      typeof localStorage !== 'undefined' &&
+      localStorage.token &&
+      localStorage.email
+    ) {
+      this.token = localStorage.token;
+      this.email = localStorage.email;
+    }
+    try {
+      const res = await getInvitations(this.token, 1);
+      const { status, data } = res.data;
+      if (status === 200) {
+        this.total = data.total;
+      }
+    } catch (error) {
+      console.error(error.response);
+      const { status } = error.response;
+      if (status === 401) this.$router.push('/login');
+    }
+  },
   data: () => ({
     menu: [
       {
@@ -107,17 +121,9 @@ export default {
     ],
     token: '',
     email: null,
+    total: 0,
   }),
-  created() {
-    if (
-      typeof localStorage !== 'undefined' &&
-      localStorage.token &&
-      localStorage.email
-    ) {
-      this.token = localStorage.token;
-      this.email = localStorage.email;
-    }
-  },
+  fetchOnServer: false,
   methods: {
     logout() {
       this.$store.commit('setUser', null);

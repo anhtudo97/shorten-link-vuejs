@@ -126,8 +126,8 @@ import {
   createNewLink,
   updateLink,
   getLink,
+  getWorkspacesJoined,
 } from '@/services/api';
-import { handle } from '@/utils/promise';
 export default {
   props: {
     edit: {
@@ -141,32 +141,37 @@ export default {
   },
   async fetch() {
     if (this.edit) {
-      const [resLink, linkError] = await handle(getLink(this.token, this.id));
-      if (linkError) {
-        console.error(linkError.response);
-        const { status } = linkError.response;
+      try {
+        const resLink = await getLink(this.token, this.id);
+        const { status, data } = resLink.data;
+        if (status === 200) {
+          const { title, destination, domain, slashtag, domainID } = data;
+          this.destinationUrl = destination;
+          this.title = title;
+          this.slashTag = slashtag;
+          this.checkSlashEdit = slashtag;
+          this.domain = domain;
+          this.domainId = domainID;
+        }
+      } catch (error) {
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        return;
-      }
-      const { status, data } = resLink.data;
-      if (status === 200) {
-        const { title, destination, domain, slashtag, domainID } = data;
-        this.destinationUrl = destination;
-        this.title = title;
-        this.slashTag = slashtag;
-        this.checkSlashEdit = slashtag;
-        this.domain = domain;
-        this.domainId = domainID;
+
       }
     }
   },
   data: () => ({
+    // domains
     domains: [],
+    pageDomains: 1,
+    // workspaces
     workspaces: [],
+    pageWorkspaces: 1,
+    // workspaces joined
+    workspacesJoined: [],
+    pageWorkspacesJoined: 1,
     token: '',
     loading: false,
-    pageDomains: 1,
-    pageWorkspaces: 1,
     showAlert: false,
     showAlert403: false,
     valid: false,
@@ -241,10 +246,8 @@ export default {
         const { title } = resTitle.data.data;
         this.title = title;
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-
       }
     },
     async getSlashTag(url) {
@@ -253,10 +256,8 @@ export default {
         const { data } = resSlashTag.data;
         this.slashTag = data;
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-
       }
     },
     async checkSlashTagValid(tag) {
@@ -265,58 +266,63 @@ export default {
         const { data } = resSlashTag.data;
         this.checkSlash = data.exists;
       } catch (error) {
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-
       }
     },
     async infiniteScroll($state) {
       const { token, pageDomains, pageWorkspaces } = this;
-      const [resDomains, domainsError] = await handle(
-        getDomains(token, pageDomains, true)
-      );
-      if (domainsError) {
-        console.error(domainsError.response);
-        const { status } = domainsError.response;
-        if (status === 401) this.$router.push('/login');
-        return;
-      }
-      const [resWorkspaces, workspacesError] = await handle(
-        getWorkspaces(token, pageWorkspaces)
-      );
-      if (workspacesError) {
-        console.error(workspacesError.response);
-        const { status } = workspacesError.response;
-        if (status === 401) this.$router.push('/login');
-        return;
-      }
+      try {
+        const resDomains = await getDomains(token, pageDomains, true);
+        const resWorkspaces = await getWorkspaces(token, pageWorkspaces);
+        const resWorkspacesJoined = await getWorkspacesJoined(
+          token,
+          pageWorkspaces
+        );
 
-      const statusDomains = resDomains.data.status;
-      const statusWorkspaces = resWorkspaces.data.status;
+        const statusDomains = resDomains.data.status;
+        const statusWorkspaces = resWorkspaces.data.status;
+        const statusWorkspacesJoined = resWorkspacesJoined.data.status;
 
-      if (statusDomains === 200) {
-        this.pageDomains += 1;
-        const { domains } = resDomains.data.data;
-        if (domains.length) {
-          this.domains.push(...domains);
-          this.domain.name = this.domains[0].name;
-          this.domain.id = this.domains[0].id;
-          $state.loaded();
-        } else {
-          $state.complete();
+        if (statusDomains === 200) {
+          this.pageDomains += 1;
+          const { domains } = resDomains.data.data;
+          if (domains.length) {
+            this.domains.push(...domains);
+            this.domain.name = this.domains[0].name;
+            this.domain.id = this.domains[0].id;
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
         }
-      }
-      if (statusWorkspaces === 200) {
-        this.pageWorkspaces += 1;
-        const { workspaces } = resWorkspaces.data.data;
-        if (workspaces.length) {
-          this.workspaces.push(...workspaces);
-          this.workspace.name = this.workspaces[0].name;
-          this.workspace.id = this.workspaces[0].id;
-          $state.loaded();
-        } else {
-          $state.complete();
+        if (statusWorkspaces === 200) {
+          this.pageWorkspaces += 1;
+          const { workspaces } = resWorkspaces.data.data;
+          if (workspaces.length) {
+            this.workspaces.push(...workspaces);
+            this.workspace.name = this.workspaces[0].name;
+            this.workspace.id = this.workspaces[0].id;
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
         }
+        if (statusWorkspacesJoined === 200) {
+          this.pageWorkspacesJoined += 1;
+          const { invitations } = resWorkspacesJoined.data.data;
+          if (invitations.length) {
+            const workspaces = invitations.map((x) => x.workspace);
+            this.workspaces.push(...workspaces);
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
+        }
+      } catch (error) {
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
+
       }
     },
     callAction() {
@@ -351,7 +357,7 @@ export default {
             }, 1000);
           }
         } catch (error) {
-          const { status } = error.response;
+          const { status } = error.response.data;
           if (status === 401) {
             this.$router.push('/login');
             return;
@@ -393,10 +399,9 @@ export default {
             }, 1000);
           }
         } catch (error) {
-          const { status } = error.response;
+          const { status } = error.response.data;
           if (status === 401) {
             this.$router.push('/login');
-
           }
         }
       } else {
