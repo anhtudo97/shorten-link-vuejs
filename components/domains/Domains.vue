@@ -71,6 +71,7 @@
 import Domain from '@/components/domains/Domain';
 import CreateNewDomain from '@/components/domains/CreateNewDomain';
 import { getDomains } from '@/services/api';
+import { handle } from '~/utils/promise';
 export default {
   components: {
     Domain,
@@ -111,17 +112,21 @@ export default {
     },
     async getDomains(page = 1) {
       const { token } = this;
-      try {
-        const resDomain = await getDomains(token, page);
-        const { status, data } = resDomain.data;
-        if (status === 200) {
-          const { domains, total, totalPage } = data;
-          this.total = total;
-          this.totalPage = totalPage;
-          this.domains = domains;
+      const [resDomain, domainError] = await handle(getDomains(token, page));
+      if (domainError) {
+        console.error(domainError.response);
+        const { status } = domainError.response;
+        if (status === 401) {
+          this.$router.push('/login');
+          return;
         }
-      } catch (error) {
-        console.log(error);
+      }
+      const { status, data } = resDomain.data;
+      if (status === 200) {
+        const { domains, total, totalPage } = data;
+        this.total = total;
+        this.totalPage = totalPage;
+        this.domains = domains;
       }
     },
     handleResize() {

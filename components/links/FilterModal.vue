@@ -70,17 +70,27 @@ export default {
     updateFilterBy() {
       this.$emit('updateFilter', this.domainsSelected, this.workspacesSelected);
     },
+
     async infiniteScroll($state) {
       const { token, pageDomains, pageWorkspaces } = this;
       const [resDomains, domainsError] = await handle(
         getDomains(token, pageDomains, true)
       );
-      if (domainsError) throw new Error('Could not fetch domains details');
+      if (domainsError) {
+        console.error(domainsError.response);
+        const { status } = domainsError.response;
+        if (status === 401) this.$router.push('/login');
+        return;
+      }
       const [resWorkspaces, workspacesError] = await handle(
         getWorkspaces(token, pageWorkspaces)
       );
-      if (workspacesError)
-        throw new Error('Could not fetch workspaces details');
+      if (workspacesError){
+        console.error(workspacesError.response);
+        const { status } = workspacesError.response;
+        if (status === 401) this.$router.push('/login');
+        return;
+      }
 
       const statusDomains = resDomains.data.status;
       const statusWorkspaces = resWorkspaces.data.status;

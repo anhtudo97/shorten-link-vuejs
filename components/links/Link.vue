@@ -80,11 +80,7 @@
       max-width="900"
       :fullscreen="width < 600 ? true : false"
     >
-      <DetailLinkModal
-        :id="id"
-        :slashtag="slashtag"
-        @closeModalDetailLink="closeModalDetailLink"
-      />
+      <DetailLinkModal :id="id" :slashtag="slashtag" @closeModalDetailLink="closeModalDetailLink" />
     </v-dialog>
     <v-dialog
       v-model="modalEditLink"
@@ -92,18 +88,10 @@
       max-width="900"
       :fullscreen="width < 600 ? true : false"
     >
-      <CreateNewLink
-        :id="id"
-        :edit="true"
-        @closeModalAddNewLink="closeModalAddNewLink"
-      />
+      <CreateNewLink :id="id" :edit="true" @closeModalEditNewLink="closeModalEditNewLink" />
     </v-dialog>
     <v-dialog v-model="isRemoveModal" persistent width="500">
-      <RemoveModal
-        name="link"
-        @closeRemoveModal="closeRemoveModal"
-        @removeElement="removeLink"
-      />
+      <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
     </v-dialog>
     <SnackbarError
       message="Delete link is successfully"
@@ -116,7 +104,6 @@
 <script>
 import { clipboard } from 'vue-clipboards';
 import { deleteLink } from '@/services/api';
-import { handle } from '@/utils/promise';
 
 import DetailLinkModal from '@/components/links/DetailLinkModal';
 import CreateNewLink from '@/components/links/CreateNewLink';
@@ -167,7 +154,7 @@ export default {
   }),
   computed: {
     shorten() {
-      return `https://${this.name}/${this.slashtag}`;
+      return `https://${this.domain}/${this.slashtag}`;
     },
     createAt() {
       const today = Date.parse(new Date());
@@ -199,9 +186,6 @@ export default {
     }
   },
   methods: {
-    reload() {
-      window.location.reload();
-    },
     closeModalDetailLink() {
       this.models.isOpen = false;
     },
@@ -213,24 +197,30 @@ export default {
         this.width = window.innerWidth;
       }
     },
-    closeModalAddNewLink() {
+    closeModalEditNewLink() {
       this.modalEditLink = false;
+      this.$emit('closeModalAddNewLink');
+      console.log('123');
     },
     async removeLink() {
-      this.loading = true;
-      const [resDeleteLink, deleteLinkError] = await handle(
-        deleteLink(this.token, this.id)
-      );
-      if (deleteLinkError) throw new Error('Could not fetch delete link');
-      const { status } = resDeleteLink.data;
-      if (status === 200) {
-        this.showAlert = true;
-        setTimeout(() => {
-          this.closeRemoveModal();
-          this.$emit('closeModalAddNewLink');
-          this.showAlert = false;
-          this.loading = false;
-        }, 1000);
+      try {
+        this.loading = true;
+        const resDeleteLink = await deleteLink(this.token, this.id);
+        const { status } = resDeleteLink.data;
+        if (status === 200) {
+          this.showAlert = true;
+          setTimeout(() => {
+            this.closeRemoveModal();
+            this.$emit('closeModalAddNewLink');
+            this.showAlert = false;
+            this.loading = false;
+          }, 1000);
+        }
+      } catch (error) {
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
+
       }
     },
     openModalUpdate() {

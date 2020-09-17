@@ -1,11 +1,9 @@
 <template>
   <div>
-    <v-snackbar v-model="showAlert" top color="error">
+    <v-snackbar v-model="show" top color="error">
       {{ message }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="$emit('closeSnackbar')"
-          >Close</v-btn
-        >
+        <v-btn color="white" text v-bind="attrs" @click="$emit('closeSnackbar')">Close</v-btn>
       </template>
     </v-snackbar>
   </div>
@@ -22,6 +20,12 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  data: () => ({
+    show: false,
+  }),
+  beforeMount() {
+    this.show = this.showAlert;
   },
 };
 </script>

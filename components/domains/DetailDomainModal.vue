@@ -10,19 +10,19 @@
       </div>
     </div>
     <div class="modal-detail-domain__domain">
-      <div class="domain-url text-overflow-hidden">{{ domainURL }}</div>
+      <div class="d-flex">
+        <div class="domain-url text-overflow-hidden">{{ domainURL }}</div>
+        <button v-if="dnsVerified" disabled class="domain-verify ml-3">Verified</button>
+      </div>
       <div class="domain-created-at d-flex my-5 align-center">
         <img src="@/assets/svg/calendar.svg" alt="calendar" />
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <div class="date pl-3" v-bind="attrs" v-on="on">
-              {{ date }}
-            </div>
+            <div class="date pl-3" v-bind="attrs" v-on="on">{{ date }}</div>
           </template>
           <span>Added on</span>
         </v-tooltip>
       </div>
-    </div>
     </div>
     <v-row class="modal-detail-domain__services align-center my-6">
       <v-col cols="12" sm="3">
@@ -47,10 +47,7 @@
         <div class="services-title">Remove</div>
       </v-col>
       <v-col cols="12" sm="9">
-        <button
-          class="button-warning services-button"
-          @click.stop="isRemoveModal = true"
-        >
+        <button class="button-warning services-button" @click.stop="isRemoveModal = true">
           <div class="button-text">Remove this domain</div>
         </button>
       </v-col>
@@ -80,8 +77,8 @@ import { format, parseISO } from 'date-fns';
 import { getDomain, deleteDomain } from '@/services/api';
 import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
 export default {
-  components:{
-    SnackbarSuccess
+  components: {
+    SnackbarSuccess,
   },
   props: {
     domain: {
@@ -91,10 +88,11 @@ export default {
   },
   async fetch() {
     try {
-      const res = await getDomain(this.token, this.domain.id);
-      const { status } = res.data;
+      const resDomain = await getDomain(this.token, this.domain.id);
+      const { status, data } = resDomain.data;
       if (status === 200) {
-        const { name, createdAt, workspaces } = res.data.data;
+        const { name, createdAt, workspaces, dnsVerified } = data;
+        this.dnsVerified = dnsVerified
         this.domainURL = name;
         this.date = format(parseISO(createdAt), 'MMM dd, yyyy');
         this.works = [...workspaces].map((x) => {
@@ -102,7 +100,12 @@ export default {
         });
       }
     } catch (error) {
-      console.log(error);
+      console.error(error.response);
+      const { status } = error.response;
+      if (status === 401) {
+        this.$router.push('/login');
+
+      }
     }
   },
   data: () => ({
@@ -113,21 +116,20 @@ export default {
     token: '',
     showAlert: false,
     loading: false,
+    dnsVerified: false,
   }),
   created() {
-   if (typeof localStorage !== 'undefined' && localStorage.token) {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
   },
+
   methods: {
-    reload() {
-      window.location.reload();
-    },
     async removeDomain() {
       this.loading = true;
       try {
-        const res = await deleteDomain(this.token, this.domain.id);
-        const { status } = res.data;
+        const resDeleteDomain = await deleteDomain(this.token, this.domain.id);
+        const { status } = resDeleteDomain.data;
         if (status === 200) {
           this.showAlert = true;
           setTimeout(() => {
@@ -137,12 +139,17 @@ export default {
           }, 1000);
         }
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) {
+          this.$router.push('/login');
+
+        }
       }
     },
     closeRemoveModal() {
       this.isRemoveModal = false;
-      this.$emit('closeModalDetailDomain')
+      this.$emit('closeModalDetailDomain');
     },
   },
 };
@@ -167,7 +174,14 @@ export default {
   &__domain {
     .domain-url {
       font-size: 24px;
-      line-height: 28px;
+      line-height: 24px;
+    }
+    .domain-verify {
+      padding: 1px 4px;
+      font-size: 12px;
+      border-radius: 4px;
+      background-color: #02af63;
+      color: #fff;
     }
     .domain-created-at {
       img {

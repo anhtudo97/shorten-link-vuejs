@@ -68,14 +68,18 @@ export default {
           this.totalPage = data.totalPage;
         }
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
     async answerInvitationWorkspace(invitationId, status = 'ACCEPTED') {
       try {
         await answerInvitations(this.token, invitationId, status);
       } catch (error) {
-        console.log(error);
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
     async answerInvitations(invitationId, status = 'ACCEPTED') {

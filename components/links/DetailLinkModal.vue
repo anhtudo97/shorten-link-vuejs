@@ -130,7 +130,7 @@ export default {
     },
   },
   async fetch() {
-    await this.getLink()
+    await this.getLink();
   },
   data: () => ({
     isRemove: false,
@@ -173,7 +173,7 @@ export default {
     },
     closeModalAddNewLink() {
       this.modalEditLink = false;
-      this.getLink()
+      this.getLink();
     },
     handleResize() {
       if (process.client) {
@@ -182,7 +182,12 @@ export default {
     },
     async getLink() {
       const [resLink, linkError] = await handle(getLink(this.token, this.id));
-      if (linkError) throw new Error('Could not fetch link');
+      if (linkError) {
+        console.error(linkError.response);
+        const { status } = linkError.response;
+        if (status === 401) this.$router.push('/login');
+        return;
+      }
       const { status, data } = resLink.data;
       if (status === 200) {
         const { createdAt, title, destination, domain, slashtag } = data;
@@ -197,7 +202,12 @@ export default {
       const [resDeleteLink, deleteLinkError] = await handle(
         deleteLink(this.token, this.id)
       );
-      if (deleteLinkError) throw new Error('Could not fetch delete link');
+      if (deleteLinkError) {
+        console.error(deleteLinkError.response);
+        const { status } = deleteLinkError.response;
+        if (status === 401) this.$router.push('/login');
+        return;
+      }
       const { status } = resDeleteLink.data;
       if (status === 200) {
         this.showAlert = true;

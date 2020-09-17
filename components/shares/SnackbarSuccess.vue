@@ -1,14 +1,10 @@
 <template>
-  <div>
-    <v-snackbar v-model="show" top color="success">
-      {{ message }}
-      <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="$emit('closeSnackbar')"
-          >Close</v-btn
-        >
-      </template>
-    </v-snackbar>
-  </div>
+  <v-snackbar v-model="show" top color="success">
+    {{ message }}
+    <template v-slot:action="{ attrs }">
+      <v-btn color="white" text v-bind="attrs" @click="$emit('closeSnackbar')">Close</v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script>

@@ -53,7 +53,6 @@
 
 <script>
 import { getMembersWorkspaces, getDomainsWorkspace } from '@/services/api';
-import { handle } from '@/utils/promise';
 export default {
   data: () => ({
     members: [],
@@ -77,39 +76,48 @@ export default {
     updateFilterBy() {
       this.$emit('updateFilter', this.domainsSelected, this.workspacesSelected);
     },
+
     async infiniteScroll($state) {
       const { token, pageMembers, pageDomains, workspaceId } = this;
-      const [resDomains, domainsError] = await handle(
-        getDomainsWorkspace(token, workspaceId, pageDomains)
-      );
-      if (domainsError) throw new Error('Could not fetch domains details');
-      const [resMembers, membersError] = await handle(
-        getMembersWorkspaces(token, workspaceId, pageMembers)
-      );
-      if (membersError) throw new Error('Could not fetch members details');
+      try {
+        const resDomains = await getDomainsWorkspace(
+          token,
+          workspaceId,
+          pageDomains
+        );
+        const resMembers = await getMembersWorkspaces(
+          token,
+          workspaceId,
+          pageMembers
+        );
 
-      const statusDomains = resDomains.data.status;
-      const statusMembers = resMembers.data.status;
+        const statusDomains = resDomains.data.status;
+        const statusMembers = resMembers.data.status;
 
-      if (statusDomains === 200) {
-        this.pageDomains += 1;
-        const { domains } = resDomains.data.data;
-        if (domains.length) {
-          this.domains.push(...domains);
-          $state.loaded();
-        } else {
-          $state.complete();
+        if (statusDomains === 200) {
+          this.pageDomains += 1;
+          const { domains } = resDomains.data.data;
+          if (domains.length) {
+            this.domains.push(...domains);
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
         }
-      }
-      if (statusMembers === 200) {
-        this.pageMembers += 1;
-        const { members } = resMembers.data.data;
-        if (members.length) {
-          this.members.push(...members);
-          $state.loaded();
-        } else {
-          $state.complete();
+        if (statusMembers === 200) {
+          this.pageMembers += 1;
+          const { members } = resMembers.data.data;
+          if (members.length) {
+            this.members.push(...members);
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
         }
+      } catch (error) {
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
     },
   },
