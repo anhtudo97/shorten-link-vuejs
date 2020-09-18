@@ -91,11 +91,12 @@
     >
       <DetailUserModal :user="user" @closeUserDetailModal="closeUserDetailModal" />
     </v-dialog>
-    <SnackbarSuccess
-      message="Send the invitations is successfully"
-      :show-alert="showAlert"
-      @closeSnackbar="showAlert = false"
-    />
+    <v-snackbar v-model="showAlert" top color="success">
+      {{ messages }}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">Close</v-btn>
+      </template>
+    </v-snackbar>
     <v-snackbar v-model="showAlert400" top color="error">
       {{ messages }}
       <template v-slot:action="{ attrs }">
@@ -114,11 +115,9 @@ import {
 } from '@/services/api';
 import validations from '@/utils/validations';
 import DetailUserModal from '@/components/user/DetailUserModal';
-import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
 export default {
   components: {
     DetailUserModal,
-    SnackbarSuccess,
   },
   props: {
     workspace: {
@@ -200,13 +199,16 @@ export default {
           this.loading = false;
         }, 2000);
       } catch (error) {
+        const { status } = error.response.data;
+        if (status === 401) {
+          this.$router.push('/login');
+          return;
+        }
         this.showAlert400 = true;
         setTimeout(() => {
           this.showAlert400 = false;
           this.loading = false;
         }, 2000);
-        const { status } = error.response.data;
-        if (status === 401) this.$router.push('/login');
       }
     },
     async inviteMembers() {
@@ -216,7 +218,13 @@ export default {
     async inviteMoreMembers() {
       this.loading = true;
       try {
-        await inviteMembers(this.token, this.workspace.id, this.selected);
+        const res = await inviteMembers(
+          this.token,
+          this.workspace.id,
+          this.selected
+        );
+        const { message } = res.data;
+        this.messages = message;
         this.showAlert = true;
         setTimeout(() => {
           this.loading = false;
@@ -226,7 +234,10 @@ export default {
         }, 2000);
       } catch (error) {
         const { status, message } = error.response.data;
-        if (status === 401) this.$router.push('/login');
+        if (status === 401) {
+          this.$router.push('/login');
+          return;
+        }
         this.messages = message;
         this.showAlert400 = true;
         setTimeout(() => {

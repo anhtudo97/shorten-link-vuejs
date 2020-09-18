@@ -150,6 +150,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
+        
       }
     },
     handleResize() {

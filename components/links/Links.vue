@@ -76,7 +76,6 @@ import Link from '@/components/links/Link';
 import CreateNewLink from '@/components/links/CreateNewLink';
 import SortModal from '@/components/links/SortModal';
 import FilterModal from '@/components/links/FilterModal';
-import { handle } from '@/utils/promise';
 import { getLinks } from '@/services/api';
 
 export default {
@@ -151,28 +150,26 @@ export default {
       workspaceSelected
     ) {
       const { token } = this;
-      const [resLink, linkError] = await handle(
-        getLinks(
+      try {
+        const resLink = await getLinks(
           token,
           page,
           sort,
           direction,
           domainSelected,
           workspaceSelected
-        )
-      );
-      if (linkError) {
-        console.error(linkError.response);
-        const { status } = linkError.response;
+        );
+
+        const { status, data } = resLink.data;
+        if (status === 200) {
+          const { links, total, totalPage } = data;
+          this.total = total;
+          this.totalPage = totalPage;
+          this.links = links;
+        }
+      } catch (error) {
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        return;
-      }
-      const { status, data } = resLink.data;
-      if (status === 200) {
-        const { links, total, totalPage } = data;
-        this.total = total;
-        this.totalPage = totalPage;
-        this.links = links;
       }
     },
     updateSort(sort, direction) {

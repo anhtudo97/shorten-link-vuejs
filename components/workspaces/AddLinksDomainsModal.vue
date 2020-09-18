@@ -106,9 +106,6 @@ export default {
     },
   },
   async fetch() {
-    if (typeof localStorage !== 'undefined' && localStorage.token) {
-      this.token = localStorage.token;
-    }
     await this.getDomains();
     await this.getDomainsWorkspace();
     this.domainSelected = [];
@@ -146,6 +143,11 @@ export default {
       this.getDomains();
     },
   },
+  created() {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+      this.token = localStorage.token;
+    }
+  },
   methods: {
     async getDomains() {
       const { token, pageDomain } = this;
@@ -160,9 +162,11 @@ export default {
           this.totalPageDomains = totalPage;
         }
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
-        if (status === 401) this.$router.push('/login');
+        const { status } = error.response.data;
+        if (status === 401) {
+          this.$router.push('/login');
+          
+        }
       }
     },
     async getDomainsWorkspace() {
@@ -183,7 +187,10 @@ export default {
         }
       } catch (error) {
         const { status } = error.response.data;
-        if (status === 401) this.$router.push('/login');
+        if (status === 401) {
+          this.$router.push('/login');
+          
+        }
       }
     },
     async addDomainsToWorkspace() {
@@ -211,7 +218,10 @@ export default {
       } catch (error) {
         this.domainSelected = [];
         const { status } = error.response.data;
-        if (status === 401) this.$router.push('/login');
+        if (status === 401) {
+          this.$router.push('/login');
+          
+        }
       }
     },
     async removeDomainsToWorkspace(id) {
@@ -238,7 +248,10 @@ export default {
         }
       } catch (error) {
         const { status } = error.response.data;
-        if (status === 401) this.$router.push('/login');
+        if (status === 401) {
+          this.$router.push('/login');
+          
+        }
       }
     },
   },

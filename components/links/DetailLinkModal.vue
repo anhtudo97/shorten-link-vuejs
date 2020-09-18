@@ -2,10 +2,7 @@
   <v-list class="modal-detail-link py-5">
     <div class="d-flex justify-space-between px-4">
       <div></div>
-      <div
-        class="modal-detail-link__dialog-icon pa-2"
-        @click="$emit('closeModalDetailLink')"
-      >
+      <div class="modal-detail-link__dialog-icon pa-2" @click="$emit('closeModalDetailLink')">
         <img src="@/assets/svg/close.svg" alt="close" />
       </div>
     </div>
@@ -17,21 +14,10 @@
           <a
             :href="`https://${shorten}`"
             class="main-title text-overflow-hidden pb-3 pb-sm-0"
-            >{{ shorten }}</a
-          >
+          >{{ shorten }}</a>
           <div class="d-flex dialog-link-service align-center">
-            <div
-              v-clipboard="`https://${shorten}`"
-              class="dialog-button-copy mr-3"
-            >
-              Copy
-            </div>
-            <button
-              class="dialog-button button-normal"
-              @click.stop="modalEditLink = true"
-            >
-              Edit
-            </button>
+            <div v-clipboard="`https://${shorten}`" class="dialog-button-copy mr-3">Copy</div>
+            <button class="dialog-button button-normal" @click.stop="modalEditLink = true">Edit</button>
           </div>
         </div>
         <div class="modal-detail-link__dialog-sub">
@@ -56,9 +42,7 @@
               <div class="information-title">Original link</div>
             </v-col>
             <v-col cols="12" md="9">
-              <div class="information-content content-border">
-                {{ destination }}
-              </div>
+              <div class="information-content content-border">{{ destination }}</div>
             </v-col>
           </v-row>
           <v-row class="information d-flex align-center">
@@ -69,9 +53,7 @@
               <button
                 class="remove-button button-warning"
                 @click.stop="isRemoveModal = true"
-              >
-                Remove this link
-              </button>
+              >Remove this link</button>
             </v-col>
           </v-row>
         </div>
@@ -83,18 +65,10 @@
       max-width="900"
       :fullscreen="width < 600 ? true : false"
     >
-      <CreateNewLink
-        :id="id"
-        :edit="true"
-        @closeModalAddNewLink="closeModalAddNewLink"
-      />
+      <CreateNewLink :id="id" :edit="true" @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
     <v-dialog v-model="isRemoveModal" persistent width="500">
-      <RemoveModal
-        name="link"
-        @closeRemoveModal="closeRemoveModal"
-        @removeElement="removeLink"
-      />
+      <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
     </v-dialog>
     <SnackbarError
       message="Delete link is successfully"
@@ -106,7 +80,6 @@
 
 <script>
 import { clipboard } from 'vue-clipboards';
-import { handle } from '@/utils/promise';
 import { getLink, deleteLink } from '@/services/api';
 
 import CreateNewLink from '@/components/links/CreateNewLink';
@@ -165,9 +138,6 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
-    reload() {
-      window.location.reload();
-    },
     closeRemoveModal() {
       this.isRemoveModal = false;
     },
@@ -181,42 +151,39 @@ export default {
       }
     },
     async getLink() {
-      const [resLink, linkError] = await handle(getLink(this.token, this.id));
-      if (linkError) {
-        console.error(linkError.response);
-        const { status } = linkError.response;
+      try {
+        const resLink = await getLink(this.token, this.id);
+        const { status, data } = resLink.data;
+        if (status === 200) {
+          const { createdAt, title, destination, domain, slashtag } = data;
+          this.date = createdAt;
+          this.title = title;
+          this.destination = destination;
+          this.shorten = `${domain.name}/${slashtag}`;
+        }
+      } catch (error) {
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        return;
-      }
-      const { status, data } = resLink.data;
-      if (status === 200) {
-        const { createdAt, title, destination, domain, slashtag } = data;
-        this.date = createdAt;
-        this.title = title;
-        this.destination = destination;
-        this.shorten = `${domain.name}/${slashtag}`;
+
       }
     },
     async removeLink() {
-      this.loading = true;
-      const [resDeleteLink, deleteLinkError] = await handle(
-        deleteLink(this.token, this.id)
-      );
-      if (deleteLinkError) {
-        console.error(deleteLinkError.response);
-        const { status } = deleteLinkError.response;
+      try {
+        this.loading = true;
+        const resDeleteLink = await deleteLink(this.token, this.id);
+        const { status } = resDeleteLink.data;
+        if (status === 200) {
+          this.showAlert = true;
+          setTimeout(() => {
+            this.closeRemoveModal();
+            this.$emit('closeModalDetailLink');
+            this.showAlert = false;
+            this.loading = false;
+          }, 1000);
+        }
+      } catch (error) {
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        return;
-      }
-      const { status } = resDeleteLink.data;
-      if (status === 200) {
-        this.showAlert = true;
-        setTimeout(() => {
-          this.closeRemoveModal();
-          this.reload();
-          this.showAlert = false;
-          this.loading = false;
-        }, 1000);
       }
     },
   },

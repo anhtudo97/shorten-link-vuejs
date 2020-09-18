@@ -53,7 +53,10 @@
         >{{ totalDomains }} Branded domains included</div>
       </div>
     </div>
-    <v-row v-if="!workspace.isDefault ^ joined" class="align-center dialog-detail-workspace__button-remove">
+    <v-row
+      v-if="!workspace.isDefault ^ joined"
+      class="align-center dialog-detail-workspace__button-remove"
+    >
       <v-col cols="12" sm="3">
         <div class="services-title">Delete this repository</div>
       </v-col>
@@ -213,6 +216,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
+        
       }
     },
     async getDomains() {
@@ -229,9 +233,9 @@ export default {
           this.totalDomains = total;
         }
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
+        
       }
     },
     async getLinks() {
@@ -249,6 +253,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
+        
       }
     },
     async removeWorkspace() {
@@ -268,6 +273,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
+        
       }
     },
     handleResize() {

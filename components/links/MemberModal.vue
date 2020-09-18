@@ -7,12 +7,7 @@
       </div>
     </div>
     <div class="modal-sort__title">Filter by</div>
-    <button
-      class="button-normal modal-sort__button mt-3"
-      @click="updateFilterBy()"
-    >
-      Filter
-    </button>
+    <button class="button-normal modal-sort__button mt-3" @click="updateFilterBy()">Filter</button>
     <v-row justify="center">
       <v-col cols="12" md="6">
         <div>Domains</div>
@@ -43,10 +38,7 @@
       </v-col>
     </v-row>
     <client-only>
-      <infinite-loading
-        spinner="waveDots"
-        @infinite="infiniteScroll"
-      ></infinite-loading>
+      <infinite-loading spinner="waveDots" @infinite="infiniteScroll"></infinite-loading>
     </client-only>
   </v-list>
 </template>
@@ -76,7 +68,6 @@ export default {
     updateFilterBy() {
       this.$emit('updateFilter', this.domainsSelected, this.workspacesSelected);
     },
-
     async infiniteScroll($state) {
       const { token, pageMembers, pageDomains, workspaceId } = this;
       try {
@@ -115,9 +106,9 @@ export default {
           }
         }
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
+        
       }
     },
   },

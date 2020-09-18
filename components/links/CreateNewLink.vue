@@ -150,6 +150,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
+        
       }
     }
   },
@@ -241,6 +242,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
+        
       }
     },
     async getSlashTag(url) {
@@ -251,6 +253,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
+        
       }
     },
     async checkSlashTagValid(tag) {
@@ -261,6 +264,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
+        
       }
     },
     async infiniteScroll($state) {
@@ -315,6 +319,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
+        
       }
     },
     callAction() {
@@ -396,6 +401,7 @@ export default {
           this.message = message;
           if (status === 401) {
             this.$router.push('/login');
+            
           }
         }
       } else {

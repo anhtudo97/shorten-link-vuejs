@@ -160,6 +160,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
+        
       }
     },
     async getWorkspacesJoined(page) {
@@ -178,6 +179,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
+        
       }
     },
   },

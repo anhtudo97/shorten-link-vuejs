@@ -188,6 +188,7 @@ export default {
   methods: {
     closeModalDetailLink() {
       this.models.isOpen = false;
+      this.$emit('closeModalAddNewLink');
     },
     closeRemoveModal() {
       this.isRemoveModal = false;
@@ -200,7 +201,6 @@ export default {
     closeModalEditNewLink() {
       this.modalEditLink = false;
       this.$emit('closeModalAddNewLink');
-      console.log('123');
     },
     async removeLink() {
       try {
@@ -217,10 +217,9 @@ export default {
           }, 1000);
         }
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-
+        
       }
     },
     openModalUpdate() {

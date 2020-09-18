@@ -97,7 +97,6 @@ export default {
             }, 2000);
           }
         } catch (error) {
-          console.error(error.response.data.message);
           const { data } = error.response;
           if (data.status === 401) {
             this.$router.push('/login');
