@@ -95,20 +95,14 @@
       <infinite-loading spinner="waveDots" @infinite="infiniteScroll"></infinite-loading>
     </client-only>
     <v-snackbar v-model="showAlert" top color="success">
-      {{ edit ? 'Update link successfully' : 'Create new link successfully' }}
-      <template
-        v-slot:action="{ attrs }"
-      >
+      {{ message }}
+      <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="showAlert = false">Close</v-btn>
       </template>
     </v-snackbar>
     <v-snackbar v-model="showAlert403" top color="error">
-      {{ domainCheck
-      ? 'The workspace has no permission this domain'
-      : 'Slash tag is exist' }}
-      <template
-        v-slot:action="{ attrs }"
-      >
+      {{ message }}
+      <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="showAlert403 = false">Close</v-btn>
       </template>
     </v-snackbar>
@@ -156,7 +150,6 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-
       }
     }
   },
@@ -177,7 +170,6 @@ export default {
     valid: false,
     checkSlash: false,
     checkSlashEdit: false,
-    domainCheck: false,
     destinationUrl: '',
     title: '',
     slashTag: '',
@@ -187,6 +179,7 @@ export default {
     },
     workspace: { name: 'Workspace', id: '' },
     domainId: '',
+    message: '',
   }),
   computed: {
     tempDomains() {
@@ -322,7 +315,6 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-
       }
     },
     callAction() {
@@ -346,7 +338,8 @@ export default {
             title,
             workspace.id
           );
-          const { status } = resLink.data;
+          const { status, message } = resLink.data;
+          this.message = message;
           if (status === 201) {
             this.showAlert = true;
             setTimeout(() => {
@@ -357,20 +350,19 @@ export default {
             }, 1000);
           }
         } catch (error) {
-          const { status } = error.response.data;
+          const { status, message } = error.response.data;
           if (status === 401) {
             this.$router.push('/login');
             return;
           }
+          this.message = message;
           this.showAlert403 = true;
-          this.domainCheck = true;
           setTimeout(() => {
             this.loading = false;
           }, 1000);
         }
       } else {
         this.showAlert403 = true;
-        this.domainCheck = false;
         setTimeout(() => {
           this.loading = false;
         }, 1000);
@@ -389,7 +381,8 @@ export default {
             slashTag,
             title
           );
-          const { status } = resUpdateLink.data;
+          const { status, message } = resUpdateLink.data;
+          this.message = message;
           if (status === 200) {
             this.showAlert = true;
             setTimeout(() => {
@@ -399,15 +392,14 @@ export default {
             }, 1000);
           }
         } catch (error) {
-          const { status } = error.response.data;
+          const { status, message } = error.response.data;
+          this.message = message;
           if (status === 401) {
             this.$router.push('/login');
           }
         }
       } else {
-        console.log('123');
         this.showAlert403 = true;
-        this.domainCheck = false;
         setTimeout(() => {
           this.showAlert403 = false;
           this.loading = false;

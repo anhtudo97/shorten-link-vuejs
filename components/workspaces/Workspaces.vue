@@ -158,8 +158,7 @@ export default {
           this.workspaces = workspaces;
         }
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -177,8 +176,7 @@ export default {
           console.log(this.workspacesJoined);
         }
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
       }
     },

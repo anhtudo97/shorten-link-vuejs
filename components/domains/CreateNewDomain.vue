@@ -38,30 +38,26 @@
         >Create new domain</button>
       </v-col>
     </v-row>
-    <SnackbarSuccess
-      message="Create new domain successfully"
-      :show-alert="showAlert"
-      @closeSnackbar="showAlert = false"
-    />
-    <SnackbarError
-      :message="message"
-      :show-alert="showAlert400"
-      @closeSnackbar="showAlert400 = false"
-    />
+    <v-snackbar v-model="showAlert" top color="success">
+      {{ message }}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="showAlert=false">Close</v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar v-model="showAlert400" top color="error">
+      {{ message }}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="showAlert400 = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
 <script>
 import { debounce } from 'debounce';
 import { createNewDomain } from '@/services/api';
-import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
-import SnackbarError from '@/components/shares/SnackbarError';
 import validation from '@/utils/validations';
 export default {
-  components: {
-    SnackbarSuccess,
-    SnackbarError,
-  },
   data: () => ({
     ...validation,
     destinationDomain: '',
@@ -81,7 +77,6 @@ export default {
     validURL: debounce(function(str) {
       const pattern = new RegExp('^([a-z0-9]+(-[a-z0-9]+)*.)+[a-z]{2,}$'); // fragment locator
       this.valid = !!pattern.test(str);
-      console.log(this.valid);
     }, 1000),
     async createNewDomain() {
       if (this.valid) {
@@ -91,7 +86,8 @@ export default {
             this.token,
             this.destinationDomain
           );
-          const { status } = resNewDomain.data;
+          const { status, message } = resNewDomain.data;
+          this.message = message;
           if (status === 200) {
             this.showAlert = true;
             setTimeout(() => {
@@ -101,7 +97,7 @@ export default {
             }, 2000);
           }
         } catch (error) {
-          console.error(error.response);
+          console.error(error.response.data.message);
           const { data } = error.response;
           if (data.status === 401) {
             this.$router.push('/login');

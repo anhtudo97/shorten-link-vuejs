@@ -33,20 +33,22 @@
     <div v-if="$fetchState.pending" class="d-flex justify-center">
       <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </div>
-    <div v-else class="domain__management">
-      <transition-group name="slide-fade" tag="ul" class="pa-0">
-        <li v-for="domain in domains" :key="domain.id">
-          <Domain :domain="domain" @closeModalCreateNewDomain="closeModalCreateNewDomain" />
-        </li>
-      </transition-group>
-      <v-row v-if="domains.length !== 0" justify="center">
-        <v-col cols="8">
-          <v-container class="max-width">
-            <v-pagination v-model="page" class="my-4" :length="totalPage"></v-pagination>
-          </v-container>
-        </v-col>
-      </v-row>
-    </div>
+    <transition v-else name="slide-fade" mode="out-in">
+      <div class="domain__management">
+        <transition-group name="slide-fade" mode="out-in" tag="ul" class="pa-0">
+          <li v-for="domain in domains" :key="domain.id">
+            <Domain :domain="domain" @closeModalCreateNewDomain="closeModalCreateNewDomain" />
+          </li>
+        </transition-group>
+        <v-row v-if="domains.length !== 0" justify="center">
+          <v-col cols="8">
+            <v-container class="max-width">
+              <v-pagination v-model="page" class="my-4" :length="totalPage"></v-pagination>
+            </v-container>
+          </v-col>
+        </v-row>
+      </div>
+    </transition>
     <v-dialog
       v-model="openModalCreateNewDomain"
       class="domain__dialog"
@@ -69,9 +71,6 @@ export default {
   },
   fetchOnServer: false,
   async fetch() {
-    if (typeof localStorage !== 'undefined' && localStorage.token) {
-      this.token = localStorage.token;
-    }
     await this.getDomains(1);
   },
   data: () => ({
@@ -87,6 +86,11 @@ export default {
     page(val) {
       this.getDomains(val);
     },
+  },
+  created() {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+      this.token = localStorage.token;
+    }
   },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);
@@ -115,7 +119,6 @@ export default {
         const { status } = error.response.data;
         if (status === 401) {
           this.$router.push('/login');
-
         }
       }
     },

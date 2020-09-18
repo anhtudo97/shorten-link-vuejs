@@ -92,7 +92,7 @@ export default {
       const { status, data } = resDomain.data;
       if (status === 200) {
         const { name, createdAt, workspaces, dnsVerified } = data;
-        this.dnsVerified = dnsVerified
+        this.dnsVerified = dnsVerified;
         this.domainURL = name;
         this.date = format(parseISO(createdAt), 'MMM dd, yyyy');
         this.works = [...workspaces].map((x) => {
@@ -103,7 +103,6 @@ export default {
       const { status } = error.response.data;
       if (status === 401) {
         this.$router.push('/login');
-
       }
     }
   },
@@ -142,7 +141,6 @@ export default {
         const { status } = error.response.data;
         if (status === 401) {
           this.$router.push('/login');
-
         }
       }
     },

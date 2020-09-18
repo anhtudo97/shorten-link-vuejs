@@ -181,8 +181,7 @@ export default {
           this.members = members;
         }
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -206,8 +205,7 @@ export default {
           this.showAlert400 = false;
           this.loading = false;
         }, 2000);
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -251,7 +249,6 @@ export default {
           this.$emit('updateMember');
         }, 2000);
       } catch (error) {
-        console.error(error.response);
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
         setTimeout(() => {
@@ -278,8 +275,7 @@ export default {
           createdAt: users[0].createdAt,
         };
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
       }
     },

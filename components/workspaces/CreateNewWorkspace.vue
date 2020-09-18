@@ -4,16 +4,11 @@
       class="dialog-create-workspace__header d-flex justify-space-between align-center py-3 border-b"
     >
       <div class="d-flex align-center">
-        <div class="header-title mr-3">
-          {{ edit ? 'Update workspace' : 'Create a new workspace' }}
-        </div>
+        <div class="header-title mr-3">{{ edit ? 'Update workspace' : 'Create a new workspace' }}</div>
       </div>
       <div class="d-flex justify-space-between">
         <div></div>
-        <div
-          class="header-dialog-icon pa-2"
-          @click.stop="$emit('closeCreateNewWorkspace')"
-        >
+        <div class="header-dialog-icon pa-2" @click.stop="$emit('closeCreateNewWorkspace')">
           <img src="@/assets/svg/close.svg" alt="close" />
         </div>
       </div>
@@ -41,22 +36,20 @@
             :disabled="loading"
             class="button-normal button-create"
             @click="callaction"
-          >
-            {{ edit ? 'Update workspace' : 'Create workspace' }}
-          </button>
+          >{{ edit ? 'Update workspace' : 'Create workspace' }}</button>
         </v-col>
       </v-row>
     </div>
     <v-snackbar v-model="showAlert" top color="success">
       {{
-        edit
-          ? 'Update workspace successfully'
-          : 'Create new workspace successfully'
+      edit
+      ? 'Update workspace successfully'
+      : 'Create new workspace successfully'
       }}
-      <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">
-          Close
-        </v-btn>
+      <template
+        v-slot:action="{ attrs }"
+      >
+        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">Close</v-btn>
       </template>
     </v-snackbar>
     <SnackbarError
@@ -128,9 +121,11 @@ export default {
           }, 2000);
         }
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
-        if (status === 401) this.$router.push('/login');
+        const { status } = error.response.data;
+        if (status === 401) {
+          this.$router.push('/login');
+          return;
+        }
         this.showAlert400 = true;
         setTimeout(() => {
           this.showAlert400 = false;
@@ -158,8 +153,7 @@ export default {
           }, 2000);
         }
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
       } finally {
         this.workspaceName = '';

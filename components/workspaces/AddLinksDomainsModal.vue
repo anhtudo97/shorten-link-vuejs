@@ -13,6 +13,7 @@
         </div>
       </div>
     </div>
+
     <div class="border-b">
       <transition-group v-if="domain_joined.length > 0" name="slide-fade" mode="out-in">
         <div
@@ -21,7 +22,6 @@
           class="d-flex justify-space-between dialog-add-links-domains__domain align-center"
         >
           <div class="member-name">{{ item.name }}</div>
-
           <button
             :disabled="loading"
             class="button-warning member-action"
@@ -35,13 +35,17 @@
       >
         <div class="member-name">Dont have any domains</div>
       </div>
-      <div v-if="totalJoined > 1" class="dialog-add-links-domains__domain d-flex justify-center">
-        <button
-          :disabled="loading"
-          class="button-normal member-action"
-          @click="addMoreDomainsWorkspace"
-        >Add More</button>
-      </div>
+      <v-row v-if="totalPageJoined >1" class="py-0 mx-0">
+        <v-col cols="12" class="py-0">
+          <v-container class="max-width py-0">
+            <v-pagination
+              v-model="pageDomainWorkspace"
+              class="text-right"
+              :length="totalPageJoined"
+            ></v-pagination>
+          </v-container>
+        </v-col>
+      </v-row>
     </div>
     <v-row
       class="mx-0 justify-space-between py-3 align-center dialog-add-links-domains__menu border-b"
@@ -68,13 +72,13 @@
         ></v-checkbox>
       </div>
     </transition-group>
-    <div v-if="totalDomains > 1" class="dialog-add-links-domains__domain d-flex justify-center">
-      <button
-        :disabled="loading"
-        class="button-normal member-action"
-        @click="addMoreDomains"
-      >Add More</button>
-    </div>
+    <v-row v-if="totalPageJoined >1" class="py-0 mx-0">
+      <v-col cols="12" class="py-0">
+        <v-container class="max-width py-0">
+          <v-pagination v-model="pageDomain" class="text-right" :length="totalPageDomains"></v-pagination>
+        </v-container>
+      </v-col>
+    </v-row>
     <SnackbarError
       message="Delete domain is successfully"
       :show-alert="showAlert400"
@@ -120,6 +124,8 @@ export default {
     showAlert400: false,
     totalJoined: 1,
     totalDomains: 1,
+    totalPageJoined: 1,
+    totalPageDomains: 1,
   }),
   computed: {
     unjoined() {
@@ -128,10 +134,16 @@ export default {
         if (!names.includes(x.name)) return x;
       });
     },
+    domainIsSelected() {
+      return this.domainSelected;
+    },
   },
   watch: {
-    domainSelected(val) {
-      console.log({ val });
+    pageDomainWorkspace() {
+      this.getDomainsWorkspace();
+    },
+    pageDomain() {
+      this.getDomains();
     },
   },
   methods: {
@@ -142,19 +154,16 @@ export default {
         const statusDomain = resDomain.data.status;
 
         if (statusDomain === 200) {
-          const { domains } = resDomain.data.data;
+          const { domains, total, totalPage } = resDomain.data.data;
           this.domains = domains;
-          this.totalDomains = resDomain.data.totalDomains;
+          this.totalDomains = total;
+          this.totalPageDomains = totalPage;
         }
       } catch (error) {
         console.error(error.response);
         const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
-    },
-    async addMoreDomains() {
-      this.pageDomain++;
-      await this.getDomains();
     },
     async getDomainsWorkspace() {
       const { token, workspace, pageDomainWorkspace } = this;
@@ -167,23 +176,19 @@ export default {
         const statusDomainWorkspace = resDomainWorkspace.data.status;
 
         if (statusDomainWorkspace === 200) {
-          const { domains } = resDomainWorkspace.data.data;
+          const { domains, totalPage, total } = resDomainWorkspace.data.data;
           this.domain_joined = domains;
-          this.totalJoined = resDomainWorkspace.data.totalJoined;
+          this.totalJoined = total;
+          this.totalPageJoined = totalPage;
         }
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
       }
     },
-    async addMoreDomainsWorkspace() {
-      this.pageDomainWorkspace++;
-      await this.getDomainsWorkspace();
-    },
     async addDomainsToWorkspace() {
       await this.addDomains();
-      await this.getDomainsWorkspace();
+      // await this.getDomainsWorkspace();
     },
     async addDomains() {
       this.loading = true;
@@ -194,18 +199,18 @@ export default {
           this.domainSelected
         );
         const { status } = res.data;
+        await this.getDomainsWorkspace();
         if (status === 200) {
           this.showAlert = true;
           setTimeout(() => {
+            this.domainSelected = [];
             this.$emit('updateDomains');
             this.loading = false;
-            this.domainSelected = [];
-          }, 500);
+          }, 300);
         }
       } catch (error) {
         this.domainSelected = [];
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -224,16 +229,15 @@ export default {
         const { status } = res.data;
         if (status === 204) {
           this.showAlert400 = true;
-          this.$emit('updateDomains');
           setTimeout(() => {
+            this.domainSelected = [];
+            this.$emit('updateDomains');
             this.loading = false;
             this.showAlert400 = false;
-            this.domainSelected = [];
-          }, 500);
+          }, 300);
         }
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
       }
     },

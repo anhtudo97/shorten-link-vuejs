@@ -148,8 +148,7 @@ export default {
           }, 1000);
         }
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
       }
     },
