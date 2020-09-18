@@ -85,7 +85,6 @@ export default {
       ],
     },
   },
-
   /*
    ** vuetify module configuration
    ** https://github.com/nuxt-community/vuetify-module
@@ -122,5 +121,12 @@ export default {
   axios: {
     baseURL: '139.180.213.253',
     proxy: true,
+  },
+  render: {
+    bundleRenderer: {
+      shouldPreload: (file, type) => {
+        return ['script', 'style', 'font'].includes(type);
+      },
+    },
   },
 };
