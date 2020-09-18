@@ -84,16 +84,18 @@ export default {
       this.token = localStorage.token;
       this.email = localStorage.email;
     }
-    try {
-      const res = await getInvitations(this.token, 1);
-      const { status, data } = res.data;
-      if (status === 200) {
-        this.total = data.total;
+    if (this.token !== '') {
+      try {
+        const res = await getInvitations(this.token, 1);
+        const { status, data } = res.data;
+        if (status === 200) {
+          this.total = data.total;
+        }
+      } catch (error) {
+        console.error(error.response);
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
       }
-    } catch (error) {
-      console.error(error.response);
-      const { status } = error.response;
-      if (status === 401) this.$router.push('/login');
     }
   },
   data: () => ({
