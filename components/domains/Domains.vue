@@ -11,6 +11,7 @@
           <v-col cols="6" sm="5" md="4" lg="3" class="text-right">
             <button
               class="button-normal add-new-domain"
+              aria-label="New Domain"
               @click.stop="openModalCreateNewDomain = true"
             >New domain</button>
           </v-col>
@@ -119,7 +120,7 @@ export default {
         const { status } = error.response.data;
         if (status === 401) {
           this.$router.push('/login');
-          
+
         }
       }
     },

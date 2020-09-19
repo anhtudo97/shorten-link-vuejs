@@ -97,13 +97,13 @@
     <v-snackbar v-model="showAlert" top color="success">
       {{ message }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">Close</v-btn>
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
       </template>
     </v-snackbar>
     <v-snackbar v-model="showAlert403" top color="error">
       {{ message }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert403 = false">Close</v-btn>
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert403 = false">Close</v-btn>
       </template>
     </v-snackbar>
   </v-list>
@@ -150,7 +150,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        
+
       }
     }
   },
@@ -242,7 +242,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        
+
       }
     },
     async getSlashTag(url) {
@@ -253,7 +253,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        
+
       }
     },
     async checkSlashTagValid(tag) {
@@ -264,7 +264,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        
+
       }
     },
     async infiniteScroll($state) {
@@ -319,7 +319,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        
+
       }
     },
     callAction() {
@@ -401,7 +401,7 @@ export default {
           this.message = message;
           if (status === 401) {
             this.$router.push('/login');
-            
+
           }
         }
       } else {

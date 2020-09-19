@@ -93,11 +93,12 @@
     <v-dialog v-model="isRemoveModal" persistent width="500">
       <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
     </v-dialog>
-    <SnackbarError
-      message="Delete link is successfully"
-      :show-alert="showAlert"
-      @closeSnackbar="showAlert = false"
-    />
+     <v-snackbar v-model="showAlert" top color="success">
+      Delete link is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </v-row>
 </template>
 
@@ -108,14 +109,12 @@ import { deleteLink } from '@/services/api';
 import DetailLinkModal from '@/components/links/DetailLinkModal';
 import CreateNewLink from '@/components/links/CreateNewLink';
 import RemoveModal from '@/components/shares/RemoveModal';
-import SnackbarError from '@/components/shares/SnackbarError';
 export default {
   directives: { clipboard },
   components: {
     DetailLinkModal,
     RemoveModal,
     CreateNewLink,
-    SnackbarError,
   },
   props: {
     id: {
@@ -219,7 +218,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        
+
       }
     },
     openModalUpdate() {

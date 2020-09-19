@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="modal-sort__title">Filter by</div>
-    <button class="button-normal modal-sort__button mt-3" @click="updateFilterBy()">Filter</button>
+    <button class="button-normal modal-sort__button mt-3" aria-label="Filter" @click="updateFilterBy()">Filter</button>
     <v-row justify="center">
       <v-col cols="12" md="6">
         <div>Domains</div>
@@ -95,7 +95,7 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        
+
       }
     },
   },

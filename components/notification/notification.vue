@@ -7,12 +7,14 @@
       <div class="notification__actions d-flex">
         <button
           class="button-normal btn-accept mr-4"
+          aria-label="Accept"
           @click="answerInvitations('ACCEPTED')"
         >
           Accept
         </button>
         <button
           class="button-warning btn-decline"
+          aria-label="decline"
           @click="answerInvitations('DENIED')"
         >
           Decline

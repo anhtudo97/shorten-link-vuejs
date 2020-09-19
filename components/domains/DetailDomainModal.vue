@@ -12,7 +12,12 @@
     <div class="modal-detail-domain__domain">
       <div class="d-flex">
         <div class="domain-url text-overflow-hidden">{{ domainURL }}</div>
-        <button v-if="dnsVerified" disabled class="domain-verify ml-3">Verified</button>
+        <button
+          v-if="dnsVerified"
+          disabled
+          class="domain-verify ml-3"
+          aria-label="verified"
+        >Verified</button>
       </div>
       <div class="domain-created-at d-flex my-5 align-center">
         <img src="@/assets/svg/calendar.svg" alt="calendar" />
@@ -47,7 +52,11 @@
         <div class="services-title">Remove</div>
       </v-col>
       <v-col cols="12" sm="9">
-        <button class="button-warning services-button" @click.stop="isRemoveModal = true">
+        <button
+          class="button-warning services-button"
+          aria-label="Remove this domain"
+          @click.stop="isRemoveModal = true"
+        >
           <div class="button-text">Remove this domain</div>
         </button>
       </v-col>
@@ -64,22 +73,19 @@
         @closeRemoveModal="closeRemoveModal"
       />
     </v-dialog>
-    <SnackbarSuccess
-      message="Delete domains is successfully"
-      :show-alert="showAlert"
-      @closeSnackbar="showAlert = false"
-    />
+    <v-snackbar v-model="showAlert" top color="success">
+      Delete domains is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
 <script>
 import { format, parseISO } from 'date-fns';
 import { getDomain, deleteDomain } from '@/services/api';
-import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
 export default {
-  components: {
-    SnackbarSuccess,
-  },
   props: {
     domain: {
       type: Object,
@@ -103,7 +109,6 @@ export default {
       const { status } = error.response.data;
       if (status === 401) {
         this.$router.push('/login');
-        
       }
     }
   },
@@ -140,7 +145,6 @@ export default {
         const { status } = error.response.data;
         if (status === 401) {
           this.$router.push('/login');
-          
         }
       }
     },

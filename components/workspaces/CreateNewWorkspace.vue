@@ -35,6 +35,7 @@
           <button
             :disabled="loading"
             class="button-normal button-create"
+            aria-label="action create new workspace"
             @click="callaction"
           >{{ edit ? 'Update workspace' : 'Create workspace' }}</button>
         </v-col>
@@ -49,24 +50,21 @@
       <template
         v-slot:action="{ attrs }"
       >
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">Close</v-btn>
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
       </template>
     </v-snackbar>
-    <SnackbarError
-      message="Workspace is existed"
-      :show-alert="showAlert400"
-      @closeSnackbar="showAlert400 = false"
-    />
+    <v-snackbar v-model="showAlert400" top color="error">
+      Workspace is existed
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="showAlert400 = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
 <script>
 import { createNewWorkspace, updateWorkspace } from '@/services/api';
-import SnackbarError from '@/components/shares/SnackbarError';
 export default {
-  components: {
-    SnackbarError,
-  },
   props: {
     edit: {
       type: Boolean,

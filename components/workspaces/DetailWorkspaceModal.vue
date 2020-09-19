@@ -14,16 +14,23 @@
         <img
           class="img"
           src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
+          alt="avatar"
         />
         <div>
           <div class="dialog-name-text px-5">{{ workspace.name }}</div>
           <div class="dialog-date-text px-5">
-            <button v-if="workspace.isDefault" disabled class="date-text">Default</button>
+            <button
+              v-if="workspace.isDefault"
+              disabled
+              class="date-text"
+              aria-label="default"
+            >Default</button>
           </div>
         </div>
       </div>
       <button
         class="dialog-detail-workspace__button button-normal"
+        aria-label="edit"
         @click="openEditWorkspace = true"
       >Edit</button>
     </div>
@@ -61,7 +68,11 @@
         <div class="services-title">Delete this repository</div>
       </v-col>
       <v-col cols="12" sm="9" class="text-md-right text-left">
-        <button class="button-warning button-remove" @click.stop="isRemoveModal = true">
+        <button
+          class="button-warning button-remove"
+          aria-label="remove this workspace"
+          @click.stop="isRemoveModal = true"
+        >
           <div class="button-text">Remove this workspace</div>
         </button>
       </v-col>
@@ -106,11 +117,12 @@
         @closeCreateNewWorkspace="closeEditWorkspace"
       />
     </v-dialog>
-    <SnackbarSuccess
-      message="Delete workspace is successfully"
-      :show-alert="showAlert"
-      @closeSnackbar="showAlert = false"
-    />
+    <v-snackbar v-model="showAlert" top color="success">
+      Delete workspace is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
@@ -126,13 +138,11 @@ import {
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
 import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
 import CreateNewWorkspaceModal from '@/components/workspaces/CreateNewWorkspace';
-import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
 export default {
   components: {
     ManagementMemberModal,
     AddLinksDomainsModal,
     CreateNewWorkspaceModal,
-    SnackbarSuccess,
   },
   props: {
     workspace: {
@@ -216,7 +226,6 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        
       }
     },
     async getDomains() {
@@ -235,7 +244,6 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        
       }
     },
     async getLinks() {
@@ -253,7 +261,6 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        
       }
     },
     async removeWorkspace() {
@@ -273,7 +280,6 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        
       }
     },
     handleResize() {

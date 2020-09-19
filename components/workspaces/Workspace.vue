@@ -12,6 +12,7 @@
           <img
             class="img"
             src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
+            alt="avatar"
           />
           <div class="name-text px-5 text-overflow-hidden">{{ workspace.name }}</div>
         </div>
@@ -56,11 +57,12 @@
         <AddLinksDomainsModal @closeModalAddLinksDomain="closeModalAddLinksDomain" />
       </v-dialog>
     </v-row>
-    <SnackbarSuccess
-      message="Delete workspace is successfully"
-      :show-alert="showAlert"
-      @closeSnackbar="showAlert = false"
-    />
+    <v-snackbar v-model="showAlert" top color="success">
+      Delete workspace is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -71,13 +73,11 @@ import { deleteWorkspace } from '@/services/api';
 import DetailWorkspaceModal from '@/components/workspaces/DetailWorkspaceModal';
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
 import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
-import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
 export default {
   components: {
     DetailWorkspaceModal,
     ManagementMemberModal,
     AddLinksDomainsModal,
-    SnackbarSuccess,
   },
   props: {
     workspace: {
@@ -150,7 +150,6 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        
       }
     },
     handleResize() {

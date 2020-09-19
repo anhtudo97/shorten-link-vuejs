@@ -6,16 +6,19 @@
           <v-col cols class="px-0 d-flex">
             <button
               class="menu-text menu-text-left"
+              aria-label="total workspace"
               @click="joined = false"
             >{{ total }} Workspace(s)</button>
             <button
               class="menu-text menu-text-right"
+              aria-label="total workspace joined"
               @click="joined = true"
             >{{ totalJoined }} Workspace(s) joined</button>
           </v-col>
           <v-col class="text-right px-0">
             <button
               class="button-normal menu-button"
+              aria-label="new workspace"
               @click.stop="openCreateNewWorkspace = true"
             >New workspace</button>
           </v-col>
@@ -160,12 +163,10 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        
       }
     },
     async getWorkspacesJoined(page) {
       const { token } = this;
-      console.log(token);
       try {
         const resWorkspace = await getWorkspacesJoined(token, page);
         const { status, data } = resWorkspace.data;
@@ -174,12 +175,10 @@ export default {
           this.totalJoined = total;
           this.totalPageJoined = totalPage;
           this.workspacesJoined = invitations;
-          console.log(this.workspacesJoined);
         }
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-        
       }
     },
   },

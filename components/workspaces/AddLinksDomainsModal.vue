@@ -25,6 +25,7 @@
           <button
             :disabled="loading"
             class="button-warning member-action"
+            aria-label="Remove"
             @click="removeDomainsToWorkspace(item.id)"
           >Remove</button>
         </div>
@@ -54,6 +55,7 @@
       <button
         :disabled="loading || !domainSelected || !domainSelected.length"
         class="button-normal add-button"
+        aria-label="add more"
         @click="addDomainsToWorkspace"
       >Add more</button>
     </v-row>
@@ -79,11 +81,12 @@
         </v-container>
       </v-col>
     </v-row>
-    <SnackbarError
-      message="Delete domain is successfully"
-      :show-alert="showAlert400"
-      @closeSnackbar="showAlert400 = false"
-    />
+     <v-snackbar v-model="showAlert400" top color="success">
+      Delete domain is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert400 = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
@@ -94,11 +97,7 @@ import {
   addDomainsWorkspace,
   removeDomainWorkspace,
 } from '@/services/api';
-import SnackbarError from '@/components/shares/SnackbarError';
 export default {
-  components: {
-    SnackbarError,
-  },
   props: {
     workspace: {
       type: Object,
@@ -165,7 +164,7 @@ export default {
         const { status } = error.response.data;
         if (status === 401) {
           this.$router.push('/login');
-          
+
         }
       }
     },
@@ -189,7 +188,7 @@ export default {
         const { status } = error.response.data;
         if (status === 401) {
           this.$router.push('/login');
-          
+
         }
       }
     },
@@ -220,7 +219,7 @@ export default {
         const { status } = error.response.data;
         if (status === 401) {
           this.$router.push('/login');
-          
+
         }
       }
     },
@@ -250,7 +249,7 @@ export default {
         const { status } = error.response.data;
         if (status === 401) {
           this.$router.push('/login');
-          
+
         }
       }
     },

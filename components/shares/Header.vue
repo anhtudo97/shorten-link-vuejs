@@ -4,7 +4,7 @@
       <div class="header d-flex align-center mx-0 mx-sm-6 mx-lg-8 mx-xl-10">
         <nuxt-link to="/">
           <div class="header__logo">
-            <img src="~/assets/logo.png" />
+            <img src="~/assets/logo.png" alt="logo"/>
           </div>
         </nuxt-link>
         <ul>
@@ -17,7 +17,6 @@
           </li>
         </ul>
         <v-spacer></v-spacer>
-
         <client-only>
           <div v-if="token === ''" class="d-flex align-center">
             <nuxt-link to="/login">
@@ -26,7 +25,7 @@
               </div>
             </nuxt-link>
             <nuxt-link to="/sign-up">
-              <button class="button-normal header__signup py-2 px-6 font-weight-bold">Sign up</button>
+              <button class="button-normal header__signup py-2 px-6 font-weight-bold" aria-label="Signup">Sign up</button>
             </nuxt-link>
           </div>
           <div v-else class="d-flex align-center">
@@ -48,6 +47,7 @@
             <div class="pr-4 header__signup">{{ email }}</div>
             <button
               class="button-normal header__signup py-2 px-6 font-weight-bold"
+              aria-label="Logout"
               @click.prevent="logout"
             >Logout</button>
           </div>
@@ -60,7 +60,7 @@
           <v-row class="header d-flex align-center mx-2 mx-sm-7 py-0">
             <nuxt-link to="/">
               <div class="header__logo">
-                <img src="@/assets/logo.png" />
+                <img src="@/assets/logo.png" alt="logo"/>
               </div>
             </nuxt-link>
             <v-spacer></v-spacer>
@@ -92,8 +92,7 @@ export default {
           this.total = data.total;
         }
       } catch (error) {
-        console.error(error.response);
-        const { status } = error.response;
+        const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
       }
     }

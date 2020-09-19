@@ -4,7 +4,7 @@
       <v-row class="header d-flex align-center mx-0">
         <nuxt-link to="/">
           <div class="logo">
-            <img src="~/assets/logo.png" />
+            <img src="~/assets/logo.png" alt="logo"/>
           </div>
         </nuxt-link>
         <v-spacer></v-spacer>

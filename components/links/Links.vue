@@ -21,7 +21,7 @@
             </div>
           </v-col>
           <v-col cols="5" sm="4" lg="3" class="text-right">
-            <button class="button-normal add-new-link" @click.stop="models.modal = true">New Link</button>
+            <button class="button-normal add-new-link" aria-label="New Link" @click.stop="models.modal = true">New Link</button>
           </v-col>
         </v-row>
       </v-col>

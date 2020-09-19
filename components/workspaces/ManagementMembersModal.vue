@@ -18,6 +18,7 @@
       <button
         :disabled="loading"
         class="button-normal dialog-button font-weight-medium px-4"
+        aria-label="send"
         @click.stop="inviteMembers"
       >Send the invitations</button>
     </div>
@@ -38,6 +39,7 @@
       <button
         :disabled="loading"
         class="button-normal search-button font-weight-medium px-10"
+        aria-label="search"
         @click.stop="searchMember"
       >Search</button>
     </div>
@@ -58,13 +60,18 @@
             <button
               :disabled="loading"
               class="button-warning member-action"
+              aria-label="remove member"
               @click="removeMembers(item.id)"
             >Remove</button>
           </v-col>
         </v-row>
       </transition-group>
       <div v-if="totalPage > 1" class="dialog-member-workspace__member">
-        <button class="button-normal member-action" @click="addMore">Add more</button>
+        <button
+          class="button-normal member-action"
+          aria-label="add more member"
+          @click="addMore"
+        >Add more</button>
       </div>
     </div>
     <transition-group name="slide-fade" mode="in-out">
@@ -94,13 +101,19 @@
     <v-snackbar v-model="showAlert" top color="success">
       {{ messages }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert = false">Close</v-btn>
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
       </template>
     </v-snackbar>
     <v-snackbar v-model="showAlert400" top color="error">
       {{ messages }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert400 = false">Close</v-btn>
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert400 = false"
+        >Close</v-btn>
       </template>
     </v-snackbar>
   </v-list>

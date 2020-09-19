@@ -17,7 +17,11 @@
           >{{ shorten }}</a>
           <div class="d-flex dialog-link-service align-center">
             <div v-clipboard="`https://${shorten}`" class="dialog-button-copy mr-3">Copy</div>
-            <button class="dialog-button button-normal" @click.stop="modalEditLink = true">Edit</button>
+            <button
+              class="dialog-button button-normal"
+              aria-label="Edit"
+              @click.stop="modalEditLink = true"
+            >Edit</button>
           </div>
         </div>
         <div class="modal-detail-link__dialog-sub">
@@ -52,6 +56,7 @@
             <v-col cols="12" md="9">
               <button
                 class="remove-button button-warning"
+                aria-label="Remove this link"
                 @click.stop="isRemoveModal = true"
               >Remove this link</button>
             </v-col>
@@ -70,11 +75,12 @@
     <v-dialog v-model="isRemoveModal" persistent width="500">
       <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
     </v-dialog>
-    <SnackbarError
-      message="Delete link is successfully"
-      :show-alert="showAlert"
-      @closeSnackbar="showAlert = false"
-    />
+    <v-snackbar v-model="showAlert" top color="success">
+      Delete link is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
@@ -84,13 +90,11 @@ import { getLink, deleteLink } from '@/services/api';
 
 import CreateNewLink from '@/components/links/CreateNewLink';
 import RemoveModal from '@/components/shares/RemoveModal';
-import SnackbarError from '@/components/shares/SnackbarError';
 export default {
   directives: { clipboard },
   components: {
     RemoveModal,
     CreateNewLink,
-    SnackbarError,
   },
   props: {
     slashtag: {
@@ -164,7 +168,6 @@ export default {
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-
       }
     },
     async removeLink() {

@@ -22,7 +22,7 @@
             <div class="signup-header d-flex align-center">
               <nuxt-link to="/">
                 <div class="header__logo mr-4">
-                  <img src="~/assets/logo.png" />
+                  <img src="~/assets/logo.png" alt="logo"/>
                 </div>
               </nuxt-link>
               <div class="signup-title">Sign up</div>
@@ -80,13 +80,14 @@
               </template>
               <v-date-picker v-model="form.date" no-title scrollable>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="form.menu = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.menu.save(form.date)">OK</v-btn>
+                <v-btn text color="primary" aria-label="cancel" @click="form.menu = false">Cancel</v-btn>
+                <v-btn text color="primary" aria-label="OK" @click="$refs.menu.save(form.date)">OK</v-btn>
               </v-date-picker>
             </v-menu>
             <button
               :disabled="isLoading"
               class="button-normal signup-button mt-6 mt-sm-8"
+              aria-label="register"
               @click.prevent="register"
             >Register</button>
           </v-col>

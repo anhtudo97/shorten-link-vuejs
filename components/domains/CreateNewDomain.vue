@@ -34,6 +34,7 @@
         <button
           :disabled="loading || !valid"
           class="button-normal dialog-create-new-domain__button"
+          aria-label="Create new domain"
           @click.prevent="createNewDomain"
         >Create new domain</button>
       </v-col>
@@ -41,13 +42,13 @@
     <v-snackbar v-model="showAlert" top color="success">
       {{ message }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert=false">Close</v-btn>
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert=false">Close</v-btn>
       </template>
     </v-snackbar>
     <v-snackbar v-model="showAlert400" top color="error">
       {{ message }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert400 = false">Close</v-btn>
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert400 = false">Close</v-btn>
       </template>
     </v-snackbar>
   </v-list>

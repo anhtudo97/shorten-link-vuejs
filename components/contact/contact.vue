@@ -60,7 +60,7 @@
             <v-text-field class="contact__input-subscription" label="Your email" outlined dense></v-text-field>
           </v-col>
           <v-col cols="12" md="4" class="py-0 py-md-3">
-            <button class="button-normal contact__button-subscription">Submit</button>
+            <button class="button-normal contact__button-subscription" aria-label="Submit">Submit</button>
           </v-col>
         </v-row>
       </v-col>
