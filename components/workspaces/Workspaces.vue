@@ -3,19 +3,21 @@
     <v-row class="workspaces__menu mx-0">
       <v-col cols="12" sm="10" md="8" class="mx-auto py-2 py-md-3 py-lg-6">
         <v-row class="align-center justify-space-between main-menu px-3 px-sm-0">
-          <v-col cols class="px-0 d-flex">
+          <v-col cols="12" md="8" class="px-0 d-flex">
             <button
+              :class="[!joined ? 'active':'']"
               class="menu-text menu-text-left"
               aria-label="total workspace"
               @click="joined = false"
             >{{ total }} Workspace(s)</button>
             <button
+              :class="[joined ? 'active':'']"
               class="menu-text menu-text-right"
               aria-label="total workspace joined"
               @click="joined = true"
             >{{ totalJoined }} Workspace(s) joined</button>
           </v-col>
-          <v-col class="text-right px-0">
+          <v-col cols="12" md="4" class="text-md-right text-left px-0">
             <button
               class="button-normal menu-button"
               aria-label="new workspace"
@@ -247,6 +249,10 @@ export default {
     @media (max-width: 960px) {
       display: none;
     }
+  }
+  .active {
+    background-color: #3c64b1;
+    color: #fff;
   }
 }
 </style>

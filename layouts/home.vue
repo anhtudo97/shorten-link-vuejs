@@ -23,6 +23,7 @@ import Footer from '@/components/shares/Footer';
 import Drawer from '@/components/shares/NavigationDrawer';
 
 export default {
+  // middleware: ['authentication'],
   components: {
     Header,
     Footer,
