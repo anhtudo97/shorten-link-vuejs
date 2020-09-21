@@ -1,6 +1,6 @@
 <template>
   <div class="workspace mb-5">
-    <nuxt-link :to="`workspaces/${workspace.id}`">
+    <nuxt-link :to="`workspaces/${workspace.id}?name=${workspace.name}`">
       <v-row class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0">
         <v-col
           cols="7"
