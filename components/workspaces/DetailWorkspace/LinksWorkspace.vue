@@ -1,11 +1,11 @@
 <template>
   <div class="link">
-    <v-row class="link__menu mx-0">
-      <v-col cols="12" sm="10" md="8" class="mx-auto py-3 px-0">
+    <v-row class="link__menu">
+      <v-col cols="12" sm="10" md="8" class="mx-auto py-3">
         <v-row class="align-center">
-          <v-col cols="7" sm="8" lg="9" class="px-0">
+          <v-col cols="7" sm="8" lg="9">
             <div class="d-flex align-center flex-wrap">
-              <div class="menu-selection my-3  d-flex">
+              <div class="menu-selection mr-4 my-3 d-flex">
                 <div class="d-flex align-center" @click="models.sortModal = true">
                   <div class="selection-text pr-2">Sort by</div>
                   <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
@@ -19,26 +19,28 @@
               </div>
             </div>
           </v-col>
-          <v-col cols="5" sm="4" lg="3" class="text-right px-0">
-            <button class="button-normal add-new-link" aria-label="new link" @click.stop="models.modal = true">New Link</button>
+          <v-col cols="5" sm="4" lg="3" class="text-right">
+            <button
+              class="button-normal add-new-link"
+              aria-label="new link"
+              @click.stop="models.modal = true"
+            >New Link</button>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
-    <div v-if="$fetchState.pending" class="d-flex justify-center">
-      <v-progress-circular indeterminate color="primary"></v-progress-circular>
-    </div>
-    <div v-else class="link__management">
-      <transition-group name="slide-fade" mode="out-in" tag="ul" class="pa-0">
-        <li v-for="link in links" :key="link.id">
+    <div class="link__management">
+      <transition-group name="slide-fade" mode="out-in" tag="section" class="py-0">
+        <div v-for="link in links" :key="link.id">
           <Link
             :id="link.id"
             :link="link.destination"
             :slashtag="link.slashtag"
             :clicks="link.clicks"
             :date="link.createdAt"
+            :domain="link.domain.name"
           />
-        </li>
+        </div>
       </transition-group>
       <v-row v-if="links.length !== 0" justify="center">
         <v-col cols="8">
@@ -66,7 +68,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 import Link from '@/components/links/Link';
 import CreateNewLink from '@/components/links/CreateNewLink';
 import SortModal from '@/components/links/SortModal';
@@ -81,20 +83,6 @@ export default {
     SortModal,
     MemberModal,
   },
-  fetchOnServer: false,
-  async fetch() {
-    this.workspaceId = this.$route.params.id;
-    if (typeof localStorage !== 'undefined' && localStorage.token) {
-      this.token = localStorage.token;
-    }
-    await this.getListLinks(
-      1,
-      this.sort,
-      this.direction,
-      this.domainSelected,
-      this.workspaceSelected
-    );
-  },
   data: () => ({
     keySort: 'Sort By',
     models: {
@@ -104,20 +92,28 @@ export default {
       filterModal: false,
     },
     width: 0,
-    links: [],
     page: 1,
     workspaceId: '',
     token: '',
-    total: 0,
-    totalPage: 0,
     domainSelected: [],
     userIdsSelected: [],
   }),
+  created() {
+    this.workspaceId = this.$route.params.id;
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+      this.token = localStorage.token;
+    }
+  },
   computed: {
-    ...mapGetters({ sort: 'links/getSort', direction: 'links/getDirection' }),
+    ...mapGetters({
+      sort: 'links/getSort',
+      direction: 'links/getDirection',
+      links: 'workspaces/getLinksWorkspace',
+      total: 'workspaces/getLinksTotalWorkspace',
+      totalPage: 'workspaces/getLinksTotalPageWorkspace',
+    }),
   },
   watch: {
-    '$route.query': '$fetch',
     page(val) {
       this.getListLinks(
         val,
@@ -140,12 +136,16 @@ export default {
       setSort: 'links/setSort',
       setDirection: 'links/setDirection',
     }),
+    ...mapActions({
+      setLinksWorkspace: 'workspaces/setLinksWorkspace',
+      setLinksTotalWorkspace: 'workspaces/setLinksTotalWorkspace',
+    }),
     async getListLinks(page, sort, direction, domainSelected, userIdsSelected) {
-      const { token, workspaceId } = this;
+      const { token } = this;
       try {
         const resLink = await getLinksWorkspaces(
           token,
-          workspaceId,
+          this.$route.params.id,
           page,
           sort,
           direction,
@@ -155,16 +155,13 @@ export default {
         const { status, data } = resLink.data;
         if (status === 200) {
           const { links, total, totalPage } = data;
-          this.total = total;
-          this.totalPage = totalPage;
-          if (links.length) {
-            this.links = links;
-          }
+          this.setLinksTotalWorkspace(total);
+          this.setLinksWorkspace(links);
+          this.setLinksTotalPageWorkspace(totalPage);
         }
       } catch (error) {
         const { status } = error.response.data;
         if (status === 401) this.$router.push('/login');
-
       }
     },
     updateSort(sort, direction) {

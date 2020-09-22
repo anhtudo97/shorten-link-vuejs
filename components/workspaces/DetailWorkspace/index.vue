@@ -1,12 +1,12 @@
 <template>
   <div class="detail-workspace">
-    <v-row class="detail-workspace__menu mx-0">
-      <v-col cols="12" sm="10" md="8" class="mx-auto px-0 py-2 py-md-3">
-        <v-row class="align-center justify-space-between main-menu px-3 px-sm-0">
-          <v-col cols="12" md="4" class="tex-center text-md-left px-0">
-            <button class="menu-button" aria-label="new workspace">{{$route.query.name}}</button>
+    <v-row class="detail-workspace__menu">
+      <v-col cols="12" sm="10" md="8" class="mx-auto py-2 py-md-3">
+        <v-row class="align-center justify-space-between main-menu">
+          <v-col cols="12" md="4" class="text-sm-center text-md-left">
+            <div class="menu-button">{{$route.query.name}}</div>
           </v-col>
-          <v-col cols="12" md="8" class="px-0 d-flex justify-md-end justify-center">
+          <v-col cols="12" md="8" class="d-flex justify-md-end justify-center">
             <button
               :class="[tabName === 'Link'? 'active':'']"
               class="menu-text menu-text-left"
@@ -30,7 +30,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12">
+      <v-col cols="12 py-0">
         <transition v-if="tabName === 'Link'" name="fade" mode="out-in">
           <Link />
         </transition>
@@ -45,6 +45,7 @@
   </div>
 </template>
 <script>
+import { mapGetters, mapMutations } from 'vuex';
 import {
   getDomainsWorkspace,
   getLinksWorkspaces,
@@ -66,26 +67,45 @@ export default {
     await Promise.all([this.getLinks(), this.getDomains(), this.getMembers()]);
   },
   data: () => ({
-    totalMember: 0,
-    totalLink: 0,
-    totalDomain: 0,
     page: 1,
     token: '',
     tabName: 'Link',
   }),
+  computed: {
+    ...mapGetters({
+      totalLink: 'workspaces/getLinksTotalWorkspace',
+      totalDomain: 'workspaces/getDomainsTotalWorkspace',
+      totalMember: 'workspaces/getMembersTotalWorkspace',
+    }),
+  },
   methods: {
+    ...mapMutations({
+      // member
+      setMembersTotalWorkspace: 'workspaces/setMembersTotalWorkspace',
+      setMembersWorkspace: 'workspaces/setMembersWorkspace',
+      setMembersTotalPageWorkspace: 'workspaces/setMembersTotalPageWorkspace',
+      // domain
+      setDomainsTotalWorkspace: 'workspaces/setDomainsTotalWorkspace',
+      setDomainsWorkspace: 'workspaces/setDomainsWorkspace',
+      setDomainsTotalPageWorkspace: 'workspaces/setDomainsTotalPageWorkspace',
+      // link
+      setLinksTotalWorkspace: 'workspaces/setLinksTotalWorkspace',
+      setLinksWorkspace: 'workspaces/setLinksWorkspace',
+      setLinksTotalPageWorkspace: 'workspaces/setLinksTotalPageWorkspace',
+    }),
     async getMembers() {
       try {
         const resMembers = await getMembersWorkspaces(
           this.token,
-          this.workspace.id,
+          this.$route.params.id,
           this.page
         );
-        const statusMembers = resMembers.data.status;
-        if (statusMembers === 200) {
-          const { total, members } = resMembers.data.data;
-          this.totalMember = total;
-          this.members = members;
+        const { status, data } = resMembers.data;
+        if (status === 200) {
+          const { total, totalPage, members } = data;
+          this.setMembersTotalWorkspace(total);
+          this.setMembersWorkspace(members);
+          this.setMembersTotalPageWorkspace(totalPage);
         }
       } catch (error) {
         const { status } = error.response.data;
@@ -99,11 +119,12 @@ export default {
           this.$route.params.id,
           this.page
         );
-        const statusDomains = resDomains.data.status;
-
-        if (statusDomains === 200) {
-          const { total } = resDomains.data.data;
-          this.totalDomain = total;
+        const { status, data } = resDomains.data;
+        if (status === 200) {
+          const { total, totalPage, domains } = data;
+          this.setDomainsTotalWorkspace(total);
+          this.setDomainsWorkspace(domains);
+          this.setDomainsTotalPageWorkspace(totalPage);
         }
       } catch (error) {
         const { status } = error.response.data;
@@ -117,10 +138,12 @@ export default {
           this.$route.params.id,
           this.page
         );
-        const statusLinks = resLinks.data.status;
-        if (statusLinks === 200) {
-          const { total } = resLinks.data.data;
-          this.totalLink = total;
+        const { status, data } = resLinks.data;
+        if (status === 200) {
+          const { total, totalPage, links } = data;
+          this.setLinksTotalWorkspace(total);
+          this.setLinksWorkspace(links);
+          this.setLinksTotalPageWorkspace(totalPage);
         }
       } catch (error) {
         const { status } = error.response.data;
@@ -162,7 +185,7 @@ export default {
     }
     .menu-button {
       font-size: 20px;
-      padding: 7px 35px;
+      padding: 7px 0;
       font-weight: 500;
       color: #3c64b1;
     }

@@ -1,117 +1,105 @@
 <template>
-  <div>
-    <v-row class="link-detail">
-      <v-col cols="12" sm="10" md="8" class="mx-auto border-radius-10">
-        <v-row class="align-center">
-          <v-col cols="12" md="8" @click.stop="models.isOpen = true">
-            <div class="shortened-link text-overflow-hidden">{{ shorten }}</div>
-            <div class="origin-link pt-2 text-overflow-hidden">{{ link }}</div>
-          </v-col>
-          <v-col cols="12" md="4">
-            <div class="d-flex justify-space-between align-center shortened-info">
-              <div class="shortened-clicks">{{ clicks }} click(s)</div>
-              <div>
-                <div class="shortened-date">{{ createAt }}</div>
-                <div class="d-flex link-services">
-                  <v-tooltip top nudge-left="10">
-                    <template v-slot:activator="{ on, attrs }">
-                      <a :href="shorten">
-                        <img
-                          :src="require('@/assets/icons/route-solid.svg')"
-                          alt="route"
-                          class="ml-5"
-                          v-bind="attrs"
-                          v-on="on"
-                        />
-                      </a>
-                    </template>
-                    <span class="text--black">Visit URL</span>
-                  </v-tooltip>
-                  <v-tooltip top nudge-left="10">
-                    <template v-slot:activator="{ on, attrs }">
-                      <div v-clipboard="shorten">
-                        <img
-                          :src="require('@/assets/icons/clone-solid.svg')"
-                          alt="route"
-                          class="ml-5"
-                          v-bind="attrs"
-                          v-on="on"
-                        />
-                      </div>
-                    </template>
-                    <span class>Copy</span>
-                  </v-tooltip>
-                  <v-tooltip top nudge-left="10">
-                    <template v-slot:activator="{ on, attrs }">
-                      <div @click.stop="openModalUpdate">
-                        <img
-                          :src="require('@/assets/icons/edit-solid.svg')"
-                          alt="route"
-                          class="ml-5"
-                          v-bind="attrs"
-                          v-on="on"
-                        />
-                      </div>
-                    </template>
-                    <span>Edit</span>
-                  </v-tooltip>
-                  <v-tooltip top nudge-left="10">
-                    <template v-slot:activator="{ on, attrs }">
-                      <div @click.stop="isRemoveModal = true">
-                        <img
-                          :src="require('@/assets/icons/trash-solid.svg')"
-                          alt="route"
-                          class="ml-5"
-                          v-bind="attrs"
-                          v-on="on"
-                        />
-                      </div>
-                    </template>
-                    <span>Remove</span>
-                  </v-tooltip>
-                </div>
+  <v-row class="link-detail">
+    <v-col cols="12" sm="10" md="8" class="mx-auto">
+      <v-row class="align-center border-radius-10 ma-0 py-3">
+        <v-col cols="12" md="8" @click.stop="models.isOpen = true">
+          <div class="shortened-link text-overflow-hidden">{{ shorten }}</div>
+          <div class="origin-link pt-2 text-overflow-hidden">{{ link }}</div>
+        </v-col>
+        <v-col cols="12" md="4">
+          <div class="d-flex justify-space-between align-center shortened-info">
+            <div class="shortened-clicks">{{ clicks }} click(s)</div>
+            <div>
+              <div class="shortened-date">{{ createAt }}</div>
+              <div class="d-flex link-services">
+                <v-tooltip top nudge-left="10">
+                  <template v-slot:activator="{ on, attrs }">
+                    <a :href="shorten">
+                      <img
+                        :src="require('@/assets/icons/route-solid.svg')"
+                        alt="route"
+                        class="ml-5"
+                        v-bind="attrs"
+                        v-on="on"
+                      />
+                    </a>
+                  </template>
+                  <span class="text--black">Visit URL</span>
+                </v-tooltip>
+                <v-tooltip top nudge-left="10">
+                  <template v-slot:activator="{ on, attrs }">
+                    <div v-clipboard="shorten">
+                      <img
+                        :src="require('@/assets/icons/clone-solid.svg')"
+                        alt="route"
+                        class="ml-5"
+                        v-bind="attrs"
+                        v-on="on"
+                      />
+                    </div>
+                  </template>
+                  <span class>Copy</span>
+                </v-tooltip>
+                <v-tooltip top nudge-left="10">
+                  <template v-slot:activator="{ on, attrs }">
+                    <div @click.stop="openModalUpdate">
+                      <img
+                        :src="require('@/assets/icons/edit-solid.svg')"
+                        alt="route"
+                        class="ml-5"
+                        v-bind="attrs"
+                        v-on="on"
+                      />
+                    </div>
+                  </template>
+                  <span>Edit</span>
+                </v-tooltip>
+                <v-tooltip top nudge-left="10">
+                  <template v-slot:activator="{ on, attrs }">
+                    <div @click.stop="isRemoveModal = true">
+                      <img
+                        :src="require('@/assets/icons/trash-solid.svg')"
+                        alt="route"
+                        class="ml-5"
+                        v-bind="attrs"
+                        v-on="on"
+                      />
+                    </div>
+                  </template>
+                  <span>Remove</span>
+                </v-tooltip>
               </div>
             </div>
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-dialog
-        v-model="models.isOpen"
-        class="dialog"
-        max-width="900"
-        :fullscreen="width < 600 ? true : false"
-      >
-        <DetailLinkModal
-          :id="id"
-          :slashtag="slashtag"
-          @closeModalDetailLink="closeModalDetailLink"
-        />
-      </v-dialog>
-      <v-dialog
-        v-model="modalEditLink"
-        class="link__dialog"
-        max-width="900"
-        :fullscreen="width < 600 ? true : false"
-      >
-        <CreateNewLink :id="id" :edit="true" @closeModalEditNewLink="closeModalEditNewLink" />
-      </v-dialog>
-      <v-dialog v-model="isRemoveModal" persistent width="500">
-        <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
-      </v-dialog>
-      <v-snackbar v-model="showAlert" top color="success">
-        Delete link is successfully
-        <template v-slot:action="{ attrs }">
-          <v-btn
-            color="white"
-            text
-            v-bind="attrs"
-            aria-label="close"
-            @click="showAlert = false"
-          >Close</v-btn>
-        </template>
-      </v-snackbar>
-    </v-row>
-  </div>
+          </div>
+        </v-col>
+      </v-row>
+    </v-col>
+    <v-dialog
+      v-model="models.isOpen"
+      class="dialog"
+      max-width="900"
+      :fullscreen="width < 600 ? true : false"
+    >
+      <DetailLinkModal :id="id" :slashtag="slashtag" @closeModalDetailLink="closeModalDetailLink" />
+    </v-dialog>
+    <v-dialog
+      v-model="modalEditLink"
+      class="link__dialog"
+      max-width="900"
+      :fullscreen="width < 600 ? true : false"
+    >
+      <CreateNewLink :id="id" :edit="true" @closeModalEditNewLink="closeModalEditNewLink" />
+    </v-dialog>
+    <v-dialog v-model="isRemoveModal" persistent width="500">
+      <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
+    </v-dialog>
+    <v-snackbar v-model="showAlert" top color="success">
+      Delete link is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+      </template>
+    </v-snackbar>
+  </v-row>
 </template>
 
 <script>

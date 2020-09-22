@@ -95,9 +95,6 @@ export default {
     }
   },
   methods: {
-    reload() {
-      window.location.reload();
-    },
     callaction() {
       if (this.edit) {
         this.updateWorkspace();
@@ -114,7 +111,6 @@ export default {
           this.showAlert = true;
           setTimeout(() => {
             this.$emit('closeCreateNewWorkspace');
-            this.reload();
             this.loading = false;
           }, 2000);
         }

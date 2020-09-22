@@ -4,7 +4,7 @@
       <div class="header d-flex align-center mx-0 mx-sm-6 mx-lg-8 mx-xl-10">
         <nuxt-link to="/">
           <div class="header__logo">
-            <img src="~/assets/logo.png" alt="logo"/>
+            <img src="~/assets/logo.png" alt="logo" />
           </div>
         </nuxt-link>
         <ul>
@@ -25,7 +25,10 @@
               </div>
             </nuxt-link>
             <nuxt-link to="/sign-up">
-              <button class="button-normal header__signup py-2 px-6 font-weight-bold" aria-label="Signup">Sign up</button>
+              <button
+                class="button-normal header__signup py-2 px-6 font-weight-bold"
+                aria-label="Signup"
+              >Sign up</button>
             </nuxt-link>
           </div>
           <div v-else class="d-flex align-center">
@@ -60,7 +63,7 @@
           <v-row class="header d-flex align-center mx-2 mx-sm-7 py-0">
             <nuxt-link to="/">
               <div class="header__logo">
-                <img src="@/assets/logo.png" alt="logo"/>
+                <img src="@/assets/logo.png" alt="logo" />
               </div>
             </nuxt-link>
             <v-spacer></v-spacer>
@@ -73,6 +76,7 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex';
 import { getInvitations } from '@/services/api';
 export default {
   async fetch() {
@@ -88,8 +92,10 @@ export default {
       try {
         const res = await getInvitations(this.token, 1);
         const { status, data } = res.data;
+        console.log(data.invitations);
         if (status === 200) {
-          this.total = data.total;
+          this.setNotifications({ notifications: data.invitations });
+          this.total = this.notifications.length;
         }
       } catch (error) {
         const { status } = error.response.data;
@@ -124,8 +130,14 @@ export default {
     email: null,
     total: 0,
   }),
+  computed: {
+    ...mapGetters({
+      notifications: 'notifications/getNotifications',
+    }),
+  },
   fetchOnServer: false,
   methods: {
+    ...mapMutations({ setNotifications: 'notifications/setNotifications' }),
     logout() {
       this.$store.commit('setUser', null);
       this.$store.commit('setToken', 'Bearer ' + null);

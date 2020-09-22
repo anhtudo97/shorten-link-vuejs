@@ -11,29 +11,23 @@
             >{{ domain.dnsVerified ? 'Verified': 'Unverified' }}</div>
           </div>
         </v-col>
-        <v-col cols="12" sm="4" md="4" lg="3" class="text-left text-sm-right">
-          <div class="added text-overflow-hidden">{{ date }}</div>
+        <v-col cols="12" sm="4" md="4" lg="3" class="text-left text-sm-right relative">
+          <div class="added text-overflow-hidden absolute">{{ date }}</div>
+          <button
+            :disabled="loading"
+            class="button-warning btn-remove absolute"
+            @click="removeFromList"
+          >Remove</button>
         </v-col>
       </v-row>
     </v-col>
-    <v-dialog
-      v-model="models.isOpen"
-      class="dialog"
-      max-width="900"
-      :fullscreen="width < 600 ? true : false"
-    >
-      <DetailDomainModal :domain="domain" @closeModalDetailDomain="closeModalDetailDomain" />
-    </v-dialog>
   </v-row>
 </template>
 
 <script>
 import { format } from 'date-fns';
-import DetailDomainModal from '@/components/domains/DetailDomainModal';
+import { removeDomainWorkspace } from '@/services/api';
 export default {
-  components: {
-    DetailDomainModal,
-  },
   props: {
     domain: {
       type: Object,
@@ -45,11 +39,18 @@ export default {
       isOpen: false,
     },
     width: 0,
+    loading: false,
+    token: '',
   }),
   computed: {
     date() {
       return format(new Date(this.domain.createdAt), 'MMMM dd, yyyy');
     },
+  },
+  created() {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+      this.token = localStorage.token;
+    }
   },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);
@@ -59,13 +60,35 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
-    closeModalDetailDomain() {
-      this.models.isOpen = false;
-      this.$emit('closeModalCreateNewDomain');
-    },
     handleResize() {
       if (process.client) {
         this.width = window.innerWidth;
+      }
+    },
+    async removeFromList() {
+      this.loading = true;
+      try {
+        const res = await removeDomainWorkspace(
+          this.token,
+          this.$route.params.id,
+          this.domain.id
+        );
+
+        const { status } = res.data;
+        if (status === 204) {
+          this.showAlert400 = true;
+          setTimeout(() => {
+            this.domainSelected = [];
+            this.$emit('updateDomains');
+            this.loading = false;
+            this.showAlert400 = false;
+          }, 300);
+        }
+      } catch (error) {
+        const { status } = error.response.data;
+        if (status === 401) {
+          this.$router.push('/login');
+        }
       }
     },
   },
@@ -99,6 +122,31 @@ export default {
   }
   .text-green {
     color: #02af63;
+  }
+  .btn-remove {
+    opacity: 0;
+    padding: 5px 40px;
+    transition: 0.3s all ease-in-out;
+  }
+  .added {
+    opacity: 1;
+    transition: 0.3s all ease-in-out;
+  }
+  .text-left {
+    position: relative;
+    .btn-remove {
+      position: absolute;
+      top: 15%;
+      left: 40%;
+    }
+  }
+  &:hover {
+    .btn-remove {
+      opacity: 1;
+    }
+    .added {
+      opacity: 0;
+    }
   }
   @media (max-width: 1366px) {
     .domain {

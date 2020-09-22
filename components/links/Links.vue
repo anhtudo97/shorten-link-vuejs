@@ -21,7 +21,11 @@
             </div>
           </v-col>
           <v-col cols="5" sm="4" lg="3" class="text-right">
-            <button class="button-normal add-new-link" aria-label="New Link" @click.stop="models.modal = true">New Link</button>
+            <button
+              class="button-normal add-new-link"
+              aria-label="New Link"
+              @click.stop="models.modal = true"
+            >New Link</button>
           </v-col>
         </v-row>
       </v-col>
@@ -31,8 +35,8 @@
         <v-progress-circular indeterminate color="primary"></v-progress-circular>
       </div>
       <div v-else class="link__management">
-        <transition-group name="slide-fade" mode="in-out" tag="ul" class="pa-0">
-          <li v-for="link in links" :key="link.id">
+        <transition-group name="slide-fade" mode="in-out" tag="section">
+          <div v-for="link in links" :key="link.id">
             <Link
               :id="link.id"
               :link="link.destination"
@@ -42,7 +46,7 @@
               :domain="link.domain.name"
               @closeModalAddNewLink="closeModalAddNewLink"
             />
-          </li>
+          </div>
         </transition-group>
         <v-row v-if="links.length !== 0" justify="center">
           <v-col cols="8">
