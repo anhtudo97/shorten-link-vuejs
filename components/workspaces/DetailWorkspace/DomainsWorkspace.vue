@@ -13,7 +13,7 @@
               class="button-normal add-new-domain"
               aria-label="New Domain"
               @click.stop="openAddLinkDomainModal = true"
-            >New domain</button>
+            >Add more domain</button>
           </v-col>
         </v-row>
       </v-col>
@@ -32,21 +32,19 @@
       </v-col>
     </v-row>
     <transition name="slide-fade" mode="out-in">
-      <div class="domain__management">
-        <transition-group name="slide-fade" mode="out-in" tag="section">
-          <div v-for="domain in domains" :key="domain.id">
-            <Domain :domain="domain" @updateDomains="updateDomains" />
-          </div>
-        </transition-group>
-        <v-row v-if="domains.length !== 0" justify="center">
-          <v-col cols="8">
-            <v-container class="max-width">
-              <v-pagination v-model="page" class="my-4" :length="totalPage"></v-pagination>
-            </v-container>
-          </v-col>
-        </v-row>
-      </div>
+      <transition-group name="slide-fade" mode="out-in" tag="section">
+        <div v-for="(domain, index) in domains" :key="`domain_${index}`">
+          <Domain :domain="domain" @updateDomains="updateDomains" />
+        </div>
+      </transition-group>
     </transition>
+    <v-row v-if="domains.length !== 0" justify="center">
+      <v-col cols="8">
+        <v-container class="max-width">
+          <v-pagination v-model="page" class="my-4" :length="totalPage"></v-pagination>
+        </v-container>
+      </v-col>
+    </v-row>
     <v-dialog
       v-model="openAddLinkDomainModal"
       max-width="700"
@@ -79,6 +77,13 @@ export default {
     page: 1,
     token: '',
   }),
+  computed: {
+    ...mapGetters({
+      domains: 'workspaces/getDomainsWorkspace',
+      total: 'workspaces/getDomainsTotalWorkspace',
+      totalPage: 'workspaces/getDomainsTotalPageWorkspace',
+    }),
+  },
   watch: {
     page(val) {
       this.getDomainsWorkspace(val);
@@ -95,13 +100,6 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize);
-  },
-  computed: {
-    ...mapGetters({
-      domains: 'workspaces/getDomainsWorkspace',
-      total: 'workspaces/getDomainsTotalWorkspace',
-      totalPage: 'workspaces/getDomainsTotalPageWorkspace',
-    }),
   },
   methods: {
     ...mapMutations({
@@ -135,7 +133,7 @@ export default {
           this.setDomainsTotalPageWorkspace(totalPage);
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
         }
@@ -211,11 +209,6 @@ export default {
     width: 100%;
     height: 1px;
     background-color: #e8e9ea;
-  }
-  &__management {
-    li {
-      list-style: none;
-    }
   }
   .hidden-on-below-960 {
     @media (max-width: 960px) {

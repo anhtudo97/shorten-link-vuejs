@@ -44,7 +44,7 @@
                     d="M7 15.7c1.11 0 2-0.89 2-2H5c0 1.11 0.89 2 2 2z"
                   />
                 </svg>
-                <span class="notification--num">{{total}}</span>
+                <span class="notification--num">{{ total }}</span>
               </div>
             </nuxt-link>
             <div class="pr-4 header__signup">{{ email }}</div>
@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { getInvitations } from '@/services/api';
 export default {
   async fetch() {
@@ -89,18 +89,7 @@ export default {
       this.email = localStorage.email;
     }
     if (this.token !== '') {
-      try {
-        const res = await getInvitations(this.token, 1);
-        const { status, data } = res.data;
-        console.log(data.invitations);
-        if (status === 200) {
-          this.setNotifications({ notifications: data.invitations });
-          this.total = this.notifications.length;
-        }
-      } catch (error) {
-        const { status } = error.response.data;
-        if (status === 401) this.$router.push('/login');
-      }
+      await this.getInvitaions();
     }
   },
   data: () => ({
@@ -128,16 +117,33 @@ export default {
     ],
     token: '',
     email: null,
-    total: 0,
   }),
   computed: {
     ...mapGetters({
       notifications: 'notifications/getNotifications',
+      total: 'notifications/getTotal',
     }),
   },
   fetchOnServer: false,
   methods: {
-    ...mapMutations({ setNotifications: 'notifications/setNotifications' }),
+    ...mapActions({
+      setNotifications: 'notifications/setNotifications',
+      setTotal: 'notifications/setTotal',
+    }),
+    async getInvitaions() {
+      try {
+        const res = await getInvitations(this.token, 1);
+        const { status, data } = res.data;
+        if (status === 200) {
+          const { total, invitations } = data;
+          this.setNotifications(invitations);
+          this.setTotal(total);
+        }
+      } catch (error) {
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
+      }
+    },
     logout() {
       this.$store.commit('setUser', null);
       this.$store.commit('setToken', 'Bearer ' + null);

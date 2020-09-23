@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import Link from '@/components/workspaces/LinksWorkspace';
+import Link from '@/components/links/LinksWorkspace';
 export default {
   name: 'WorkspacesLinks',
   layout: 'link',

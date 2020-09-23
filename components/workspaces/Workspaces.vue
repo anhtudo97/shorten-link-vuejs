@@ -163,7 +163,7 @@ export default {
           this.workspaces = workspaces;
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -179,7 +179,7 @@ export default {
           this.workspacesJoined = invitations;
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     },

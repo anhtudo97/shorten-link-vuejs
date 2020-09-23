@@ -1,12 +1,12 @@
 <template>
   <div class="detail-workspace">
-    <v-row class="detail-workspace__menu">
+    <v-row class="detail-workspace__menu border-b">
       <v-col cols="12" sm="10" md="8" class="mx-auto py-2 py-md-3">
         <v-row class="align-center justify-space-between main-menu">
-          <v-col cols="12" md="4" class="text-sm-center text-md-left">
+          <v-col cols="12" sm="4" class="text-center text-sm-left">
             <div class="menu-button">{{$route.query.name}}</div>
           </v-col>
-          <v-col cols="12" md="8" class="d-flex justify-md-end justify-center">
+          <v-col cols="12" sm="8" class="d-flex justify-sm-end justify-center">
             <button
               :class="[tabName === 'Link'? 'active':'']"
               class="menu-text menu-text-left"
@@ -45,11 +45,10 @@
   </div>
 </template>
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 import {
   getDomainsWorkspace,
   getLinksWorkspaces,
-  getMembersWorkspaces,
 } from '@/services/api';
 import Link from '@/components/workspaces/DetailWorkspace/LinksWorkspace';
 import Domain from '@/components/workspaces/DetailWorkspace/DomainsWorkspace';
@@ -82,7 +81,6 @@ export default {
     ...mapMutations({
       // member
       setMembersTotalWorkspace: 'workspaces/setMembersTotalWorkspace',
-      setMembersWorkspace: 'workspaces/setMembersWorkspace',
       setMembersTotalPageWorkspace: 'workspaces/setMembersTotalPageWorkspace',
       // domain
       setDomainsTotalWorkspace: 'workspaces/setDomainsTotalWorkspace',
@@ -93,24 +91,12 @@ export default {
       setLinksWorkspace: 'workspaces/setLinksWorkspace',
       setLinksTotalPageWorkspace: 'workspaces/setLinksTotalPageWorkspace',
     }),
+    ...mapActions({
+      setMembersWorkspace: 'workspaces/setMembersWorkspace',
+    }),
     async getMembers() {
-      try {
-        const resMembers = await getMembersWorkspaces(
-          this.token,
-          this.$route.params.id,
-          this.page
-        );
-        const { status, data } = resMembers.data;
-        if (status === 200) {
-          const { total, totalPage, members } = data;
-          this.setMembersTotalWorkspace(total);
-          this.setMembersWorkspace(members);
-          this.setMembersTotalPageWorkspace(totalPage);
-        }
-      } catch (error) {
-        const { status } = error.response.data;
-        if (status === 401) this.$router.push('/login');
-      }
+      const { page } = this;
+      await this.setMembersWorkspace({ page, id: this.$route.params.id });
     },
     async getDomains() {
       try {
@@ -127,7 +113,7 @@ export default {
           this.setDomainsTotalPageWorkspace(totalPage);
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -146,7 +132,7 @@ export default {
           this.setLinksTotalPageWorkspace(totalPage);
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -200,14 +186,13 @@ export default {
       }
     }
     @media (max-width: 960px) {
-      border-bottom: none;
       .menu-text {
         font-size: 14px;
         padding: 4px 28px;
       }
       .menu-button {
         font-size: 15px;
-        padding: 4px 28px;
+        padding: 4px 0;
       }
     }
     @media (max-width: 600px) {
@@ -218,7 +203,7 @@ export default {
       }
       .menu-button {
         font-size: 14px;
-        padding: 4px 25px;
+        padding: 4px 0;
       }
     }
   }

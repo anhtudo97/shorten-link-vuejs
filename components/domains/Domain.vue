@@ -74,7 +74,6 @@ export default {
 
 <style lang="scss" scoped>
 .domain-detail {
-  margin-bottom: 20px;
   cursor: pointer;
   .border-radius-10 {
     border: 1px solid #e8e9ea;

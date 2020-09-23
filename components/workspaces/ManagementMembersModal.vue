@@ -2,7 +2,7 @@
   <v-list class="dialog-member-workspace">
     <div class="d-flex justify-space-between dialog-member-workspace__title border-b">
       <div class="d-flex align-center flex-wrap">
-        <div class="dialog-title mr-4">{{ workspace.name }}</div>
+        <div class="dialog-title mr-4">{{ $route.query.name }}</div>
       </div>
       <div class="d-flex justify-space-between dialog-icon-block">
         <div></div>
@@ -43,37 +43,6 @@
         @click.stop="searchMember"
       >Search</button>
     </div>
-    <div class="border-b">
-      <transition-group name="fade" mode="in-out">
-        <v-row
-          v-for="item in joined"
-          :key="item.id"
-          class="d-flex justify-space-between dialog-member-workspace__member align-center mx-0"
-        >
-          <v-col cols="12" md="8">
-            <div class="d-flex align-center justify-space-between">
-              <div class="member-name" @click.stop="openDetailModal(item.email)">{{ item.fullName }}</div>
-              <div class="member-name">{{ item.status }}</div>
-            </div>
-          </v-col>
-          <v-col cols="12" md="4" class="text-right">
-            <button
-              :disabled="loading"
-              class="button-warning member-action"
-              aria-label="remove member"
-              @click="removeMembers(item.id)"
-            >Remove</button>
-          </v-col>
-        </v-row>
-      </transition-group>
-      <div v-if="totalPage > 1" class="dialog-member-workspace__member">
-        <button
-          class="button-normal member-action"
-          aria-label="add more member"
-          @click="addMore"
-        >Add more</button>
-      </div>
-    </div>
     <transition-group name="slide-fade" mode="in-out">
       <div
         v-for="item in unjoined"
@@ -90,21 +59,13 @@
         ></v-checkbox>
       </div>
     </transition-group>
-    <v-dialog
-      v-model="openUserDetailModal"
-      :overlay="false"
-      max-width="700px"
-      transition="dialog-transition"
-    >
-      <DetailUserModal :user="user" @closeUserDetailModal="closeUserDetailModal" />
-    </v-dialog>
     <v-snackbar v-model="showAlert" top color="success">
       {{ messages }}
       <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
       </template>
     </v-snackbar>
-    <v-snackbar v-model="showAlert400" top color="error">
+    <v-snackbar v-model="showAlertError" top color="error">
       {{ messages }}
       <template v-slot:action="{ attrs }">
         <v-btn
@@ -112,7 +73,7 @@
           text
           v-bind="attrs"
           aria-label="close"
-          @click="showAlert400 = false"
+          @click="showAlertError = false"
         >Close</v-btn>
       </template>
     </v-snackbar>
@@ -121,17 +82,11 @@
 
 <script>
 import {
-  getMembersWorkspaces,
   getMember,
   inviteMembers,
-  removeMemberWorkspace,
 } from '@/services/api';
 import validations from '@/utils/validations';
-import DetailUserModal from '@/components/user/DetailUserModal';
 export default {
-  components: {
-    DetailUserModal,
-  },
   props: {
     workspace: {
       type: Object,
@@ -141,9 +96,8 @@ export default {
   data: () => ({
     ...validations,
     search: '',
-    openUserDetailModal: false,
-    showAlert400: false,
     showAlert: false,
+    showAlertError: false,
     loading: false,
     selected: [],
     token: '',
@@ -151,17 +105,9 @@ export default {
     totalPage: 1,
     members: [],
     users: [],
-    user: {
-      fullname: '',
-      email: '',
-      createdAt: '2020-08-26T10:11:25.704675+07:00',
-    },
     messages: '',
   }),
   computed: {
-    joined() {
-      return this.members;
-    },
     unjoined() {
       return this.users;
     },
@@ -171,31 +117,18 @@ export default {
       this.token = localStorage.token;
     }
   },
-  async mounted() {
-    await this.getMembersJoined();
-  },
+
   methods: {
-    async addMore() {
-      this.page++;
-      await this.getMembersJoined();
-    },
-    async getMembersJoined() {
-      try {
-        const res = await getMembersWorkspaces(
-          this.token,
-          this.workspace.id,
-          this.page
-        );
-        const { status, data } = res.data;
-        if (status === 200) {
-          const { members, totalPage } = data;
-          this.totalPage = totalPage;
-          this.members = members;
+    isExistUsers(id) {
+      let check = false;
+      this.users.forEach((e) => {
+        if (e.id === id) {
+          check = true;
+        } else {
+          check = false;
         }
-      } catch (error) {
-        const { status } = error.response.data;
-        if (status === 401) this.$router.push('/login');
-      }
+      });
+      return check;
     },
     async searchMember() {
       this.loading = true;
@@ -204,36 +137,45 @@ export default {
         const { data } = res.data;
         const { users } = data;
         setTimeout(() => {
-          this.users.push({
-            id: users[0].id,
-            name: users[0].fullName,
-            email: users[0].email,
-          });
+          if (!this.isExistUsers(users[0].id)) {
+            this.users.push({
+              id: users[0].id,
+              name: users[0].fullName,
+              email: users[0].email,
+            });
+          } else {
+            this.messages = 'User is explored';
+            this.showAlertError = true;
+            setTimeout(() => {
+              this.loading = false;
+              this.showAlertError = false;
+            }, 1500);
+          }
           this.loading = false;
-        }, 2000);
+        }, 1000);
       } catch (error) {
-        const { status } = error.response.data;
+        const { status, message } = error.response;
         if (status === 401) {
           this.$router.push('/login');
           return;
         }
-        this.showAlert400 = true;
+        this.messages = message;
+        this.showAlertError = true;
         setTimeout(() => {
-          this.showAlert400 = false;
+          this.showAlertError = false;
           this.loading = false;
         }, 2000);
       }
     },
     async inviteMembers() {
       await this.inviteMoreMembers();
-      await this.getMembersJoined();
     },
     async inviteMoreMembers() {
       this.loading = true;
       try {
         const res = await inviteMembers(
           this.token,
-          this.workspace.id,
+          this.$route.params.id,
           this.selected
         );
         const { message } = res.data;
@@ -246,61 +188,19 @@ export default {
           this.$emit('updateMember');
         }, 2000);
       } catch (error) {
-        const { status, message } = error.response.data;
+        const { status, data } = error.response;
+        const {message} = data
         if (status === 401) {
           this.$router.push('/login');
           return;
         }
         this.messages = message;
-        this.showAlert400 = true;
+        this.showAlertError = true;
         setTimeout(() => {
           this.loading = false;
-          this.showAlert400 = false;
+          this.showAlertError = false;
           this.users = [];
         }, 2000);
-      }
-    },
-    async removeMembers(id) {
-      await this.removeMemberWorkspace(id);
-      await this.getMembersJoined();
-    },
-    async removeMemberWorkspace(id) {
-      this.loading = true;
-      try {
-        await removeMemberWorkspace(this.token, this.workspace.id, id);
-        setTimeout(() => {
-          this.loading = false;
-          this.$emit('updateMember');
-        }, 2000);
-      } catch (error) {
-        const { status } = error.response.data;
-        if (status === 401) this.$router.push('/login');
-        setTimeout(() => {
-          this.loading = false;
-        }, 2000);
-      }
-    },
-    closeUserDetailModal() {
-      this.openUserDetailModal = false;
-    },
-    openDetailModal(email) {
-      this.openUserDetailModal = true;
-      this.getMemberDetail(email);
-    },
-    async getMemberDetail(email) {
-      try {
-        const res = await getMember(this.token, email);
-        const { data } = res.data;
-        const { users } = data;
-
-        this.user = {
-          fullname: users[0].fullName,
-          email: users[0].email,
-          createdAt: users[0].createdAt,
-        };
-      } catch (error) {
-        const { status } = error.response.data;
-        if (status === 401) this.$router.push('/login');
       }
     },
   },

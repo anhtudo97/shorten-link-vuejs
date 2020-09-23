@@ -117,7 +117,7 @@ export default {
           this.domains = domains;
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
 

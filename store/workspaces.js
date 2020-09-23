@@ -1,3 +1,5 @@
+import { getMembersWorkspaces } from '@/services/api'
+
 export const state = () => ({
     workspaces: [],
     links: {
@@ -121,5 +123,33 @@ export const actions = {
     },
     setDomainsTotalWorkspace({ commit }, total) {
         commit('setDomainsTotalWorkspace', total)
-    }
+    },
+    // member
+    async setMembersWorkspace({ commit }, payload) {
+        const token = localStorage.getItem('token')
+        const { page, id } = payload
+        try {
+            const resDomainWorkspace = await getMembersWorkspaces(
+                token,
+                id,
+                page
+            );
+            const { status, data } = resDomainWorkspace.data;
+
+            if (status === 200) {
+                const { members, total, totalPage } = data;
+                commit('setMembersWorkspace', members)
+                commit('setMembersTotalWorkspace', total)
+                commit('setMembersTotalPageWorkspace', totalPage)
+            }
+        } catch (error) {
+            const { status } = error.response;
+            if (status === 401) {
+                this.$router.push('/login');
+            }
+        }
+    },
+    setMembersTotalWorkspace({ commit }, total) {
+        commit('setMembersTotalWorkspace', total);
+    },
 }

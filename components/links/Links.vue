@@ -69,18 +69,17 @@
       <SortModal @updateSort="updateSort" @closeModal="models.sortModal = false" />
     </v-dialog>
     <v-dialog v-model="models.filterModal" max-width="700">
-      <FilterModal @updateFilter="updateFilter" @closeModal="models.filterModal = false" />
+      <FilterModal @closeModal="models.filterModal = false" />
     </v-dialog>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 import Link from '@/components/links/Link';
 import CreateNewLink from '@/components/links/CreateNewLink';
 import SortModal from '@/components/links/SortModal';
 import FilterModal from '@/components/links/FilterModal';
-import { getLinks } from '@/services/api';
 
 export default {
   components: {
@@ -91,16 +90,9 @@ export default {
   },
   fetchOnServer: false,
   async fetch() {
-    if (typeof localStorage !== 'undefined' && localStorage.token) {
-      this.token = localStorage.token;
-    }
-    await this.getListLinks(
-      this.page,
-      this.sort,
-      this.direction,
-      this.domainSelected,
-      this.workspaceSelected
-    );
+    await this.updateLinks({
+      page: this.page,
+    });
   },
   data: () => ({
     keySort: 'Sort By',
@@ -111,27 +103,25 @@ export default {
       filterModal: false,
     },
     width: 0,
-    links: [],
     page: 1,
-    token: '',
-    total: 0,
-    totalPage: 0,
-    domainSelected: [],
-    workspaceSelected: [],
   }),
   computed: {
-    ...mapGetters({ sort: 'links/getSort', direction: 'links/getDirection' }),
+    ...mapGetters({
+      sort: 'links/getSort',
+      direction: 'links/getDirection',
+      domainSelected: 'links/getDomainSelected',
+      workspaceSelected: 'links/getWorkspaceSelected',
+      links: 'links/getLinks',
+      total: 'links/getTotal',
+      totalPage: 'links/getTotalPage',
+    }),
   },
   watch: {
     '$route.query': '$fetch',
     page(val) {
-      this.getListLinks(
-        val,
-        this.sort,
-        this.direction,
-        this.domainSelected,
-        this.workspaceSelected
-      );
+      this.updateLinks({
+        page: val,
+      });
     },
   },
   beforeMount() {
@@ -145,70 +135,31 @@ export default {
     ...mapMutations({
       setSort: 'links/setSort',
       setDirection: 'links/setDirection',
+      setDomainSelected: 'links/setDomainSelected',
+      setWorkspaceSelected: 'links/setWorkspaceSelected',
     }),
-    async getListLinks(
-      page = 1,
-      sort = 'created_at',
-      direction = 'DESC',
-      domainSelected,
-      workspaceSelected
-    ) {
-      const { token } = this;
-      try {
-        const resLink = await getLinks(
-          token,
-          page,
-          sort,
-          direction,
-          domainSelected,
-          workspaceSelected
-        );
-
-        const { status, data } = resLink.data;
-        if (status === 200) {
-          const { links, total, totalPage } = data;
-          this.total = total;
-          this.totalPage = totalPage;
-          this.links = links;
-        }
-      } catch (error) {
-        const { status } = error.response.data;
-        if (status === 401) this.$router.push('/login');
-      }
-    },
+    ...mapActions({
+      updateLinks: 'links/updateLinks',
+    }),
     updateSort(sort, direction) {
       this.setSort(sort);
       this.setDirection(direction);
-      this.getListLinks(
-        this.page,
-        this.sort,
-        this.direction,
-        this.domainSelected,
-        this.workspaceSelected
-      );
+      this.updateLinks({
+        page: this.page,
+      });
     },
     updateFilter(domainSelected, workspaceSelected) {
-      this.domainSelected = domainSelected;
-      this.workspaceSelected = workspaceSelected;
-      this.getListLinks(
-        this.page,
-        this.sort,
-        this.direction,
-        this.domainSelected,
-        this.workspaceSelected
-      );
-      this.domainSelected = [];
-      this.workspaceSelected = [];
+      this.setDomainSelected(domainSelected);
+      this.setWorkspaceSelected(workspaceSelected);
+      this.updateLinks({
+        page: this.page,
+      });
     },
     closeModalAddNewLink() {
       this.models.modal = false;
-      this.getListLinks(
-        this.page,
-        this.sort,
-        this.direction,
-        this.domainSelected,
-        this.workspaceSelected
-      );
+      this.updateLinks({
+        page: this.page,
+      });
     },
     handleResize() {
       if (process.client) {

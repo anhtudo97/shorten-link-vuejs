@@ -1,18 +1,15 @@
 <template>
-  <v-row class="domain-detail mt-5 mt-md-0">
-    <v-col cols="12" sm="10" md="8" class="mx-auto" @click.stop="models.isOpen = true">
+  <v-row class="member-detail">
+    <v-col cols="12" sm="10" md="8" class="mx-auto" @click.stop="openUserDetailModal = true">
       <v-row class="align-center border-radius-10 mx-0 py-3">
-        <v-col cols="12" sm="8" md="8" lg="9">
+        <v-col cols="12" sm="8" md="8">
           <div class="d-flex justify-space-between">
-            <div class="domain text-overflow-hidden">{{ domain.name }}</div>
-            <div
-              :class="[domain.dnsVerified?'text-green': 'text-gray']"
-              class="domain text-overflow-hidden"
-            >{{ domain.dnsVerified ? 'Verified': 'Unverified' }}</div>
+            <div class="member text-overflow-hidden">{{ member.fullName }}</div>
+            <div :class="[colorStatus]" class="member text-overflow-hidden">{{ member.status }}</div>
           </div>
         </v-col>
-        <v-col cols="12" sm="4" md="4" lg="3" class="text-left text-sm-right relative">
-          <div class="added text-overflow-hidden absolute">{{ date }}</div>
+        <v-col cols="12" sm="4" md="4" class="text-left text-sm-right relative">
+          <div class="added text-overflow-hidden absolute">{{ member.email }}</div>
           <button
             :disabled="loading"
             class="button-warning btn-remove absolute"
@@ -21,30 +18,63 @@
         </v-col>
       </v-row>
     </v-col>
+    <v-dialog
+      v-model="openUserDetailModal"
+      :overlay="false"
+      max-width="700px"
+      transition="dialog-transition"
+    >
+      <DetailUserModal :user="member" @closeUserDetailModal="closeUserDetailModal" />
+    </v-dialog>
+    <v-snackbar v-model="showAlert400" top color="error">
+      {{ messages }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert400 = false"
+        >Close</v-btn>
+      </template>
+    </v-snackbar>
   </v-row>
 </template>
 
 <script>
 import { format } from 'date-fns';
-import { removeDomainWorkspace } from '@/services/api';
+import { removeMemberWorkspace } from '@/services/api';
+import DetailUserModal from '@/components/user/DetailUserModal';
 export default {
+  components: {
+    DetailUserModal,
+  },
   props: {
-    domain: {
+    member: {
       type: Object,
       default: () => {},
     },
   },
   data: () => ({
-    models: {
-      isOpen: false,
-    },
+    openUserDetailModal: false,
+    openMemberModal: false,
+    showAlert400: false,
+    messages: '',
     width: 0,
     loading: false,
     token: '',
   }),
   computed: {
     date() {
-      return format(new Date(this.domain.createdAt), 'MMMM dd, yyyy');
+      return format(new Date(this.member.createdAt), 'MMMM dd, yyyy');
+    },
+    colorStatus() {
+      const { status } = this.member;
+      return status === 'ACCEPTED'
+        ? 'text-green'
+        : status === 'PENDING'
+        ? 'text-gray'
+        : 'text-red';
     },
   },
   created() {
@@ -65,30 +95,27 @@ export default {
         this.width = window.innerWidth;
       }
     },
+    closeUserDetailModal() {
+      this.openUserDetailModal = false;
+    },
     async removeFromList() {
       this.loading = true;
       try {
-        const res = await removeDomainWorkspace(
+        await removeMemberWorkspace(
           this.token,
           this.$route.params.id,
-          this.domain.id
+          this.member.id
         );
-
-        const { status } = res.data;
-        if (status === 204) {
-          this.showAlert400 = true;
-          setTimeout(() => {
-            this.domainSelected = [];
-            this.$emit('updateDomains');
-            this.loading = false;
-            this.showAlert400 = false;
-          }, 300);
-        }
+        setTimeout(() => {
+          this.loading = false;
+          this.$emit('updateMembers');
+        }, 2000);
       } catch (error) {
         const { status } = error.response;
-        if (status === 401) {
-          this.$router.push('/login');
-        }
+        if (status === 401) this.$router.push('/login');
+        setTimeout(() => {
+          this.loading = false;
+        }, 2000);
       }
     },
   },
@@ -96,7 +123,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.domain-detail {
+.member-detail {
   cursor: pointer;
   .border-radius-10 {
     border: 1px solid #e8e9ea;
@@ -107,7 +134,7 @@ export default {
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
   }
-  .domain {
+  .member {
     font-weight: 500;
     font-size: 20px;
     line-height: 28px;
@@ -121,6 +148,9 @@ export default {
   }
   .text-green {
     color: #02af63;
+  }
+  .text-red {
+    color: #d34547;
   }
   .btn-remove {
     opacity: 0;
@@ -136,7 +166,7 @@ export default {
     .btn-remove {
       position: absolute;
       top: 15%;
-      left: 40%;
+      left: 50%;
     }
   }
   &:hover {
@@ -148,7 +178,7 @@ export default {
     }
   }
   @media (max-width: 1366px) {
-    .domain {
+    .member {
       font-size: 18px;
       line-height: 26px;
     }
@@ -157,7 +187,7 @@ export default {
     }
   }
   @media (max-width: 960px) {
-    .domain {
+    .member {
       font-size: 16px;
       line-height: 24px;
     }
@@ -166,7 +196,7 @@ export default {
     }
   }
   @media (max-width: 600px) {
-    .domain {
+    .member {
       font-size: 14px;
       line-height: 22px;
     }
@@ -174,14 +204,5 @@ export default {
       font-size: 12px;
     }
   }
-}
-.dialog {
-  position: fixed;
-  z-index: 99999;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
 }
 </style>

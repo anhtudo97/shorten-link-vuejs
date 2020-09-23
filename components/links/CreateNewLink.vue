@@ -127,6 +127,7 @@ import {
   updateLink,
   getLink,
   getWorkspacesJoined,
+  getDomainsWorkspace,
 } from '@/services/api';
 export default {
   props: {
@@ -154,7 +155,7 @@ export default {
           this.domainId = domainID;
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     }
@@ -247,7 +248,7 @@ export default {
         const { title } = resTitle.data.data;
         this.title = title;
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -257,7 +258,7 @@ export default {
         const { data } = resSlashTag.data;
         this.slashTag = data;
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -267,14 +268,24 @@ export default {
         const { data } = resSlashTag.data;
         this.checkSlash = data.exists;
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     },
     async infiniteScroll($state) {
       const { token, pageDomains, pageWorkspaces } = this;
       try {
-        const resDomains = await getDomains(token, pageDomains, true);
+        let resDomains = null;
+        if (this.$route.params.id) {
+          resDomains = await getDomainsWorkspace(
+            token,
+            this.$route.params.id,
+            pageDomains,
+            true
+          );
+        } else {
+          resDomains = await getDomains(token, pageDomains, true);
+        }
         const resWorkspaces = await getWorkspaces(token, pageWorkspaces);
         const resWorkspacesJoined = await getWorkspacesJoined(
           token,
@@ -302,8 +313,17 @@ export default {
           const { workspaces } = resWorkspaces.data.data;
           if (workspaces.length) {
             this.workspaces.push(...workspaces);
-            this.workspace.name = this.workspaces[0].name;
-            this.workspace.id = this.workspaces[0].id;
+            if (this.$route.params && this.$route.query.name) {
+              const name = this.$route.query.name;
+              const id = this.$route.params.id;
+              this.workspace = {
+                name,
+                id,
+              };
+            } else {
+              this.workspace.name = this.workspaces[0].name;
+              this.workspace.id = this.workspaces[0].id;
+            }
             $state.loaded();
           } else {
             $state.complete();
@@ -321,7 +341,7 @@ export default {
           }
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -358,7 +378,7 @@ export default {
             }, 1000);
           }
         } catch (error) {
-          const { status, message } = error.response.data;
+          const { status, message } = error.response;
           if (status === 401) {
             this.$router.push('/login');
             return;
@@ -400,7 +420,7 @@ export default {
             }, 1000);
           }
         } catch (error) {
-          const { status, message } = error.response.data;
+          const { status, message } = error.response;
           this.message = message;
           if (status === 401) {
             this.$router.push('/login');

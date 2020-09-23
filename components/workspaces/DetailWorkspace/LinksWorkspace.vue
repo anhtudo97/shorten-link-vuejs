@@ -98,12 +98,6 @@ export default {
     domainSelected: [],
     userIdsSelected: [],
   }),
-  created() {
-    this.workspaceId = this.$route.params.id;
-    if (typeof localStorage !== 'undefined' && localStorage.token) {
-      this.token = localStorage.token;
-    }
-  },
   computed: {
     ...mapGetters({
       sort: 'links/getSort',
@@ -120,9 +114,15 @@ export default {
         this.sort,
         this.direction,
         this.domainSelected,
-        this.workspaceSelected
+        this.userIdsSelected
       );
     },
+  },
+  created() {
+    this.workspaceId = this.$route.params.id;
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+      this.token = localStorage.token;
+    }
   },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);
@@ -135,6 +135,7 @@ export default {
     ...mapMutations({
       setSort: 'links/setSort',
       setDirection: 'links/setDirection',
+      setLinksTotalPageWorkspace: 'workspaces/setLinksTotalPageWorkspace',
     }),
     ...mapActions({
       setLinksWorkspace: 'workspaces/setLinksWorkspace',
@@ -160,7 +161,7 @@ export default {
           this.setLinksTotalPageWorkspace(totalPage);
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -172,7 +173,7 @@ export default {
         this.sort,
         this.direction,
         this.domainSelected,
-        this.workspaceSelected
+        this.userIdsSelected
       );
       this.$forceUpdate();
     },
@@ -194,7 +195,7 @@ export default {
         this.sort,
         this.direction,
         this.domainSelected,
-        this.workspaceSelected
+        this.userIdsSelected
       );
     },
     handleResize() {

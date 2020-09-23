@@ -157,7 +157,6 @@ export default {
           }, 2000);
         }
       } catch (error) {
-        console.log(error);
         this.showAlertError = true;
         setTimeout(() => {
           this.showAlertError = false;

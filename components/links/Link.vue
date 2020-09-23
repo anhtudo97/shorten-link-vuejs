@@ -216,7 +216,7 @@ export default {
           }, 1000);
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -230,7 +230,6 @@ export default {
 <style lang="scss" scoped>
 .link-detail {
   cursor: pointer;
-  margin-bottom: 20px;
   .border-radius-10 {
     border: 1px solid #e8e9ea;
     border-radius: 10px;

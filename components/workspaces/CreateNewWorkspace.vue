@@ -115,7 +115,7 @@ export default {
           }, 2000);
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
           return;
@@ -147,7 +147,7 @@ export default {
           }, 2000);
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
         return;
       } finally {

@@ -149,7 +149,7 @@ export default {
           }, 1000);
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -207,16 +207,6 @@ export default {
       }
     }
   }
-  // &:hover {
-  //   .workspace__content {
-  //     .date {
-  //       opacity: 0;
-  //     }
-  //     .modify {
-  //       opacity: 1;
-  //     }
-  //   }
-  // }
   .dialog-detail-600::v-deep .v-dialog {
     display: block;
     @media screen and (min-width: 600px) {

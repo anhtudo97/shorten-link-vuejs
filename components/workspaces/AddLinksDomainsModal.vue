@@ -74,7 +74,6 @@ export default {
     this.domainSelected = [];
   },
   data: () => ({
-    tabs: null,
     pageDomain: 1,
     pageDomainWorkspace: 1,
     domain_joined: [],
@@ -125,7 +124,7 @@ export default {
           this.totalPageDomains = totalPage;
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
         }
@@ -148,7 +147,7 @@ export default {
           this.totalPageJoined = totalPage;
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
         }
@@ -177,7 +176,7 @@ export default {
         }
       } catch (error) {
         this.domainSelected = [];
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
         }
