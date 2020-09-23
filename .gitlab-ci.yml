@@ -1,0 +1,9 @@
+stages:
+  - package
+
+include:
+  - project: internal/ci
+    file: dockerize.yaml
+
+dockerize:
+  stage: package
