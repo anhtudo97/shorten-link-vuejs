@@ -9,7 +9,13 @@
     >
       <v-row class="align-center mx-0">
         <v-col cols="12" sm="8" md="8" lg="9">
-          <div class="domain text-overflow-hidden">{{ domain.name }}</div>
+          <div class="d-flex justify-space-between">
+            <div class="domain text-overflow-hidden">{{ domain.name }}</div>
+            <div
+              :class="[domain.dnsVerified?'text-green': 'text-gray']"
+              class="domain text-overflow-hidden"
+            >{{ domain.dnsVerified ? 'Verified': 'Unverified' }}</div>
+          </div>
         </v-col>
         <v-col cols="12" sm="4" md="4" lg="3" class="text-left text-sm-right">
           <div class="added text-overflow-hidden">{{ date }}</div>
@@ -22,10 +28,7 @@
       max-width="900"
       :fullscreen="width < 600 ? true : false"
     >
-      <DetailDomainModal
-        :domain="domain"
-        @closeModalDetailDomain="closeModalDetailDomain"
-      />
+      <DetailDomainModal :domain="domain" @closeModalDetailDomain="closeModalDetailDomain" />
     </v-dialog>
   </v-row>
 </template>
@@ -64,6 +67,7 @@ export default {
   methods: {
     closeModalDetailDomain() {
       this.models.isOpen = false;
+      this.$emit('closeModalCreateNewDomain');
     },
     handleResize() {
       if (process.client) {
@@ -95,6 +99,12 @@ export default {
     &:hover {
       color: #3c64b1;
     }
+  }
+  .text-gray {
+    color: rgba(0, 0, 0, 0.3);
+  }
+  .text-green {
+    color: #02af63;
   }
   @media (max-width: 1366px) {
     .domain {

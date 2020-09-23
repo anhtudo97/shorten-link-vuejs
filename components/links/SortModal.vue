@@ -9,18 +9,21 @@
     <div class="modal-sort__title">Sort By</div>
     <button
       class="button-normal modal-sort__button mt-3"
+      aria-label="The lastest"
       @click="updateSortBy('lastest')"
     >
       The lastest
     </button>
     <button
       class="button-normal modal-sort__button mt-3"
+      aria-label="SlashTagAZ"
       @click="updateSortBy('slashTagAZ')"
     >
       Slash tag A - Z
     </button>
     <button
       class="button-normal modal-sort__button mt-3"
+      aria-label="SlashTagZA"
       @click="updateSortBy('slashTagZA')"
     >
       Slash tag Z - A

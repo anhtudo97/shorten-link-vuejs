@@ -7,12 +7,7 @@
       </div>
     </div>
     <div class="modal-sort__title">Filter by</div>
-    <button
-      class="button-normal modal-sort__button mt-3"
-      @click="updateFilterBy()"
-    >
-      Filter
-    </button>
+    <button class="button-normal modal-sort__button mt-3" aria-label="Filter" @click="updateFilterBy()">Filter</button>
     <v-row justify="center">
       <v-col cols="12" md="6">
         <div>Domains</div>
@@ -40,17 +35,13 @@
       </v-col>
     </v-row>
     <client-only>
-      <infinite-loading
-        spinner="waveDots"
-        @infinite="infiniteScroll"
-      ></infinite-loading>
+      <infinite-loading spinner="waveDots" @infinite="infiniteScroll"></infinite-loading>
     </client-only>
   </v-list>
 </template>
 
 <script>
 import { getWorkspaces, getDomains } from '@/services/api';
-import { handle } from '@/utils/promise';
 export default {
   data: () => ({
     domains: [],
@@ -70,40 +61,41 @@ export default {
     updateFilterBy() {
       this.$emit('updateFilter', this.domainsSelected, this.workspacesSelected);
     },
+
     async infiniteScroll($state) {
       const { token, pageDomains, pageWorkspaces } = this;
-      const [resDomains, domainsError] = await handle(
-        getDomains(token, pageDomains, true)
-      );
-      if (domainsError) throw new Error('Could not fetch domains details');
-      const [resWorkspaces, workspacesError] = await handle(
-        getWorkspaces(token, pageWorkspaces)
-      );
-      if (workspacesError)
-        throw new Error('Could not fetch workspaces details');
+      try {
+        const resDomains = await getDomains(token, pageDomains, true);
 
-      const statusDomains = resDomains.data.status;
-      const statusWorkspaces = resWorkspaces.data.status;
+        const resWorkspaces = await getWorkspaces(token, pageWorkspaces);
 
-      if (statusDomains === 200) {
-        this.pageDomains += 1;
-        const { domains } = resDomains.data.data;
-        if (domains.length) {
-          this.domains.push(...domains);
-          $state.loaded();
-        } else {
-          $state.complete();
+        const statusDomains = resDomains.data.status;
+        const statusWorkspaces = resWorkspaces.data.status;
+
+        if (statusDomains === 200) {
+          this.pageDomains += 1;
+          const { domains } = resDomains.data.data;
+          if (domains.length) {
+            this.domains.push(...domains);
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
         }
-      }
-      if (statusWorkspaces === 200) {
-        this.pageWorkspaces += 1;
-        const { workspaces } = resWorkspaces.data.data;
-        if (workspaces.length) {
-          this.workspaces.push(...workspaces);
-          $state.loaded();
-        } else {
-          $state.complete();
+        if (statusWorkspaces === 200) {
+          this.pageWorkspaces += 1;
+          const { workspaces } = resWorkspaces.data.data;
+          if (workspaces.length) {
+            this.workspaces.push(...workspaces);
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
         }
+      } catch (error) {
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
+
       }
     },
   },

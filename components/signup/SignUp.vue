@@ -22,7 +22,7 @@
             <div class="signup-header d-flex align-center">
               <nuxt-link to="/">
                 <div class="header__logo mr-4">
-                  <img src="~/assets/logo.png" />
+                  <img src="~/assets/logo.png" alt="logo"/>
                 </div>
               </nuxt-link>
               <div class="signup-title">Sign up</div>
@@ -41,7 +41,7 @@
               label="Your email"
               type="email"
               hide-details="auto"
-              :rules="emailRules"
+              :rules="[required('email'), emailFormat()]"
             ></v-text-field>
             <v-text-field
               v-model="form.password"
@@ -53,18 +53,9 @@
             ></v-text-field>
             <div class="mt-4 mt-sm-6">
               <div class="gender-title">Gender</div>
-              <v-radio-group
-                v-model="form.gender"
-                :mandatory="false"
-                dense
-                hide-details="auto"
-              >
+              <v-radio-group v-model="form.gender" :mandatory="false" dense hide-details="auto">
                 <v-radio class="gender-input" label="Male" value="M"></v-radio>
-                <v-radio
-                  class="gender-input"
-                  label="Female"
-                  value="F"
-                ></v-radio>
+                <v-radio class="gender-input" label="Female" value="F"></v-radio>
               </v-radio-group>
             </div>
             <v-menu
@@ -89,21 +80,16 @@
               </template>
               <v-date-picker v-model="form.date" no-title scrollable>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="form.menu = false"
-                  >Cancel</v-btn
-                >
-                <v-btn text color="primary" @click="$refs.menu.save(form.date)"
-                  >OK</v-btn
-                >
+                <v-btn text color="primary" aria-label="cancel" @click="form.menu = false">Cancel</v-btn>
+                <v-btn text color="primary" aria-label="OK" @click="$refs.menu.save(form.date)">OK</v-btn>
               </v-date-picker>
             </v-menu>
             <button
               :disabled="isLoading"
               class="button-normal signup-button mt-6 mt-sm-8"
+              aria-label="register"
               @click.prevent="register"
-            >
-              Register
-            </button>
+            >Register</button>
           </v-col>
           <v-col
             cols="12"
@@ -127,8 +113,10 @@
 
 <script>
 import { createNewUser } from '@/services/api';
+import validations from '@/utils/validations';
 export default {
   data: () => ({
+    ...validations,
     form: {
       name: '',
       email: '',
@@ -140,10 +128,6 @@ export default {
     showAlert: false,
     showAlertError: false,
     isLoading: false,
-    emailRules: [
-      (v) => !!v || 'E-mail is required',
-      (v) => /.+@.+/.test(v) || 'E-mail must be valid',
-    ],
   }),
   methods: {
     async register() {
@@ -159,7 +143,6 @@ export default {
           gender,
           tempDate
         );
-
         const { status } = res.data;
         if (status === 200) {
           name = '';

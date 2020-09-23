@@ -1,8 +1,6 @@
 <template>
   <v-list class="dialog-member-workspace">
-    <div
-      class="d-flex justify-space-between dialog-member-workspace__title border-b"
-    >
+    <div class="d-flex justify-space-between dialog-member-workspace__title border-b">
       <div class="d-flex align-center flex-wrap">
         <div class="dialog-title mr-4">{{ workspace.name }}</div>
       </div>
@@ -20,10 +18,9 @@
       <button
         :disabled="loading"
         class="button-normal dialog-button font-weight-medium px-4"
+        aria-label="send"
         @click.stop="inviteMembers"
-      >
-        Send the invitations
-      </button>
+      >Send the invitations</button>
     </div>
     <div
       class="d-flex flex-wrap justify-space-between py-3 dialog-member-workspace__search border-b"
@@ -42,40 +39,42 @@
       <button
         :disabled="loading"
         class="button-normal search-button font-weight-medium px-10"
+        aria-label="search"
         @click.stop="searchMember"
-      >
-        Search
-      </button>
+      >Search</button>
     </div>
     <div class="border-b">
       <transition-group name="fade" mode="in-out">
-        <div
+        <v-row
           v-for="item in joined"
           :key="item.id"
-          class="d-flex justify-space-between dialog-member-workspace__member align-center"
+          class="d-flex justify-space-between dialog-member-workspace__member align-center mx-0"
         >
-          <div class="member-name" @click.stop="openDetailModal(item.email)">
-            {{ item.fullName }}
-          </div>
-          <div class="member-name">
-            {{ item.status }}
-          </div>
-          <button
-            :disabled="loading"
-            class="button-warning member-action"
-            @click="removeMembers(item.id)"
-          >
-            Remove
-          </button>
-        </div>
+          <v-col cols="12" md="8">
+            <div class="d-flex align-center justify-space-between">
+              <div class="member-name" @click.stop="openDetailModal(item.email)">{{ item.fullName }}</div>
+              <div class="member-name">{{ item.status }}</div>
+            </div>
+          </v-col>
+          <v-col cols="12" md="4" class="text-right">
+            <button
+              :disabled="loading"
+              class="button-warning member-action"
+              aria-label="remove member"
+              @click="removeMembers(item.id)"
+            >Remove</button>
+          </v-col>
+        </v-row>
       </transition-group>
       <div v-if="totalPage > 1" class="dialog-member-workspace__member">
-        <button class="button-normal member-action" @click="addMore">
-          Add more
-        </button>
+        <button
+          class="button-normal member-action"
+          aria-label="add more member"
+          @click="addMore"
+        >Add more</button>
       </div>
     </div>
-    <transition-group name="fade" mode="in-out">
+    <transition-group name="slide-fade" mode="in-out">
       <div
         v-for="item in unjoined"
         :key="item.id"
@@ -97,21 +96,26 @@
       max-width="700px"
       transition="dialog-transition"
     >
-      <DetailUserModal
-        :user="user"
-        @closeUserDetailModal="closeUserDetailModal"
-      />
+      <DetailUserModal :user="user" @closeUserDetailModal="closeUserDetailModal" />
     </v-dialog>
-    <SnackbarSuccess
-      message="Send the invitations is successfully"
-      :show-alert="showAlert"
-      @closeSnackbar="showAlert = false"
-    />
-    <SnackbarError
-      message="Email is not exited"
-      :show-alert="showAlert400"
-      @closeSnackbar="showAlert400 = false"
-    />
+    <v-snackbar v-model="showAlert" top color="success">
+      {{ messages }}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar v-model="showAlert400" top color="error">
+      {{ messages }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert400 = false"
+        >Close</v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
@@ -124,13 +128,9 @@ import {
 } from '@/services/api';
 import validations from '@/utils/validations';
 import DetailUserModal from '@/components/user/DetailUserModal';
-import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
-import SnackbarError from '@/components/shares/SnackbarError';
 export default {
   components: {
     DetailUserModal,
-    SnackbarSuccess,
-    SnackbarError,
   },
   props: {
     workspace: {
@@ -156,6 +156,7 @@ export default {
       email: '',
       createdAt: '2020-08-26T10:11:25.704675+07:00',
     },
+    messages: '',
   }),
   computed: {
     joined() {
@@ -192,7 +193,8 @@ export default {
           this.members = members;
         }
       } catch (error) {
-        console.log(error);
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
       }
     },
     async searchMember() {
@@ -210,7 +212,11 @@ export default {
           this.loading = false;
         }, 2000);
       } catch (error) {
-        console.log(error);
+        const { status } = error.response.data;
+        if (status === 401) {
+          this.$router.push('/login');
+          return;
+        }
         this.showAlert400 = true;
         setTimeout(() => {
           this.showAlert400 = false;
@@ -225,23 +231,32 @@ export default {
     async inviteMoreMembers() {
       this.loading = true;
       try {
-        await inviteMembers(this.token, this.workspace.id, this.selected);
+        const res = await inviteMembers(
+          this.token,
+          this.workspace.id,
+          this.selected
+        );
+        const { message } = res.data;
+        this.messages = message;
         this.showAlert = true;
         setTimeout(() => {
           this.loading = false;
           this.showAlert = false;
           this.users = [];
-          this.search = '';
           this.$emit('updateMember');
         }, 2000);
       } catch (error) {
-        console.log(error);
+        const { status, message } = error.response.data;
+        if (status === 401) {
+          this.$router.push('/login');
+          return;
+        }
+        this.messages = message;
         this.showAlert400 = true;
         setTimeout(() => {
           this.loading = false;
           this.showAlert400 = false;
           this.users = [];
-          this.search = '';
         }, 2000);
       }
     },
@@ -258,7 +273,8 @@ export default {
           this.$emit('updateMember');
         }, 2000);
       } catch (error) {
-        console.log(error);
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
         setTimeout(() => {
           this.loading = false;
         }, 2000);
@@ -283,7 +299,8 @@ export default {
           createdAt: users[0].createdAt,
         };
       } catch (error) {
-        console.log(error);
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
       }
     },
   },
@@ -332,7 +349,6 @@ export default {
     }
   }
   &__member {
-    margin: 2vh 0;
     padding: 1vh 4vh;
     .member-name {
       cursor: pointer;
@@ -385,7 +401,6 @@ export default {
       }
     }
     &__member {
-      margin: 2vh 0;
       padding: 1vh 3.5vh;
       .member-name {
         font-size: 15px;

@@ -5,18 +5,15 @@
         <v-row class="align-center">
           <v-col cols="6" sm="7" md="8" lg="9">
             <div class="d-flex align-center">
-              <div class="domain-count pr-4">
-                {{ total }} Domain(s)
-              </div>
+              <div class="domain-count pr-4">{{ total }} Domain(s)</div>
             </div>
           </v-col>
           <v-col cols="6" sm="5" md="4" lg="3" class="text-right">
             <button
               class="button-normal add-new-domain"
+              aria-label="New Domain"
               @click.stop="openModalCreateNewDomain = true"
-            >
-              New domain
-            </button>
+            >New domain</button>
           </v-col>
         </v-row>
       </v-col>
@@ -34,13 +31,25 @@
         </v-row>
       </v-col>
     </v-row>
-    <div class="domain__management">
-      <transition-group name="slide-fade" tag="ul" class="pa-0">
-        <li v-for="domain in domains" :key="domain.id">
-          <Domain :domain="domain" />
-        </li>
-      </transition-group>
+    <div v-if="$fetchState.pending" class="d-flex justify-center">
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </div>
+    <transition v-else name="slide-fade" mode="out-in">
+      <div class="domain__management">
+        <transition-group name="slide-fade" mode="out-in" tag="ul" class="pa-0">
+          <li v-for="domain in domains" :key="domain.id">
+            <Domain :domain="domain" @closeModalCreateNewDomain="closeModalCreateNewDomain" />
+          </li>
+        </transition-group>
+        <v-row v-if="domains.length !== 0" justify="center">
+          <v-col cols="8">
+            <v-container class="max-width">
+              <v-pagination v-model="page" class="my-4" :length="totalPage"></v-pagination>
+            </v-container>
+          </v-col>
+        </v-row>
+      </div>
+    </transition>
     <v-dialog
       v-model="openModalCreateNewDomain"
       class="domain__dialog"
@@ -55,25 +64,35 @@
 <script>
 import Domain from '@/components/domains/Domain';
 import CreateNewDomain from '@/components/domains/CreateNewDomain';
+import { getDomains } from '@/services/api';
 export default {
   components: {
     Domain,
     CreateNewDomain,
   },
-  props: {
-    domains: {
-      type: Array,
-      default: () => [],
-    },
-    total: {
-      type: Number,
-      default: 0,
-    },
+  fetchOnServer: false,
+  async fetch() {
+    await this.getDomains(1);
   },
   data: () => ({
     openModalCreateNewDomain: false,
     width: 0,
+    domains: [],
+    page: 1,
+    token: '',
+    total: 0,
+    totalPage: 1,
   }),
+  watch: {
+    page(val) {
+      this.getDomains(val);
+    },
+  },
+  created() {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+      this.token = localStorage.token;
+    }
+  },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);
     this.handleResize();
@@ -84,6 +103,26 @@ export default {
   methods: {
     closeModalCreateNewDomain() {
       this.openModalCreateNewDomain = false;
+      this.getDomains(1);
+    },
+    async getDomains(page = 1) {
+      const { token } = this;
+      try {
+        const resDomain = await getDomains(token, page);
+        const { status, data } = resDomain.data;
+        if (status === 200) {
+          const { domains, total, totalPage } = data;
+          this.total = total;
+          this.totalPage = totalPage;
+          this.domains = domains;
+        }
+      } catch (error) {
+        const { status } = error.response.data;
+        if (status === 401) {
+          this.$router.push('/login');
+
+        }
+      }
     },
     handleResize() {
       if (process.client) {

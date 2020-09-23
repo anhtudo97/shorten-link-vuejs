@@ -10,9 +10,7 @@
             >Build and protect your brand using powerful, recognizable short links.</div>
           </v-col>
           <v-col cols="12" md="4">
-            <v-img
-              src="https://i.pinimg.com/originals/74/04/a7/7404a70c336bd4da793ef0d9e1b39d7f.png"
-            ></v-img>
+            <img src="@/assets/home.webp" alt="home"/>
           </v-col>
         </v-row>
       </v-col>
@@ -34,6 +32,7 @@
           <v-col cols="12" sm="4" class="ma-md-0">
             <button
               class="shorten-button button-primary"
+              aria-label="Action"
               @click="isShorten = !isShorten"
             >{{isShorten ? 'Copy':'Shorten'}}</button>
           </v-col>
@@ -102,6 +101,11 @@ export default {
         line-height: 22px;
         letter-spacing: 0.3px;
         color: #737b7d;
+      }
+      img{
+        object-fit: cover;
+        width: 100%;
+        height: auto;
       }
     }
     @media (max-width: 1366px) {

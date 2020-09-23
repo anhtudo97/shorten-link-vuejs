@@ -7,19 +7,13 @@
             <div class="d-flex align-center flex-wrap">
               <div class="menu-text my-3 pr-4">{{ total }} Link(s)</div>
               <div class="menu-selection my-3 mr-4 d-flex">
-                <div
-                  class="d-flex align-center"
-                  @click="models.sortModal = true"
-                >
+                <div class="d-flex align-center" @click="models.sortModal = true">
                   <div class="selection-text pr-2">Sort by</div>
                   <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
               </div>
               <div class="menu-selection my-3 d-flex">
-                <div
-                  class="d-flex align-center"
-                  @click="models.filterModal = true"
-                >
+                <div class="d-flex align-center" @click="models.filterModal = true">
                   <div class="selection-text pr-2">Filter by</div>
                   <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
@@ -27,17 +21,15 @@
             </div>
           </v-col>
           <v-col cols="5" sm="4" lg="3" class="text-right">
-            <button
-              class="button-normal add-new-link"
-              @click.stop="models.modal = true"
-            >
-              New Link
-            </button>
+            <button class="button-normal add-new-link" aria-label="new link" @click.stop="models.modal = true">New Link</button>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
-    <div v-if="links.length !== 0" class="link__management">
+    <div v-if="$fetchState.pending" class="d-flex justify-center">
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+    </div>
+    <div v-else class="link__management">
       <transition-group name="slide-fade" mode="out-in" tag="ul" class="pa-0">
         <li v-for="link in links" :key="link.id">
           <Link
@@ -49,20 +41,13 @@
           />
         </li>
       </transition-group>
-      <v-row justify="center">
+      <v-row v-if="links.length !== 0" justify="center">
         <v-col cols="8">
           <v-container class="max-width">
-            <v-pagination
-              v-model="page"
-              class="my-4"
-              :length="totalPage"
-            ></v-pagination>
+            <v-pagination v-model="page" class="my-4" :length="totalPage"></v-pagination>
           </v-container>
         </v-col>
       </v-row>
-    </div>
-    <div v-else class="d-flex justify-center">
-      <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </div>
     <v-dialog
       v-model="models.modal"
@@ -73,16 +58,10 @@
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
     <v-dialog v-model="models.sortModal" max-width="400">
-      <SortModal
-        @updateSort="updateSort"
-        @closeModal="models.sortModal = false"
-      />
+      <SortModal @updateSort="updateSort" @closeModal="models.sortModal = false" />
     </v-dialog>
     <v-dialog v-model="models.filterModal" max-width="700">
-      <MemberModal
-        @updateFilter="updateFilter"
-        @closeModal="models.filterModal = false"
-      />
+      <MemberModal @updateFilter="updateFilter" @closeModal="models.filterModal = false" />
     </v-dialog>
   </div>
 </template>
@@ -95,7 +74,6 @@ import SortModal from '@/components/links/SortModal';
 import MemberModal from '@/components/links/MemberModal';
 
 import { getLinksWorkspaces } from '@/services/api';
-import { handle } from '@/utils/promise';
 
 export default {
   components: {
@@ -103,6 +81,20 @@ export default {
     CreateNewLink,
     SortModal,
     MemberModal,
+  },
+  fetchOnServer: false,
+  async fetch() {
+    this.workspaceId = this.$route.params.id;
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+      this.token = localStorage.token;
+    }
+    await this.getListLinks(
+      1,
+      this.sort,
+      this.direction,
+      this.domainSelected,
+      this.workspaceSelected
+    );
   },
   data: () => ({
     keySort: 'Sort By',
@@ -126,6 +118,7 @@ export default {
     ...mapGetters({ sort: 'links/getSort', direction: 'links/getDirection' }),
   },
   watch: {
+    '$route.query': '$fetch',
     page(val) {
       this.getListLinks(
         val,
@@ -135,21 +128,6 @@ export default {
         this.workspaceSelected
       );
     },
-  },
-  created() {
-    if (typeof localStorage !== 'undefined' && localStorage.token) {
-      this.token = localStorage.token;
-    }
-  },
-  mounted() {
-    this.workspaceId = this.$route.params.id;
-    this.getListLinks(
-      1,
-      this.sort,
-      this.direction,
-      this.domainSelected,
-      this.workspaceSelected
-    );
   },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);
@@ -165,8 +143,8 @@ export default {
     }),
     async getListLinks(page, sort, direction, domainSelected, userIdsSelected) {
       const { token, workspaceId } = this;
-      const [resLink, linkError] = await handle(
-        getLinksWorkspaces(
+      try {
+        const resLink = await getLinksWorkspaces(
           token,
           workspaceId,
           page,
@@ -174,17 +152,20 @@ export default {
           direction,
           domainSelected,
           userIdsSelected
-        )
-      );
-      if (linkError) throw new Error('Could not fetch link');
-      const { status, data } = resLink.data;
-      if (status === 200) {
-        const { links, total, totalPage } = data;
-        this.total = total;
-        this.totalPage = totalPage;
-        if (links.length) {
-          this.links = links;
+        );
+        const { status, data } = resLink.data;
+        if (status === 200) {
+          const { links, total, totalPage } = data;
+          this.total = total;
+          this.totalPage = totalPage;
+          if (links.length) {
+            this.links = links;
+          }
         }
+      } catch (error) {
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
+
       }
     },
     updateSort(sort, direction) {
@@ -212,8 +193,13 @@ export default {
     },
     closeModalAddNewLink() {
       this.models.modal = false;
-
-      this.$forceUpdate();
+      this.getListLinks(
+        this.page,
+        this.sort,
+        this.direction,
+        this.domainSelected,
+        this.workspaceSelected
+      );
     },
     handleResize() {
       if (process.client) {

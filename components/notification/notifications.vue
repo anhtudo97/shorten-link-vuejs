@@ -14,11 +14,7 @@
         <v-row v-if="getNiotifitcations.length !== 0" justify="center">
           <v-col cols="8">
             <v-container class="max-width">
-              <v-pagination
-                v-model="page"
-                class="my-4"
-                :length="totalPage"
-              ></v-pagination>
+              <v-pagination v-model="page" class="my-4" :length="totalPage"></v-pagination>
             </v-container>
           </v-col>
         </v-row>
@@ -68,14 +64,18 @@ export default {
           this.totalPage = data.totalPage;
         }
       } catch (error) {
-        console.log(error);
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
+        
       }
     },
     async answerInvitationWorkspace(invitationId, status = 'ACCEPTED') {
       try {
         await answerInvitations(this.token, invitationId, status);
       } catch (error) {
-        console.log(error);
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
+        
       }
     },
     async answerInvitations(invitationId, status = 'ACCEPTED') {

@@ -14,57 +14,54 @@
         <img
           class="img"
           src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
+          alt="avatar"
         />
         <div>
           <div class="dialog-name-text px-5">{{ workspace.name }}</div>
           <div class="dialog-date-text px-5">
-            <button disabled class="date-text">Default</button>
+            <button
+              v-if="workspace.isDefault"
+              disabled
+              class="date-text"
+              aria-label="default"
+            >Default</button>
           </div>
         </div>
       </div>
       <button
         class="dialog-detail-workspace__button button-normal"
+        aria-label="edit"
         @click="openEditWorkspace = true"
-      >
-        Edit
-      </button>
+      >Edit</button>
     </div>
     <div class="mt-16 mb-4 border-b">
       <div class="d-flex dialog-detail-workspace__info align-center mb-5">
         <img src="@/assets/svg/calendar.svg" alt="calendar" class="mr-3" />
-        <div class="info-text">
-          Created on {{ createdDate }} by anhtudo97@gmail.com
-        </div>
+        <div class="info-text">Created on {{ createdDate }} by anhtudo97@gmail.com</div>
       </div>
       <div class="d-flex dialog-detail-workspace__info align-center mb-5">
         <img src="@/assets/svg/links.svg" alt="calendar" class="mr-3" />
         <nuxt-link :to="`/links/${workspace.id}`">
-          <div class="info-text info-link font-weight-medium">
-            {{ totalLinks }} Links
-          </div>
+          <div class="info-text info-link font-weight-medium">{{ totalLinks }} Links</div>
         </nuxt-link>
       </div>
-      <div class="d-flex dialog-detail-workspace__info align-center mb-5">
+      <div v-if="!joined" class="d-flex dialog-detail-workspace__info align-center mb-5">
         <img src="@/assets/svg/members.svg" alt="calendar" class="mr-3" />
         <div
           class="info-text font-weight-medium"
           @click.stop="openModalMemberModal = true"
-        >
-          {{ totalMembers }} teammate(s)
-        </div>
+        >{{ totalMembers }} teammate(s)</div>
       </div>
-      <div class="d-flex dialog-detail-workspace__info align-center mb-5">
+      <div v-if="!joined" class="d-flex dialog-detail-workspace__info align-center mb-5">
         <img src="@/assets/svg/domains.svg" alt="calendar" class="mr-3" />
         <div
           class="info-text info-link font-weight-medium"
           @click.stop="openAddLinkDomainModal = true"
-        >
-          {{ totalDomains }} Branded domains included
-        </div>
+        >{{ totalDomains }} Branded domains included</div>
       </div>
     </div>
     <v-row
-      v-if="!workspace.isDefault"
+      v-if="!workspace.isDefault ^ joined"
       class="align-center dialog-detail-workspace__button-remove"
     >
       <v-col cols="12" sm="3">
@@ -73,9 +70,10 @@
       <v-col cols="12" sm="9" class="text-md-right text-left">
         <button
           class="button-warning button-remove"
+          aria-label="remove this workspace"
           @click.stop="isRemoveModal = true"
         >
-          <div class="button-text">Remove this domain</div>
+          <div class="button-text">Remove this workspace</div>
         </button>
       </v-col>
     </v-row>
@@ -111,11 +109,7 @@
         @closeModalAddLinksDomain="closeModalAddLinksDomain"
       />
     </v-dialog>
-    <v-dialog
-      v-model="openEditWorkspace"
-      max-width="850"
-      :fullscreen="width < 600 ? true : false"
-    >
+    <v-dialog v-model="openEditWorkspace" max-width="850" :fullscreen="width < 600 ? true : false">
       <CreateNewWorkspaceModal
         :id="workspace.id"
         :edit="true"
@@ -123,11 +117,12 @@
         @closeCreateNewWorkspace="closeEditWorkspace"
       />
     </v-dialog>
-    <SnackbarSuccess
-      message="Delete workspace is successfully"
-      :show-alert="showAlert"
-      @closeSnackbar="showAlert = false"
-    />
+    <v-snackbar v-model="showAlert" top color="success">
+      Delete workspace is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
@@ -143,18 +138,20 @@ import {
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
 import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
 import CreateNewWorkspaceModal from '@/components/workspaces/CreateNewWorkspace';
-import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
 export default {
   components: {
     ManagementMemberModal,
     AddLinksDomainsModal,
     CreateNewWorkspaceModal,
-    SnackbarSuccess,
   },
   props: {
     workspace: {
       type: Object,
       default: () => {},
+    },
+    joined: {
+      type: Boolean,
+      default: false,
     },
   },
   data: () => ({
@@ -193,9 +190,6 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
-    reload() {
-      window.location.reload();
-    },
     updateMember() {
       this.getMembers();
     },
@@ -230,7 +224,8 @@ export default {
           this.members = members;
         }
       } catch (error) {
-        console.log(error);
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
       }
     },
     async getDomains() {
@@ -247,7 +242,8 @@ export default {
           this.totalDomains = total;
         }
       } catch (error) {
-        console.log(error);
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
       }
     },
     async getLinks() {
@@ -263,7 +259,8 @@ export default {
           this.totalLinks = total;
         }
       } catch (error) {
-        console.log(error);
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
       }
     },
     async removeWorkspace() {
@@ -275,14 +272,14 @@ export default {
         if (status === 200) {
           this.showAlert = true;
           setTimeout(() => {
-            this.reload();
+            this.$emit('closeCreateNewWorkspace');
             this.showAlert = false;
             this.loading = false;
           }, 1000);
         }
       } catch (error) {
-        console.log(error);
-      } finally {
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
       }
     },
     handleResize() {

@@ -9,14 +9,14 @@
     <div class="modal-mask">
       <div class="modal-mask__title mb-5">Shorten a new link</div>
       <v-textarea
-        v-model="form.destinationUrl"
+        v-model.lazy="destinationUrl"
         auto-grow
         label="Destination your URL"
         hint="Type or paste your URL"
         outlined
         dense
         rows="1"
-        @input="validURL(form.destinationUrl)"
+        @input="validURL(destinationUrl)"
       ></v-textarea>
       <transition name="slide-fade">
         <div v-if="valid || edit || loading">
@@ -25,14 +25,14 @@
               <v-col cols="12" md="6" class="py-0">
                 <div class="modal-mask__sub-title">Branded domain</div>
                 <v-select
-                  v-model="form.domain.id"
+                  v-model="domain.id"
                   class="dialog-domain"
                   :items="tempDomains"
                   item-text="name"
                   item-value="id"
                   dense
                   outlined
-                  :label="form.domain.name"
+                  :label="domain.name"
                   :disabled="loading"
                   item-disabled="isUse"
                 />
@@ -40,7 +40,7 @@
               <v-col cols="12" md="6" class="py-0">
                 <div class="modal-mask__sub-title">Slash tag</div>
                 <v-text-field
-                  v-model="form.slashTag"
+                  v-model="slashTag"
                   class="dialog-slash-tag"
                   outlined
                   dense
@@ -52,11 +52,11 @@
               <v-col cols="12" md="6" class="py-0">
                 <div class="modal-mask__sub-title">Workspace belong to</div>
                 <v-select
-                  v-model="form.workspace.id"
+                  v-model="workspace.id"
                   class="dialog-workspace"
                   :items="tempWorkspaces"
                   item-text="name"
-                  :label="form.workspace.name"
+                  :label="workspace.name"
                   item-value="id"
                   dense
                   outlined
@@ -67,7 +67,7 @@
               <v-col cols="12" md="6" class="py-0">
                 <div class="modal-mask__sub-title">Web title</div>
                 <v-text-field
-                  v-model="form.title"
+                  v-model="title"
                   class="dialog-web-title"
                   placeholder="Web title"
                   outlined
@@ -82,46 +82,35 @@
                 :disabled="loading"
                 class="modal-mask__button"
                 @click="callAction"
-              >
-                {{ edit ? 'Update Link' : 'Create link' }}
-              </div>
+              >{{ edit ? 'Update Link' : 'Create link' }}</div>
             </div>
           </div>
           <div v-else class="d-flex justify-center">
-            <v-progress-circular
-              indeterminate
-              color="primary"
-            ></v-progress-circular>
+            <v-progress-circular indeterminate color="primary"></v-progress-circular>
           </div>
         </div>
       </transition>
     </div>
     <client-only>
-      <infinite-loading
-        spinner="waveDots"
-        @infinite="infiniteScroll"
-      ></infinite-loading>
+      <infinite-loading spinner="waveDots" @infinite="infiniteScroll"></infinite-loading>
     </client-only>
-    <SnackbarSuccess
-      :message="
-        edit ? 'Update link successfully' : 'Create new link successfully'
-      "
-      :show-alert="showAlert"
-      @closeSnackbar="showAlert = false"
-    />
-    <SnackbarError
-      :message="
-        domainCheck
-          ? 'The workspace has no permission this domain'
-          : 'Slash tag is exist'
-      "
-      :show-alert="showAlert403"
-      @closeSnackbar="showAlert403 = false"
-    />
+    <v-snackbar v-model="showAlert" top color="success">
+      {{ message }}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar v-model="showAlert403" top color="error">
+      {{ message }}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert403 = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
 <script>
+import { debounce } from 'debounce';
 import {
   getDomains,
   getWorkspaces,
@@ -131,15 +120,9 @@ import {
   createNewLink,
   updateLink,
   getLink,
+  getWorkspacesJoined,
 } from '@/services/api';
-import { handle } from '@/utils/promise';
-import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
-import SnackbarError from '@/components/shares/SnackbarError';
 export default {
-  components: {
-    SnackbarSuccess,
-    SnackbarError,
-  },
   props: {
     edit: {
       type: Boolean,
@@ -152,42 +135,52 @@ export default {
   },
   async fetch() {
     if (this.edit) {
-      const [resLink, linkError] = await handle(getLink(this.token, this.id));
-      if (linkError) throw new Error('Could not fetch link');
-      const { status, data } = resLink.data;
-      if (status === 200) {
-        const { title, destination, domain, slashtag, domainID } = data;
-        this.form.destinationUrl = destination;
-        this.form.title = title;
-        this.form.slashTag = slashtag;
-        this.form.domain = domain;
-        this.form.domainId = domainID;
+      try {
+        const resLink = await getLink(this.token, this.id);
+        const { status, data } = resLink.data;
+        if (status === 200) {
+          const { title, destination, domain, slashtag, domainID } = data;
+          this.destinationUrl = destination;
+          this.title = title;
+          this.slashTag = slashtag;
+          this.checkSlashEdit = slashtag;
+          this.domain = domain;
+          this.domainId = domainID;
+        }
+      } catch (error) {
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
+
       }
     }
   },
   data: () => ({
+    // domains
     domains: [],
+    pageDomains: 1,
+    // workspaces
     workspaces: [],
+    pageWorkspaces: 1,
+    // workspaces joined
+    workspacesJoined: [],
+    pageWorkspacesJoined: 1,
     token: '',
     loading: false,
-    pageDomains: 1,
-    pageWorkspaces: 1,
     showAlert: false,
     showAlert403: false,
     valid: false,
     checkSlash: false,
-    domainCheck: false,
-    form: {
-      destinationUrl: '',
-      title: '',
-      slashTag: '',
-      domain: {
-        name: 'Domain',
-        id: '',
-      },
-      workspace: { name: 'Workspace', id: '' },
-      domainId: '',
+    checkSlashEdit: false,
+    destinationUrl: '',
+    title: '',
+    slashTag: '',
+    domain: {
+      name: 'Domain',
+      id: '',
     },
+    workspace: { name: 'Workspace', id: '' },
+    domainId: '',
+    message: '',
   }),
   computed: {
     tempDomains() {
@@ -208,13 +201,20 @@ export default {
       });
     },
   },
+  watch: {
+    slashTag(newVal, oldVal) {
+      if (newVal !== this.checkSlashEdit) {
+        this.checkSlashTagValid(newVal);
+      }
+    },
+  },
   created() {
     if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
   },
   methods: {
-    async validURL(str) {
+    validURL: debounce(async function(str) {
       const pattern = new RegExp(
         '^(https?:\\/\\/)?' + // protocol
         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
@@ -225,69 +225,101 @@ export default {
         'i'
       ); // fragment locator
       this.valid = !!pattern.test(str);
+      if (!str.includes('http') || !str.includes('https'))
+        str = 'https://' + str;
       if (this.valid) {
         this.loading = true;
         await Promise.all([this.getTitle(str), this.getSlashTag(str)]);
         this.loading = false;
       }
       return this.valid;
-    },
+    }, 1000),
     async getTitle(url) {
-      const [resTitle, titleError] = await handle(getTitleUrl(url));
-      if (titleError) throw new Error('Could not fetch title details');
-      const { title } = resTitle.data.data;
-      this.form.title = title;
+      try {
+        const resTitle = await getTitleUrl(url);
+        const { title } = resTitle.data.data;
+        this.title = title;
+      } catch (error) {
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
+
+      }
     },
     async getSlashTag(url) {
-      const [resSlashTag, slashTagError] = await handle(getSlashTag(url));
-      if (slashTagError) throw new Error('Could not fetch slash tag');
-      const { data } = resSlashTag.data;
-      this.form.slashTag = data;
+      try {
+        const resSlashTag = await getSlashTag(url);
+        const { data } = resSlashTag.data;
+        this.slashTag = data;
+      } catch (error) {
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
+
+      }
     },
     async checkSlashTagValid(tag) {
-      const [resSlashTag, slashTagError] = await handle(checkSlashTag(tag));
-      if (slashTagError) throw new Error('Could not fetch slash tag');
-      const { data } = resSlashTag.data;
-      this.checkSlash = data.exists;
+      try {
+        const resSlashTag = await checkSlashTag(tag);
+        const { data } = resSlashTag.data;
+        this.checkSlash = data.exists;
+      } catch (error) {
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
+
+      }
     },
     async infiniteScroll($state) {
       const { token, pageDomains, pageWorkspaces } = this;
-      const [resDomains, domainsError] = await handle(
-        getDomains(token, pageDomains, true)
-      );
-      if (domainsError) throw new Error('Could not fetch doamins details');
-      const [resWorkspaces, workspacesError] = await handle(
-        getWorkspaces(token, pageWorkspaces)
-      );
-      if (workspacesError)
-        throw new Error('Could not fetch workspaces details');
+      try {
+        const resDomains = await getDomains(token, pageDomains, true);
+        const resWorkspaces = await getWorkspaces(token, pageWorkspaces);
+        const resWorkspacesJoined = await getWorkspacesJoined(
+          token,
+          pageWorkspaces
+        );
 
-      const statusDomains = resDomains.data.status;
-      const statusWorkspaces = resWorkspaces.data.status;
+        const statusDomains = resDomains.data.status;
+        const statusWorkspaces = resWorkspaces.data.status;
+        const statusWorkspacesJoined = resWorkspacesJoined.data.status;
 
-      if (statusDomains === 200) {
-        this.pageDomains += 1;
-        const { domains } = resDomains.data.data;
-        if (domains.length) {
-          this.domains.push(...domains);
-          this.form.domain.name = this.domains[0].name;
-          this.form.domain.id = this.domains[0].id;
-          $state.loaded();
-        } else {
-          $state.complete();
+        if (statusDomains === 200) {
+          this.pageDomains += 1;
+          const { domains } = resDomains.data.data;
+          if (domains.length) {
+            this.domains.push(...domains);
+            this.domain.name = this.domains[0].name;
+            this.domain.id = this.domains[0].id;
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
         }
-      }
-      if (statusWorkspaces === 200) {
-        this.pageWorkspaces += 1;
-        const { workspaces } = resWorkspaces.data.data;
-        if (workspaces.length) {
-          this.workspaces.push(...workspaces);
-          this.form.workspace.name = this.workspaces[0].name;
-          this.form.workspace.id = this.workspaces[0].id;
-          $state.loaded();
-        } else {
-          $state.complete();
+        if (statusWorkspaces === 200) {
+          this.pageWorkspaces += 1;
+          const { workspaces } = resWorkspaces.data.data;
+          if (workspaces.length) {
+            this.workspaces.push(...workspaces);
+            this.workspace.name = this.workspaces[0].name;
+            this.workspace.id = this.workspaces[0].id;
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
         }
+        if (statusWorkspacesJoined === 200) {
+          this.pageWorkspacesJoined += 1;
+          const { invitations } = resWorkspacesJoined.data.data;
+          if (invitations.length) {
+            const workspaces = invitations.map((x) => x.workspace);
+            this.workspaces.push(...workspaces);
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
+        }
+      } catch (error) {
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
+
       }
     },
     callAction() {
@@ -299,13 +331,9 @@ export default {
     },
     async createNewLink() {
       this.loading = true;
-      const { destinationUrl, domain, workspace, title, slashTag } = this.form;
-      const [resSlashTag, slashTagError] = await handle(
-        checkSlashTag(slashTag)
-      );
-      if (slashTagError) throw new Error('Could not fetch slashTag details');
-      const { data } = resSlashTag.data;
-      if (!data.exists) {
+      const { destinationUrl, domain, workspace, title, slashTag } = this;
+      await this.checkSlashTagValid(slashTag);
+      if (!this.checkSlash && destinationUrl !== '') {
         try {
           const resLink = await createNewLink(
             this.token,
@@ -315,52 +343,73 @@ export default {
             title,
             workspace.id
           );
-          const { status } = resLink.data;
+          const { status, message } = resLink.data;
+          this.message = message;
           if (status === 201) {
             this.showAlert = true;
             setTimeout(() => {
+              this.destinationUrl = '';
+              this.valid = false;
               this.$emit('closeModalAddNewLink');
               this.loading = false;
-            }, 2000);
+            }, 1000);
           }
         } catch (error) {
+          const { status, message } = error.response.data;
+          if (status === 401) {
+            this.$router.push('/login');
+            return;
+          }
+          this.message = message;
           this.showAlert403 = true;
-          this.domainCheck = true;
           setTimeout(() => {
             this.loading = false;
-          }, 2000);
+          }, 1000);
         }
       } else {
         this.showAlert403 = true;
-        this.domainCheck = false;
         setTimeout(() => {
           this.loading = false;
-        }, 2000);
+        }, 1000);
       }
     },
     async updateLink() {
       this.loading = true;
-      const { destinationUrl, title, slashTag, domainId } = this.form;
-      const [resUpdateLink, updateLinkError] = await handle(
-        updateLink(
-          this.token,
-          this.id,
-          destinationUrl,
-          domainId,
-          slashTag,
-          title
-        )
-      );
-      if (updateLinkError) throw new Error('Could not fetch update link');
+      const { destinationUrl, title, slashTag, domainId } = this;
       if (!this.checkSlash) {
-        const { status } = resUpdateLink.data;
-        if (status === 200) {
-          this.showAlert = true;
-          setTimeout(() => {
-            this.$emit('closeModalAddNewLink');
-            this.loading = false;
-          }, 2000);
+        try {
+          const resUpdateLink = await updateLink(
+            this.token,
+            this.id,
+            destinationUrl,
+            domainId,
+            slashTag,
+            title
+          );
+          const { status, message } = resUpdateLink.data;
+          this.message = message;
+          if (status === 200) {
+            this.showAlert = true;
+            setTimeout(() => {
+              this.showAlert = false;
+              this.$emit('closeModalEditNewLink');
+              this.loading = false;
+            }, 1000);
+          }
+        } catch (error) {
+          const { status, message } = error.response.data;
+          this.message = message;
+          if (status === 401) {
+            this.$router.push('/login');
+
+          }
         }
+      } else {
+        this.showAlert403 = true;
+        setTimeout(() => {
+          this.showAlert403 = false;
+          this.loading = false;
+        }, 2000);
       }
     },
   },

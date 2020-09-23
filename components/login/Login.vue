@@ -58,6 +58,7 @@
               <button
                 :disabled="isLoading"
                 class="button-normal login-button mt-8 mt-sm-10"
+                aria-label="Login"
                 @click.prevent="login"
               >
                 Login
@@ -135,7 +136,7 @@ export default {
   height: 100px;
 }
 .login {
-  font-family: Poppins, sans-serif;
+  font-family: Montserrat, sans-serif;
   &__block {
     margin-top: 20px;
     margin-bottom: 100px;
@@ -167,6 +168,7 @@ export default {
         font-weight: bold;
         color: #222;
         font-size: 36px;
+        font-weight: 600;
       }
     }
     .login-button {

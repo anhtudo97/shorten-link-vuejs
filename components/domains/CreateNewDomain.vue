@@ -9,66 +9,65 @@
         <img src="@/assets/svg/close.svg" alt="close" />
       </div>
     </div>
-    <div class="dialog-create-new-domain__title">
-      Connect a domain name you already own
-    </div>
+    <div class="dialog-create-new-domain__title">Connect a domain name you already own</div>
     <div class="dialog-create-new-domain__description mb-10">
       Configure a domain name you already own to use as a branded domain for
       your links.
     </div>
-    <v-row class="d-flex flex-wrap align-center">
+    <v-row class="d-flex flex-wrap align-start">
       <v-col cols="12" sm="8">
         <v-textarea
           v-model="destinationDomain"
+          :rules="[domainFormat()]"
           auto-grow
           label="Destination your Domain"
           placeholder="What is your domain name"
-          hide-details="auto"
           outlined
           rows="1"
           dense
           :disabled="loading"
           class="dialog-create-new-domain__input"
+          @input="validURL(destinationDomain)"
         ></v-textarea>
       </v-col>
       <v-col cols="12" sm="4" class="text-right">
         <button
-          :disabled="loading"
+          :disabled="loading || !valid"
           class="button-normal dialog-create-new-domain__button"
+          aria-label="Create new domain"
           @click.prevent="createNewDomain"
-        >
-          Create new domain
-        </button>
+        >Create new domain</button>
       </v-col>
     </v-row>
-    <SnackbarSuccess
-      message="Create new domain successfully"
-      :show-alert="showAlert"
-      @closeSnackbar="showAlert = false"
-    />
-    <SnackbarError
-      message="Domain is existed"
-      :show-alert="showAlert400"
-      @closeSnackbar="showAlert400 = false"
-    />
+    <v-snackbar v-model="showAlert" top color="success">
+      {{ message }}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert=false">Close</v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar v-model="showAlert400" top color="error">
+      {{ message }}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert400 = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </v-list>
 </template>
 
 <script>
+import { debounce } from 'debounce';
 import { createNewDomain } from '@/services/api';
-import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
-import SnackbarError from '@/components/shares/SnackbarError';
+import validation from '@/utils/validations';
 export default {
-  components: {
-    SnackbarSuccess,
-    SnackbarError,
-  },
   data: () => ({
+    ...validation,
     destinationDomain: '',
     loading: false,
     showAlert: false,
     showAlert400: false,
     token: '',
+    message: '',
+    valid: false,
   }),
   created() {
     if (localStorage.token) {
@@ -76,32 +75,42 @@ export default {
     }
   },
   methods: {
-    reload() {
-      window.location.reload();
-    },
+    validURL: debounce(function(str) {
+      const pattern = new RegExp('^([a-z0-9]+(-[a-z0-9]+)*.)+[a-z]{2,}$'); // fragment locator
+      this.valid = !!pattern.test(str);
+    }, 1000),
     async createNewDomain() {
-      this.loading = true;
-      try {
-        const res = await createNewDomain(this.token, this.destinationDomain);
-        const { status } = res.data;
-        if (status === 200) {
-          this.showAlert = true;
+      if (this.valid) {
+        this.loading = true;
+        try {
+          const resNewDomain = await createNewDomain(
+            this.token,
+            this.destinationDomain
+          );
+          const { status, message } = resNewDomain.data;
+          this.message = message;
+          if (status === 200) {
+            this.showAlert = true;
+            setTimeout(() => {
+              this.$emit('closeModalCreateNewDomain');
+              this.showAlert = false;
+              this.loading = false;
+            }, 2000);
+          }
+        } catch (error) {
+          const { data } = error.response;
+          if (data.status === 401) {
+            this.$router.push('/login');
+            return;
+          }
+          this.message = data.message;
+          this.showAlert400 = true;
           setTimeout(() => {
-            this.$emit('closeModalCreateNewDomain');
-            this.reload();
-            this.showAlert = false;
+            this.showAlert400 = false;
             this.loading = false;
+            this.destinationDomain = '';
           }, 2000);
         }
-      } catch (error) {
-        console.log(error);
-        this.showAlert400 = true;
-        setTimeout(() => {
-          this.showAlert400 = false;
-          this.loading = false;
-        }, 2000);
-      } finally {
-        this.destinationDomain = '';
       }
     },
   },

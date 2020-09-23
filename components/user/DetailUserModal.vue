@@ -18,7 +18,7 @@
         <div>
           <div class="dialog-name-text px-5">{{ user.fullname }}</div>
           <div class="dialog-email-text px-5">
-            <button disabled class="date-text">{{ user.email }}</button>
+            <button disabled class="date-text" aria-label="email">{{ user.email }}</button>
           </div>
         </div>
       </div>

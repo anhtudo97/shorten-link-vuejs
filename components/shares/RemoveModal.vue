@@ -12,6 +12,7 @@
           <button
             :disabled="loading"
             class="dialog-button dialog-cancel-button mr-5"
+            aria-label="cancel"
             @click="$emit('closeRemoveModal')"
           >
             Cancel
@@ -19,6 +20,7 @@
           <button
             :disabled="loading"
             class="dialog-button dialog-delete-button"
+            aria-label="delete"
             @click="$emit('removeElement')"
           >
             Delete

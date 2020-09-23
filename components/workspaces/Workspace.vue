@@ -1,8 +1,6 @@
 <template>
   <div class="workspace mb-5">
-    <v-row
-      class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0"
-    >
+    <v-row class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0">
       <v-col
         cols="7"
         sm="8"
@@ -14,39 +12,13 @@
           <img
             class="img"
             src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
+            alt="avatar"
           />
-          <div class="name-text px-5 text-overflow-hidden">
-            {{ workspace.name }}
-          </div>
+          <div class="name-text px-5 text-overflow-hidden">{{ workspace.name }}</div>
         </div>
       </v-col>
-      <v-col
-        cols="5"
-        sm="4"
-        md="3"
-        class="text-md-center text-right workspace__content"
-      >
+      <v-col cols="5" sm="4" md="3" class="text-md-center text-right workspace__content">
         <div class="date">{{ createdDate }}</div>
-        <!-- <div class="modify d-flex align-center justify-end justify-md-center">
-          <img
-            src="@/assets/svg/addlink.svg"
-            alt="add link"
-            class="ml-4"
-            @click.stop="openAddLinkDomainModal = true"
-          />
-          <img
-            src="@/assets/svg/member.svg"
-            alt="member"
-            class="ml-4 opacity-06"
-            @click.stop="openModalMemberModal = true"
-          />
-          <img
-            src="@/assets/svg/trash.svg"
-            alt="trash"
-            class="ml-4 opacity-06"
-            @click.stop="isRemoveModal = true"
-          />
-        </div> -->
       </v-col>
 
       <v-dialog
@@ -56,6 +28,7 @@
       >
         <DetailWorkspaceModal
           :workspace="workspace"
+          :joined="joined"
           @closeModalDetailWorkspace="closeModalDetailWorkspace"
         />
       </v-dialog>
@@ -66,10 +39,7 @@
         max-width="650"
         :fullscreen="width < 600 ? true : false"
       >
-        <ManagementMemberModal
-          :workspace="workspace"
-          @closeModalMembers="closeModalMembers"
-        />
+        <ManagementMemberModal :workspace="workspace" @closeModalMembers="closeModalMembers" />
       </v-dialog>
       <v-dialog v-model="isRemoveModal" persistent max-width="500">
         <RemoveModal
@@ -84,16 +54,15 @@
         max-width="700"
         :fullscreen="width < 600 ? true : false"
       >
-        <AddLinksDomainsModal
-          @closeModalAddLinksDomain="closeModalAddLinksDomain"
-        />
+        <AddLinksDomainsModal @closeModalAddLinksDomain="closeModalAddLinksDomain" />
       </v-dialog>
     </v-row>
-    <SnackbarSuccess
-      message="Delete workspace is successfully"
-      :show-alert="showAlert"
-      @closeSnackbar="showAlert = false"
-    />
+    <v-snackbar v-model="showAlert" top color="success">
+      Delete workspace is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -104,18 +73,20 @@ import { deleteWorkspace } from '@/services/api';
 import DetailWorkspaceModal from '@/components/workspaces/DetailWorkspaceModal';
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
 import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
-import SnackbarSuccess from '@/components/shares/SnackbarSuccess';
 export default {
   components: {
     DetailWorkspaceModal,
     ManagementMemberModal,
     AddLinksDomainsModal,
-    SnackbarSuccess
   },
   props: {
     workspace: {
       type: Object,
       default: () => {},
+    },
+    joined: {
+      type: Boolean,
+      default: false,
     },
   },
   data: () => ({
@@ -151,6 +122,7 @@ export default {
     },
     closeModalDetailWorkspace() {
       this.openModalDetailModal = false;
+      this.$emit('closeCreateNewWorkspace');
     },
     closeModalMembers() {
       this.openModalMemberModal = false;
@@ -176,7 +148,8 @@ export default {
           }, 1000);
         }
       } catch (error) {
-        console.log(error);
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
       }
     },
     handleResize() {

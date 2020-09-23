@@ -3,7 +3,7 @@
     <v-col cols="12" sm="10" md="8" class="mx-auto px-0 border-radius-10">
       <v-row class="align-center mx-0">
         <v-col cols="12" md="8" @click.stop="models.isOpen = true">
-          <div class="shortened-link text-overflow-hidden">{{ slashtag }}</div>
+          <div class="shortened-link text-overflow-hidden">{{ shorten }}</div>
           <div class="origin-link pt-2 text-overflow-hidden">{{ link }}</div>
         </v-col>
         <v-col cols="12" md="4">
@@ -14,7 +14,7 @@
               <div class="d-flex link-services">
                 <v-tooltip top nudge-left="10">
                   <template v-slot:activator="{ on, attrs }">
-                    <a :href="slashtag">
+                    <a :href="shorten">
                       <img
                         :src="require('@/assets/icons/route-solid.svg')"
                         alt="route"
@@ -28,7 +28,7 @@
                 </v-tooltip>
                 <v-tooltip top nudge-left="10">
                   <template v-slot:activator="{ on, attrs }">
-                    <div v-clipboard="slashtag">
+                    <div v-clipboard="shorten">
                       <img
                         :src="require('@/assets/icons/clone-solid.svg')"
                         alt="route"
@@ -80,11 +80,7 @@
       max-width="900"
       :fullscreen="width < 600 ? true : false"
     >
-      <DetailLinkModal
-        :id="id"
-        :slashtag="slashtag"
-        @closeModalDetailLink="closeModalDetailLink"
-      />
+      <DetailLinkModal :id="id" :slashtag="slashtag" @closeModalDetailLink="closeModalDetailLink" />
     </v-dialog>
     <v-dialog
       v-model="modalEditLink"
@@ -92,44 +88,33 @@
       max-width="900"
       :fullscreen="width < 600 ? true : false"
     >
-      <CreateNewLink
-        :id="id"
-        :edit="true"
-        :form-update="form"
-        @closeModalAddNewLink="closeModalAddNewLink"
-      />
+      <CreateNewLink :id="id" :edit="true" @closeModalEditNewLink="closeModalEditNewLink" />
     </v-dialog>
     <v-dialog v-model="isRemoveModal" persistent width="500">
-      <RemoveModal
-        name="link"
-        @closeRemoveModal="closeRemoveModal"
-        @removeElement="removeLink"
-      />
+      <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
     </v-dialog>
-    <SnackbarError
-      message="Delete link is successfully"
-      :show-alert="showAlert"
-      @closeSnackbar="showAlert = false"
-    />
+     <v-snackbar v-model="showAlert" top color="success">
+      Delete link is successfully
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </v-row>
 </template>
 
 <script>
 import { clipboard } from 'vue-clipboards';
 import { deleteLink } from '@/services/api';
-import { handle } from '@/utils/promise';
 
 import DetailLinkModal from '@/components/links/DetailLinkModal';
 import CreateNewLink from '@/components/links/CreateNewLink';
 import RemoveModal from '@/components/shares/RemoveModal';
-import SnackbarError from '@/components/shares/SnackbarError';
 export default {
   directives: { clipboard },
   components: {
     DetailLinkModal,
     RemoveModal,
     CreateNewLink,
-    SnackbarError,
   },
   props: {
     id: {
@@ -152,6 +137,10 @@ export default {
       type: String,
       default: '',
     },
+    domain: {
+      type: String,
+      default: '',
+    },
   },
   data: () => ({
     models: {
@@ -161,16 +150,11 @@ export default {
     modalEditLink: false,
     width: 0,
     showAlert: false,
-    form: {
-      destinationUrl: '',
-      title: '',
-      slashTag: '',
-      domain: 'Domain',
-      workspace: '',
-      domainId: '',
-    },
   }),
   computed: {
+    shorten() {
+      return `https://${this.domain}/${this.slashtag}`;
+    },
     createAt() {
       const today = Date.parse(new Date());
       const createdAt = Date.parse(this.date);
@@ -201,11 +185,9 @@ export default {
     }
   },
   methods: {
-    reload() {
-      window.location.reload();
-    },
     closeModalDetailLink() {
       this.models.isOpen = false;
+      this.$emit('closeModalAddNewLink');
     },
     closeRemoveModal() {
       this.isRemoveModal = false;
@@ -215,24 +197,28 @@ export default {
         this.width = window.innerWidth;
       }
     },
-    closeModalAddNewLink() {
+    closeModalEditNewLink() {
       this.modalEditLink = false;
+      this.$emit('closeModalAddNewLink');
     },
     async removeLink() {
-      this.loading = true;
-      const [resDeleteLink, deleteLinkError] = await handle(
-        deleteLink(this.token, this.id)
-      );
-      if (deleteLinkError) throw new Error('Could not fetch delete link');
-      const { status } = resDeleteLink.data;
-      if (status === 200) {
-        this.showAlert = true;
-        setTimeout(() => {
-          this.closeRemoveModal();
-          this.$emit('closeModalAddNewLink');
-          this.showAlert = false;
-          this.loading = false;
-        }, 1000);
+      try {
+        this.loading = true;
+        const resDeleteLink = await deleteLink(this.token, this.id);
+        const { status } = resDeleteLink.data;
+        if (status === 200) {
+          this.showAlert = true;
+          setTimeout(() => {
+            this.closeRemoveModal();
+            this.$emit('closeModalAddNewLink');
+            this.showAlert = false;
+            this.loading = false;
+          }, 1000);
+        }
+      } catch (error) {
+        const { status } = error.response.data;
+        if (status === 401) this.$router.push('/login');
+
       }
     },
     openModalUpdate() {
