@@ -1,6 +1,7 @@
-import colors from 'vuetify/es5/util/colors';
+/* eslint-disable nuxt/no-cjs-in-config */
+const { default: colors } = require('vuetify/es5/util/colors');
 
-export default {
+module.exports = {
   /*
    ** Nuxt target
    ** See https://nuxtjs.org/api/configuration-target
