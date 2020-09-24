@@ -20,9 +20,6 @@ build:
   script:
     - yarn install
     - yarn build
-  artifacts:
-    paths:
-      - .nuxt/dist
 
 include:
   - project: internal/ci
