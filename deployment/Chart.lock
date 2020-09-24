@@ -1,0 +1,6 @@
+dependencies:
+- name: mono
+  repository: https://charts.godmerch.com
+  version: 0.1.1
+digest: sha256:b77162688417ce2e604f6e2409a7b4fb24d5bd3ad978743417777095d3bebfb4
+generated: "2020-09-24T08:02:16.34043+07:00"
