@@ -1,5 +1,28 @@
+image: node:12-alpine
+
 stages:
   - package
+  - build
+
+before_script:
+  - export PATH=$HOME/.yarn/bin:$PATH
+
+cache:
+  key:
+    files:
+      - yarn.lock
+  paths:
+    - node_modules/
+    - $HOME/.yarn
+
+build:
+  stage: build
+  script:
+    - yarn install
+    - yarn build
+  artifacts:
+    paths:
+      - .nuxt/dist
 
 include:
   - project: internal/ci
@@ -7,3 +30,5 @@ include:
 
 dockerize:
   stage: package
+  only:
+    - master

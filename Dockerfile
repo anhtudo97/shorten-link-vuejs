@@ -15,11 +15,13 @@ ENV NODE_ENV=production API_URL=http://localhost:3000 API_KEY=Y2tfMzQ4ZGQxNzVhYj
 ENV HOST=0.0.0.0 PORT=3000
 
 COPY --from=builder /app /app
+RUN apk add --no-cache tini
 RUN chown -R node:node /app
 
 USER node
 WORKDIR /app
 EXPOSE 3000
-CMD ["npx", "nuxt", "start"]
+ENTRYPOINT ["tini","--","npx"]
+CMD ["nuxt", "start"]
 
 
