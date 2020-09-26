@@ -29,7 +29,7 @@
         v-model="search"
         :disabled="loading"
         :rules="[required('email'), emailFormat()]"
-        label="Searching member ..."
+        label="Enter email of user you want to invite"
         class="search-input mr-0 mr-sm-9"
         hide-details="auto"
         outlined

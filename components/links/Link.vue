@@ -14,7 +14,7 @@
               <div class="d-flex link-services">
                 <v-tooltip top nudge-left="10">
                   <template v-slot:activator="{ on, attrs }">
-                    <a :href="shorten">
+                    <a :href="`https://${shorten}`" target="_blank">
                       <img
                         :src="require('@/assets/icons/route-solid.svg')"
                         alt="route"
@@ -249,7 +249,6 @@ export default {
 
 <style lang="scss" scoped>
 .link-detail {
-  cursor: pointer;
   .border-radius-10 {
     border: 1px solid #e8e9ea;
     border-radius: 10px;
@@ -270,6 +269,7 @@ export default {
     }
   }
   .shortened-link {
+    cursor: pointer;
     font-weight: 600;
     font-size: 20px;
     line-height: 28px;
