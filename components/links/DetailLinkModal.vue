@@ -18,7 +18,7 @@
             <img
               class="img-favicon mr-3"
               :src="
-                `https://www.google.com/s2/favicons?domain=https://${shorten}`
+                `https://www.google.com/s2/favicons?domain=${destination}`
               "
               alt="favicon"
             />

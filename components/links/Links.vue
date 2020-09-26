@@ -7,17 +7,31 @@
             <div class="d-flex align-center flex-wrap">
               <div class="menu-text my-3 pr-4">{{ total }} Link(s)</div>
               <div class="menu-selection my-3 mr-4 d-flex">
-                <div class="d-flex align-center" @click="models.sortModal = true">
+                <div
+                  class="d-flex align-center"
+                  @click="models.sortModal = true"
+                >
                   <div class="selection-text pr-2">Sort by</div>
                   <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
               </div>
-              <div class="menu-selection my-3 d-flex">
-                <div class="d-flex align-center" @click="models.filterModal = true">
+              <div class="menu-selection my-3 mr-4 d-flex">
+                <div
+                  class="d-flex align-center"
+                  @click="models.filterModal = true"
+                >
                   <div class="selection-text pr-2">Filter by</div>
                   <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
               </div>
+              <v-text-field
+                v-model="name"
+                class="search-form"
+                label="Searching link ... "
+                outlined
+                dense
+                hide-details="auto"
+              ></v-text-field>
             </div>
           </v-col>
           <v-col cols="5" sm="4" lg="3" class="text-right">
@@ -25,14 +39,19 @@
               class="button-normal add-new-link"
               aria-label="New Link"
               @click.stop="models.modal = true"
-            >New Link</button>
+            >
+              New Link
+            </button>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
     <client-only>
       <div v-if="$fetchState.pending" class="d-flex justify-center">
-        <v-progress-circular indeterminate color="primary"></v-progress-circular>
+        <v-progress-circular
+          indeterminate
+          color="primary"
+        ></v-progress-circular>
       </div>
       <div v-else class="link__management">
         <transition-group name="slide-fade" mode="in-out" tag="section">
@@ -51,7 +70,11 @@
         <v-row v-if="links.length !== 0" justify="center">
           <v-col cols="8">
             <v-container class="max-width">
-              <v-pagination v-model="page" class="my-4" :length="totalPage"></v-pagination>
+              <v-pagination
+                v-model="page"
+                class="my-4"
+                :length="totalPage"
+              ></v-pagination>
             </v-container>
           </v-col>
         </v-row>
@@ -66,7 +89,10 @@
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
     <v-dialog v-model="models.sortModal" max-width="400">
-      <SortModal @updateSort="updateSort" @closeModal="models.sortModal = false" />
+      <SortModal
+        @updateSort="updateSort"
+        @closeModal="models.sortModal = false"
+      />
     </v-dialog>
     <v-dialog v-model="models.filterModal" max-width="700">
       <FilterModal @closeModal="models.filterModal = false" />
@@ -95,6 +121,7 @@ export default {
     });
   },
   data: () => ({
+    name: '',
     keySort: 'Sort By',
     models: {
       base: false,
@@ -122,6 +149,15 @@ export default {
       this.updateLinks({
         page: val,
       });
+    },
+    name(val) {
+      setTimeout(
+        this.updateLinks({
+          page: 1,
+          name: val,
+        }),
+        2000
+      );
     },
   },
   beforeMount() {
@@ -186,7 +222,7 @@ export default {
       border: 0.5px solid #dddddd;
       box-sizing: border-box;
       border-radius: 4px;
-      padding: 5px 20px;
+      padding: 7px 20px;
       cursor: pointer;
       img {
         align-self: center;
@@ -260,6 +296,10 @@ export default {
           }
         }
       }
+      .search-form::v-deep input,
+      .search-form::v-deep label {
+        font-size: 15px;
+      }
       .add-new-link {
         font-size: 16px;
         line-height: 22px;
@@ -292,6 +332,10 @@ export default {
           }
         }
       }
+      .search-form::v-deep input,
+      .search-form::v-deep label {
+        font-size: 14px;
+      }
       .add-new-link {
         padding: 5px 30px;
         font-size: 15px;
@@ -320,6 +364,10 @@ export default {
             line-height: 18px;
           }
         }
+      }
+      .search-form::v-deep input,
+      .search-form::v-deep label {
+        font-size: 13px;
       }
       .add-new-link {
         font-size: 15px;

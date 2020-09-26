@@ -69,10 +69,11 @@ export const getLinks = (
     sort = 'created_at',
     direction = 'DESC',
     domainIds = [],
-    workspaceIds = []
+    workspaceIds = [],
+    search = ''
 ) => {
     return api.get(
-        `/links?page=${page}&perPage=10&sort=${sort}&direction=${direction}&domainIds=${domainIds}&workspaceIds=${workspaceIds}`, {
+        `/links?page=${page}&perPage=10&sort=${sort}&direction=${direction}&domainIds=${domainIds}&workspaceIds=${workspaceIds}&search=${search}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

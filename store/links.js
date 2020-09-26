@@ -69,6 +69,7 @@ export const actions = {
         } = state
         const {
             page,
+            name = ''
         } = payload
         try {
             const resLink = await getLinks(
@@ -77,7 +78,8 @@ export const actions = {
                 sort,
                 direction,
                 domainSelected,
-                workspaceSelected
+                workspaceSelected,
+                name
             );
 
             const { status, data } = resLink.data;
