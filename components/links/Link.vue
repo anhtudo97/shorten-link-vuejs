@@ -95,7 +95,6 @@
       <CreateNewLink
         :id="id"
         :edit="true"
-        :form-link="formLink"
         @closeModalAddNewLink="closeModalEditNewLink"
       />
     </v-dialog>
