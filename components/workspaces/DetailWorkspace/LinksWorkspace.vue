@@ -6,13 +6,19 @@
           <v-col cols="7" sm="8" lg="9">
             <div class="d-flex align-center flex-wrap">
               <div class="menu-selection mr-4 my-3 d-flex">
-                <div class="d-flex align-center" @click="models.sortModal = true">
+                <div
+                  class="d-flex align-center"
+                  @click="models.sortModal = true"
+                >
                   <div class="selection-text pr-2">Sort by</div>
                   <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
               </div>
               <div class="menu-selection my-3 d-flex">
-                <div class="d-flex align-center" @click="models.filterModal = true">
+                <div
+                  class="d-flex align-center"
+                  @click="models.filterModal = true"
+                >
                   <div class="selection-text pr-2">Filter by</div>
                   <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
@@ -24,13 +30,20 @@
               class="button-normal add-new-link"
               aria-label="new link"
               @click.stop="models.modal = true"
-            >New Link</button>
+            >
+              New Link
+            </button>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
     <div class="link__management">
-      <transition-group name="slide-fade" mode="out-in" tag="section" class="py-0">
+      <transition-group
+        name="slide-fade"
+        mode="out-in"
+        tag="section"
+        class="py-0"
+      >
         <div v-for="link in links" :key="link.id">
           <Link
             :id="link.id"
@@ -39,13 +52,18 @@
             :clicks="link.clicks"
             :date="link.createdAt"
             :domain="link.domain.name"
+            @closeModalAddNewLink="closeModalAddNewLink"
           />
         </div>
       </transition-group>
       <v-row v-if="links.length !== 0" justify="center">
         <v-col cols="8">
           <v-container class="max-width">
-            <v-pagination v-model="page" class="my-4" :length="totalPage"></v-pagination>
+            <v-pagination
+              v-model="page"
+              class="my-4"
+              :length="totalPage"
+            ></v-pagination>
           </v-container>
         </v-col>
       </v-row>
@@ -59,10 +77,16 @@
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
     <v-dialog v-model="models.sortModal" max-width="400">
-      <SortModal @updateSort="updateSort" @closeModal="models.sortModal = false" />
+      <SortModal
+        @updateSort="updateSort"
+        @closeModal="models.sortModal = false"
+      />
     </v-dialog>
     <v-dialog v-model="models.filterModal" max-width="700">
-      <MemberModal @updateFilter="updateFilter" @closeModal="models.filterModal = false" />
+      <MemberModal
+        @updateFilter="updateFilter"
+        @closeModal="models.filterModal = false"
+      />
     </v-dialog>
   </div>
 </template>
@@ -74,8 +98,6 @@ import CreateNewLink from '@/components/links/CreateNewLink';
 import SortModal from '@/components/links/SortModal';
 import MemberModal from '@/components/links/MemberModal';
 
-import { getLinksWorkspaces } from '@/services/api';
-
 export default {
   components: {
     Link,
@@ -84,7 +106,6 @@ export default {
     MemberModal,
   },
   data: () => ({
-    keySort: 'Sort By',
     models: {
       base: false,
       modal: false,
@@ -93,15 +114,13 @@ export default {
     },
     width: 0,
     page: 1,
-    workspaceId: '',
-    token: '',
     domainSelected: [],
     userIdsSelected: [],
   }),
   computed: {
     ...mapGetters({
-      sort: 'links/getSort',
-      direction: 'links/getDirection',
+      sort: 'workspaces/getLinksSort',
+      direction: 'workspaces/getLinksDirection',
       links: 'workspaces/getLinksWorkspace',
       total: 'workspaces/getLinksTotalWorkspace',
       totalPage: 'workspaces/getLinksTotalPageWorkspace',
@@ -109,20 +128,8 @@ export default {
   },
   watch: {
     page(val) {
-      this.getListLinks(
-        val,
-        this.sort,
-        this.direction,
-        this.domainSelected,
-        this.userIdsSelected
-      );
+      this.setLinksWorkspace({ page: val, id: this.$route.params.id });
     },
-  },
-  created() {
-    this.workspaceId = this.$route.params.id;
-    if (typeof localStorage !== 'undefined' && localStorage.token) {
-      this.token = localStorage.token;
-    }
   },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);
@@ -133,70 +140,30 @@ export default {
   },
   methods: {
     ...mapMutations({
-      setSort: 'links/setSort',
-      setDirection: 'links/setDirection',
+      setLinksSort: 'workspaces/setLinksSort',
+      setLinksDirection: 'workspaces/setLinksDirection',
       setLinksTotalPageWorkspace: 'workspaces/setLinksTotalPageWorkspace',
+      setLinksDomainSelected: 'workspaces/setLinksDomainSelected',
+      setLinksUserIdsSelected: 'workspaces/setLinksUserIdsSelected',
     }),
     ...mapActions({
       setLinksWorkspace: 'workspaces/setLinksWorkspace',
       setLinksTotalWorkspace: 'workspaces/setLinksTotalWorkspace',
     }),
-    async getListLinks(page, sort, direction, domainSelected, userIdsSelected) {
-      const { token } = this;
-      try {
-        const resLink = await getLinksWorkspaces(
-          token,
-          this.$route.params.id,
-          page,
-          sort,
-          direction,
-          domainSelected,
-          userIdsSelected
-        );
-        const { status, data } = resLink.data;
-        if (status === 200) {
-          const { links, total, totalPage } = data;
-          this.setLinksTotalWorkspace(total);
-          this.setLinksWorkspace(links);
-          this.setLinksTotalPageWorkspace(totalPage);
-        }
-      } catch (error) {
-        const { status } = error.response;
-        if (status === 401) this.$router.push('/login');
-      }
-    },
     updateSort(sort, direction) {
-      this.setSort(sort);
-      this.setDirection(direction);
-      this.getListLinks(
-        this.page,
-        this.sort,
-        this.direction,
-        this.domainSelected,
-        this.userIdsSelected
-      );
+      this.setLinksSort(sort);
+      this.setLinksDirection(direction);
+      this.setLinksWorkspace({ page: this.page, id: this.$route.params.id });
       this.$forceUpdate();
     },
     updateFilter(domainSelected, userIdsSelected) {
-      this.domainSelected = domainSelected;
-      this.userIdsSelected = userIdsSelected;
-      this.getListLinks(
-        this.page,
-        this.sort,
-        this.direction,
-        this.domainSelected,
-        this.userIdsSelected
-      );
+      this.setLinksDomainSelected(domainSelected);
+      this.setLinksUserIdsSelected(userIdsSelected);
+      this.setLinksWorkspace({ page: this.page, id: this.$route.params.id });
     },
     closeModalAddNewLink() {
       this.models.modal = false;
-      this.getListLinks(
-        this.page,
-        this.sort,
-        this.direction,
-        this.domainSelected,
-        this.userIdsSelected
-      );
+      this.setLinksWorkspace({ page: this.page, id: this.$route.params.id });
     },
     handleResize() {
       if (process.client) {

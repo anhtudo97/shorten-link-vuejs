@@ -2,12 +2,7 @@
   <div class="workspace mb-5">
     <nuxt-link :to="`workspaces/${workspace.id}?name=${workspace.name}`">
       <v-row class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0">
-        <v-col
-          cols="7"
-          sm="8"
-          md="9"
-          class="workspace__name my-3"
-        >
+        <v-col cols="7" sm="8" md="9" class="workspace__name my-3">
           <div class="d-flex">
             <img
               class="img"
@@ -20,19 +15,6 @@
         <v-col cols="5" sm="4" md="3" class="text-md-center text-right workspace__content">
           <div class="date">{{ createdDate }}</div>
         </v-col>
-
-        <v-dialog
-          v-model="openModalDetailModal"
-          max-width="1000"
-          :fullscreen="width < 600 ? true : false"
-        >
-          <DetailWorkspaceModal
-            :workspace="workspace"
-            :joined="joined"
-            @closeModalDetailWorkspace="closeModalDetailWorkspace"
-          />
-        </v-dialog>
-
         <v-dialog
           v-model="openModalMemberModal"
           class="dialog"
@@ -71,12 +53,10 @@
 import { format } from 'date-fns';
 import { deleteWorkspace } from '@/services/api';
 
-import DetailWorkspaceModal from '@/components/workspaces/DetailWorkspaceModal';
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
 import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
 export default {
   components: {
-    DetailWorkspaceModal,
     ManagementMemberModal,
     AddLinksDomainsModal,
   },
@@ -91,7 +71,6 @@ export default {
     },
   },
   data: () => ({
-    openModalDetailModal: false,
     openModalMemberModal: false,
     openAddLinkDomainModal: false,
     isRemoveModal: false,
@@ -120,10 +99,6 @@ export default {
   methods: {
     reload() {
       window.location.reload();
-    },
-    closeModalDetailWorkspace() {
-      this.openModalDetailModal = false;
-      this.$emit('closeCreateNewWorkspace');
     },
     closeModalMembers() {
       this.openModalMemberModal = false;
@@ -164,7 +139,7 @@ export default {
 
 <style lang="scss" scoped>
 .workspace {
-  a{
+  a {
     color: #000;
   }
   cursor: pointer;

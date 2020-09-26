@@ -3,32 +3,60 @@
     <v-row class="detail-workspace__menu border-b">
       <v-col cols="12" sm="10" md="8" class="mx-auto py-2 py-md-3">
         <v-row class="align-center justify-space-between main-menu">
-          <v-col cols="12" sm="4" class="text-center text-sm-left">
-            <div class="menu-button">{{$route.query.name}}</div>
+          <v-col cols="12" sm="3" class="text-center text-sm-left">
+            <v-menu offset-x :close-on-content-click="true">
+              <template v-slot:activator="{ on, attrs }">
+                <div v-bind="attrs" class="menu-button" v-on="on">
+                  {{ $route.query.name }}
+                </div>
+              </template>
+
+              <v-list class="menu-list">
+                <v-list-item
+                  v-for="(item, index) in workspaces"
+                  :key="index"
+                  @click="changeWorkspace(item.id, item.name)"
+                >
+                  <v-list-item-title>{{ item.name }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </v-col>
           <v-col cols="12" sm="8" class="d-flex justify-sm-end justify-center">
             <button
-              :class="[tabName === 'Link'? 'active':'']"
+              :class="[tabName === 'Link' ? 'active' : '']"
               class="menu-text menu-text-left"
               aria-label="total workspace"
               @click="changeTab('Link')"
-            >{{ totalLink }} Link(s)</button>
+            >
+              {{ totalLink }} Link(s)
+            </button>
             <button
-              :class="[tabName === 'Domain'? 'active':'']"
+              :class="[tabName === 'Domain' ? 'active' : '']"
               class="menu-text menu-text-center"
               aria-label="total workspace joined"
               @click="changeTab('Domain')"
-            >{{ totalDomain }} Domain(s)</button>
+            >
+              {{ totalDomain }} Domain(s)
+            </button>
             <button
-              :class="[tabName === 'Member'? 'active':'']"
+              :class="[tabName === 'Member' ? 'active' : '']"
               class="menu-text menu-text-right"
               aria-label="total workspace joined"
               @click="changeTab('Member')"
-            >{{ totalMember }} Member(s)</button>
+            >
+              {{ totalMember }} Member(s)
+            </button>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
+    <client-only>
+      <infinite-loading
+        spinner="waveDots"
+        @infinite="infiniteScroll"
+      ></infinite-loading>
+    </client-only>
     <v-row>
       <v-col cols="12 py-0">
         <transition v-if="tabName === 'Link'" name="fade" mode="out-in">
@@ -45,11 +73,8 @@
   </div>
 </template>
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex';
-import {
-  getDomainsWorkspace,
-  getLinksWorkspaces,
-} from '@/services/api';
+import { mapGetters, mapActions } from 'vuex';
+import { getWorkspaces, getWorkspacesJoined } from '@/services/api';
 import Link from '@/components/workspaces/DetailWorkspace/LinksWorkspace';
 import Domain from '@/components/workspaces/DetailWorkspace/DomainsWorkspace';
 import Member from '@/components/workspaces/DetailWorkspace/MembersWorkspace';
@@ -60,15 +85,28 @@ export default {
     Member,
   },
   async fetch() {
-    if (typeof localStorage !== 'undefined' && localStorage.token) {
-      this.token = localStorage.token;
-    }
-    await Promise.all([this.getLinks(), this.getDomains(), this.getMembers()]);
+    await Promise.all([
+      this.setLinksWorkspace({
+        page: this.page,
+        id: this.$route.params.id,
+      }),
+      this.setDomainsWorkspace({
+        page: this.page,
+        id: this.$route.params.id,
+      }),
+      this.setMembersWorkspace({
+        page: this.page,
+        id: this.$route.params.id,
+      }),
+    ]);
   },
   data: () => ({
     page: 1,
     token: '',
     tabName: 'Link',
+    workspaces: [],
+    pageWorkspaces: 1,
+    pageWorkspacesJoined: 1,
   }),
   computed: {
     ...mapGetters({
@@ -77,59 +115,52 @@ export default {
       totalMember: 'workspaces/getMembersTotalWorkspace',
     }),
   },
+  created() {
+    if (typeof localStorage !== 'undefined' && localStorage.token) {
+      this.token = localStorage.token;
+    }
+  },
   methods: {
-    ...mapMutations({
-      // member
-      setMembersTotalWorkspace: 'workspaces/setMembersTotalWorkspace',
-      setMembersTotalPageWorkspace: 'workspaces/setMembersTotalPageWorkspace',
-      // domain
-      setDomainsTotalWorkspace: 'workspaces/setDomainsTotalWorkspace',
-      setDomainsWorkspace: 'workspaces/setDomainsWorkspace',
-      setDomainsTotalPageWorkspace: 'workspaces/setDomainsTotalPageWorkspace',
-      // link
-      setLinksTotalWorkspace: 'workspaces/setLinksTotalWorkspace',
-      setLinksWorkspace: 'workspaces/setLinksWorkspace',
-      setLinksTotalPageWorkspace: 'workspaces/setLinksTotalPageWorkspace',
-    }),
     ...mapActions({
       setMembersWorkspace: 'workspaces/setMembersWorkspace',
+      setDomainsWorkspace: 'workspaces/setDomainsWorkspace',
+      setLinksWorkspace: 'workspaces/setLinksWorkspace',
     }),
-    async getMembers() {
-      const { page } = this;
-      await this.setMembersWorkspace({ page, id: this.$route.params.id });
+    changeWorkspace(id, name) {
+      this.$router.push(`/workspaces/${id}?name=${name}`);
     },
-    async getDomains() {
+    async infiniteScroll($state) {
+      const { token, pageWorkspaces, pageWorkspacesJoined } = this;
       try {
-        const resDomains = await getDomainsWorkspace(
-          this.token,
-          this.$route.params.id,
-          this.page
+        const resWorkspaces = await getWorkspaces(token, pageWorkspaces);
+        const resWorkspacesJoined = await getWorkspacesJoined(
+          token,
+          pageWorkspacesJoined
         );
-        const { status, data } = resDomains.data;
-        if (status === 200) {
-          const { total, totalPage, domains } = data;
-          this.setDomainsTotalWorkspace(total);
-          this.setDomainsWorkspace(domains);
-          this.setDomainsTotalPageWorkspace(totalPage);
+
+        const statusWorkspaces = resWorkspaces.data.status;
+        const statusWorkspacesJoined = resWorkspacesJoined.data.status;
+
+        if (statusWorkspaces === 200) {
+          this.pageWorkspaces += 1;
+          const { workspaces } = resWorkspaces.data.data;
+          if (workspaces.length) {
+            this.workspaces.push(...workspaces);
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
         }
-      } catch (error) {
-        const { status } = error.response;
-        if (status === 401) this.$router.push('/login');
-      }
-    },
-    async getLinks() {
-      try {
-        const resLinks = await getLinksWorkspaces(
-          this.token,
-          this.$route.params.id,
-          this.page
-        );
-        const { status, data } = resLinks.data;
-        if (status === 200) {
-          const { total, totalPage, links } = data;
-          this.setLinksTotalWorkspace(total);
-          this.setLinksWorkspace(links);
-          this.setLinksTotalPageWorkspace(totalPage);
+        if (statusWorkspacesJoined === 200) {
+          this.pageWorkspacesJoined += 1;
+          const { invitations } = resWorkspacesJoined.data.data;
+          if (invitations.length) {
+            const workspaces = invitations.map((x) => x.workspace);
+            this.workspaces.push(...workspaces);
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
         }
       } catch (error) {
         const { status } = error.response;
@@ -183,6 +214,9 @@ export default {
       .menu-button {
         font-size: 18px;
         padding: 5px 0;
+      }
+      .menu-list::v-deep div {
+        font-size: 10px !important;
       }
     }
     @media (max-width: 960px) {

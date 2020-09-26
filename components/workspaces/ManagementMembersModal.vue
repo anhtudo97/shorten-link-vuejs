@@ -117,7 +117,6 @@ export default {
       this.token = localStorage.token;
     }
   },
-
   methods: {
     isExistUsers(id) {
       let check = false;
@@ -154,12 +153,12 @@ export default {
           this.loading = false;
         }, 1000);
       } catch (error) {
-        const { status, message } = error.response;
+        const { status, data } = error.response;
         if (status === 401) {
           this.$router.push('/login');
           return;
         }
-        this.messages = message;
+        this.messages = data.message;
         this.showAlertError = true;
         setTimeout(() => {
           this.showAlertError = false;

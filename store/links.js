@@ -1,7 +1,6 @@
 import { getLinks } from '@/services/api'
 
 export const state = () => ({
-    loading: false,
     sort: 'created_at',
     direction: 'DESC',
     links: [],

@@ -44,7 +44,7 @@
                   class="dialog-slash-tag"
                   outlined
                   dense
-                  :disabled="loading"
+                  :disabled="loading || edit"
                 />
               </v-col>
             </v-row>
@@ -82,22 +82,37 @@
                 :disabled="loading"
                 class="modal-mask__button"
                 @click="callAction"
-              >{{ edit ? 'Update Link' : 'Create link' }}</div>
+              >
+                {{ edit ? 'Update Link' : 'Create link' }}
+              </div>
             </div>
           </div>
           <div v-else class="d-flex justify-center">
-            <v-progress-circular indeterminate color="primary"></v-progress-circular>
+            <v-progress-circular
+              indeterminate
+              color="primary"
+            ></v-progress-circular>
           </div>
         </div>
       </transition>
     </div>
     <client-only>
-      <infinite-loading spinner="waveDots" @infinite="infiniteScroll"></infinite-loading>
+      <infinite-loading
+        spinner="waveDots"
+        @infinite="infiniteScroll"
+      ></infinite-loading>
     </client-only>
     <v-snackbar v-model="showAlert" top color="success">
       {{ message }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
     <v-snackbar v-model="showAlert403" top color="error">
@@ -109,7 +124,8 @@
           v-bind="attrs"
           aria-label="close"
           @click="showAlert403 = false"
-        >Close</v-btn>
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
   </v-list>
@@ -232,7 +248,7 @@ export default {
       ); // fragment locator
       this.valid = !!pattern.test(str);
       if (!str.includes('http') || !str.includes('https')) {
-        str = 'https://' + str;
+        str = 'http://' + str;
         this.destinationUrl = str;
       }
       if (this.valid) {
@@ -268,7 +284,8 @@ export default {
         const { data } = resSlashTag.data;
         this.checkSlash = data.exists;
       } catch (error) {
-        const { status } = error.response;
+        const { status, data } = error.response;
+        this.message = data.message;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -368,7 +385,7 @@ export default {
           );
           const { status, message } = resLink.data;
           this.message = message;
-          if (status === 201) {
+          if (status === 200) {
             this.showAlert = true;
             setTimeout(() => {
               this.destinationUrl = '';
@@ -378,12 +395,12 @@ export default {
             }, 1000);
           }
         } catch (error) {
-          const { status, message } = error.response;
+          const { status, data } = error.response;
           if (status === 401) {
             this.$router.push('/login');
             return;
           }
-          this.message = message;
+          this.message = data.message;
           this.showAlert403 = true;
           setTimeout(() => {
             this.loading = false;
@@ -391,6 +408,7 @@ export default {
         }
       } else {
         this.showAlert403 = true;
+        this.message = 'Slash tag is existed';
         setTimeout(() => {
           this.loading = false;
         }, 1000);
@@ -420,13 +438,14 @@ export default {
             }, 1000);
           }
         } catch (error) {
-          const { status, message } = error.response;
-          this.message = message;
+          const { status, data } = error.response;
+          this.message = data.message;
           if (status === 401) {
             this.$router.push('/login');
           }
         }
       } else {
+        this.message = 'Slash tag is existed';
         this.showAlert403 = true;
         setTimeout(() => {
           this.showAlert403 = false;

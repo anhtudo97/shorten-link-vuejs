@@ -4,7 +4,7 @@
       <div class="header d-flex align-center mx-0 mx-sm-6 mx-lg-8 mx-xl-10">
         <nuxt-link to="/">
           <div class="header__logo">
-            <img src="~/assets/logo.png" alt="logo" />
+            <img src="~/assets/logo_R.png" alt="logo" />
           </div>
         </nuxt-link>
         <ul>

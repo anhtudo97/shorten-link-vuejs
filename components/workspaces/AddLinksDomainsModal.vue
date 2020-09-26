@@ -24,28 +24,23 @@
         @click="addDomainsToWorkspace"
       >Add more</button>
     </v-row>
-    <transition-group name="slide-fade" mode="out-in">
-      <div
-        v-for="(item, index) in unjoined"
-        :key="`Domain__${index}`"
-        class="d-flex justify-space-between dialog-add-links-domains__undomain align-center"
-      >
-        <v-checkbox
-          v-model="domainSelected"
-          class="checkbox-member"
-          :disabled="loading"
-          :label="item.name"
-          :value="item.id"
-        ></v-checkbox>
+    <transition name="slide-fade" mode="in-out">
+      <div v-if="lazyLoading">
+        <div
+          v-for="(item, index) in unjoined"
+          :key="`Domain__${index}`"
+          class="d-flex justify-space-between dialog-add-links-domains__undomain align-center"
+        >
+          <v-checkbox
+            v-model="domainSelected"
+            class="checkbox-member"
+            :disabled="loading"
+            :label="item.name"
+            :value="item.id"
+          ></v-checkbox>
+        </div>
       </div>
-    </transition-group>
-    <v-row v-if="totalPageJoined >1" class="py-0 mx-0">
-      <v-col cols="12" class="py-0">
-        <v-container class="max-width py-0">
-          <v-pagination v-model="pageDomain" class="text-right" :length="totalPageDomains"></v-pagination>
-        </v-container>
-      </v-col>
-    </v-row>
+    </transition>
     <v-snackbar v-model="showAlert400" top color="success">
       Delete domain is successfully
       <template v-slot:action="{ attrs }">
@@ -80,6 +75,7 @@ export default {
     domains: [],
     domainSelected: [],
     loading: false,
+    lazyLoading: false,
     showAlert400: false,
     totalJoined: 1,
     totalDomains: 1,
@@ -89,32 +85,29 @@ export default {
   computed: {
     unjoined() {
       const names = [...this.domain_joined].map((x) => x.name);
-      return this.domains.filter((x) => {
+      const temp = [...this.domains].filter((x) => {
         if (!names.includes(x.name)) return x;
       });
-    },
-    domainIsSelected() {
-      return this.domainSelected;
-    },
-  },
-  watch: {
-    pageDomainWorkspace() {
-      this.getDomainsWorkspace();
-    },
-    pageDomain() {
-      this.getDomains();
+      return temp;
     },
   },
   created() {
+    this.delayLoading();
     if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
   },
   methods: {
+    delayLoading() {
+      this.lazyLoading = false;
+      setTimeout(() => {
+        this.lazyLoading = true;
+      }, 3000);
+    },
     async getDomains() {
       const { token, pageDomain } = this;
       try {
-        const resDomain = await getDomains(token, pageDomain);
+        const resDomain = await getDomains(token, pageDomain, false, 20);
         const statusDomain = resDomain.data.status;
 
         if (statusDomain === 200) {
@@ -136,7 +129,9 @@ export default {
         const resDomainWorkspace = await getDomainsWorkspace(
           token,
           this.$route.params.id,
-          pageDomainWorkspace
+          pageDomainWorkspace,
+          false,
+          20
         );
         const statusDomainWorkspace = resDomainWorkspace.data.status;
 
@@ -154,9 +149,6 @@ export default {
       }
     },
     async addDomainsToWorkspace() {
-      await this.addDomains();
-    },
-    async addDomains() {
       this.loading = true;
       try {
         const res = await addDomainsWorkspace(
@@ -188,6 +180,7 @@ export default {
 
 <style lang="scss" scoped>
 .dialog-add-links-domains {
+  height: 100%;
   font-family: Poppins, sans-serif;
   &__header {
     padding: 1vh 4vh;

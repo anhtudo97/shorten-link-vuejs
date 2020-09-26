@@ -164,9 +164,9 @@ export const createNewDomain = (token, name) => {
     );
 };
 
-export const getDomains = (token, page, withDefault = false) => {
+export const getDomains = (token, page, withDefault = false, perpage = 10) => {
     return api.get(
-        `/domains?page=${page}&perPage=10&withDefault=${withDefault}`, {
+        `/domains?page=${page}&perPage=${perpage}&withDefault=${withDefault}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -235,8 +235,8 @@ export const deleteWorkspace = (token, id) => {
     });
 };
 
-export const getDomainsWorkspace = (token, workspaceId, page, status = false) => {
-    return api.get(`/workspaces/${workspaceId}/domains?page=${page}&perPage=10&withDefault=${status}`, {
+export const getDomainsWorkspace = (token, workspaceId, page, status = false, perpage = 10) => {
+    return api.get(`/workspaces/${workspaceId}/domains?page=${page}&perPage=${perpage}&withDefault=${status}`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },

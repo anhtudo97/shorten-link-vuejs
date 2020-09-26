@@ -1,20 +1,16 @@
 <template>
-  <v-app>
-    <div id="header" class="relative">
-      <Header class="header-fixed" @openModal="openModal" />
-    </div>
-    <nuxt />
-    <Footer />
-    <v-navigation-drawer
-      v-model="drawer"
-      absolute
-      left
-      temporary
-      style="width: 60%;"
-    >
-      <Drawer />
-    </v-navigation-drawer>
-  </v-app>
+  <transition name="fade" mode="out-in">
+    <v-app v-if="loading">
+      <div id="header" class="relative">
+        <Header class="header-fixed" @openModal="openModal" />
+      </div>
+      <nuxt />
+      <Footer />
+      <v-navigation-drawer v-model="drawer" absolute left temporary style="width: 60%;">
+        <Drawer />
+      </v-navigation-drawer>
+    </v-app>
+  </transition>
 </template>
 
 <script>
@@ -29,10 +25,19 @@ export default {
   },
   data: () => ({
     drawer: false,
+    loading: false,
   }),
+  beforeMount() {
+    this.delayLoading();
+  },
   methods: {
     openModal() {
       this.drawer = !this.drawer;
+    },
+    delayLoading() {
+      setTimeout(() => {
+        this.loading = true;
+      }, 200);
     },
   },
 };

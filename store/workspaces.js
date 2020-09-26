@@ -1,12 +1,23 @@
-import { getMembersWorkspaces } from '@/services/api'
+import {
+    getWorkspaces,
+    getMembersWorkspaces,
+    getDomainsWorkspace,
+    getLinksWorkspaces
+} from '@/services/api'
 
 export const state = () => ({
     workspaces: [],
+    total: 0,
+    totalPage: 1,
     links: {
         links: [],
         page: 1,
         total: 0,
         totalPage: 1,
+        sort: 'created_at',
+        direction: 'DESC',
+        domainSelected: [],
+        userIdsSelected: []
     },
     domains: {
         domains: [],
@@ -26,6 +37,12 @@ export const getters = {
     getWorkspaces: (state) => {
         return state.workspaces;
     },
+    getTotal: (state) => {
+        return state.total;
+    },
+    getTotalPage: (state) => {
+        return state.totalPage;
+    },
     // links
     getLinksWorkspace: (state) => {
         return state.links.links;
@@ -35,6 +52,18 @@ export const getters = {
     },
     getLinksTotalWorkspace: (state) => {
         return state.links.total;
+    },
+    getLinksSort: (state) => {
+        return state.links.sort;
+    },
+    getLinksDirection: (state) => {
+        return state.links.direction;
+    },
+    getLinksDomainSelected: (state) => {
+        return state.links.domainSelected;
+    },
+    getLinksUserIdsSelected: (state) => {
+        return state.links.userIdsSelected;
     },
     getLinksTotalPageWorkspace: (state) => {
         return state.links.totalPage;
@@ -68,6 +97,15 @@ export const getters = {
 };
 
 export const mutations = {
+    setWorkspaces: (state, workspaces) => {
+        state.workspaces = workspaces
+    },
+    setTotalWorkspaces: (state, total) => {
+        state.total = total;
+    },
+    setTotalPageWorkspaces: (state, totalPage) => {
+        state.totalPage = totalPage;
+    },
     // link
     setLinksWorkspace: (state, links) => {
         state.links.links = links;
@@ -80,6 +118,18 @@ export const mutations = {
     },
     setLinksTotalPageWorkspace: (state, totalPage) => {
         state.links.totalPage = totalPage;
+    },
+    setLinksSort: (state, sort) => {
+        state.links.sort = sort
+    },
+    setLinksDirection: (state, direction) => {
+        state.links.direction = direction
+    },
+    setLinksDomainSelected: (state, domainSelected) => {
+        state.links.domainSelected = domainSelected
+    },
+    setLinksUserIdsSelected: (state, userIdsSelected) => {
+        state.links.userIdsSelected = userIdsSelected
     },
     // domain
     setDomainsWorkspace: (state, domains) => {
@@ -110,19 +160,76 @@ export const mutations = {
 };
 
 export const actions = {
-    // link
-    setLinksWorkspace({ commit }, links) {
-        commit('setLinksWorkspace', links)
+    async setWorkspaces({ commit }, payload) {
+        const token = localStorage.getItem('token')
+        const { page } = payload
+        try {
+            const resWorkspace = await getWorkspaces(token, page);
+            const { status, data } = resWorkspace.data;
+            if (status === 200) {
+                const { workspaces, total, totalPage } = data;
+                commit('setWorkspaces', workspaces)
+                commit('setTotalWorkspaces', total)
+                commit('setTotalPageWorkspaces', totalPage)
+            }
+        } catch (error) {
+            const { status } = error.response;
+            if (status === 401) this.$router.push('/login');
+        }
     },
-    setLinksTotalWorkspace({ commit }, total) {
-        commit('setLinksTotalWorkspace', total)
+    // link
+    async setLinksWorkspace({ commit, state }, payload) {
+        const token = localStorage.getItem('token')
+        const {
+            sort,
+            direction,
+            domainSelected,
+            userIdsSelected
+        } = state.links
+        const { page, id } = payload
+        try {
+            const resLinks = await getLinksWorkspaces(
+                token,
+                id,
+                page,
+                sort,
+                direction,
+                domainSelected,
+                userIdsSelected
+            );
+            const { status, data } = resLinks.data;
+            if (status === 200) {
+                const { total, totalPage, links } = data;
+                commit('setLinksWorkspace', links)
+                commit('setLinksTotalWorkspace', total)
+                commit('setLinksTotalPageWorkspace', totalPage)
+            }
+        } catch (error) {
+            const { status } = error.response;
+            if (status === 401) this.$router.push('/login');
+        }
     },
     // domain
-    setDomainsWorkspace({ commit }, domains) {
-        commit('setDomainsWorkspace', domains)
-    },
-    setDomainsTotalWorkspace({ commit }, total) {
-        commit('setDomainsTotalWorkspace', total)
+    async setDomainsWorkspace({ commit }, payload) {
+        const token = localStorage.getItem('token')
+        const { page, id } = payload
+        try {
+            const resDomains = await getDomainsWorkspace(
+                token,
+                id,
+                page
+            );
+            const { status, data } = resDomains.data;
+            if (status === 200) {
+                const { total, totalPage, domains } = data;
+                commit('setDomainsWorkspace', domains)
+                commit('setDomainsTotalWorkspace', total)
+                commit('setDomainsTotalPageWorkspace', totalPage)
+            }
+        } catch (error) {
+            const { status } = error.response;
+            if (status === 401) this.$router.push('/login');
+        }
     },
     // member
     async setMembersWorkspace({ commit }, payload) {
@@ -135,7 +242,6 @@ export const actions = {
                 page
             );
             const { status, data } = resDomainWorkspace.data;
-
             if (status === 200) {
                 const { members, total, totalPage } = data;
                 commit('setMembersWorkspace', members)
@@ -148,8 +254,5 @@ export const actions = {
                 this.$router.push('/login');
             }
         }
-    },
-    setMembersTotalWorkspace({ commit }, total) {
-        commit('setMembersTotalWorkspace', total);
     },
 }

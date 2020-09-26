@@ -19,13 +19,13 @@
       >
         <v-row>
           <v-col cols="12" sm="6" class="signup__left pr-0 pr-sm-10">
-            <div class="signup-header d-flex align-center">
+            <div class="signup-header text-center">
               <nuxt-link to="/">
                 <div class="header__logo mr-4">
-                  <img src="~/assets/logo.png" alt="logo"/>
+                  <img src="~/assets/logo_RELINKS.png" alt="logo" />
                 </div>
               </nuxt-link>
-              <div class="signup-title">Sign up</div>
+              <div class="signup-title">Create a new account</div>
             </div>
             <v-text-field
               v-model="form.name"
@@ -52,8 +52,7 @@
               :rules="[(v) => !!v || 'Password is required']"
             ></v-text-field>
             <div class="mt-4 mt-sm-6">
-              <div class="gender-title">Gender</div>
-              <v-radio-group v-model="form.gender" :mandatory="false" dense hide-details="auto">
+              <v-radio-group v-model="form.gender" :mandatory="false" dense hide-details="auto" row>
                 <v-radio class="gender-input" label="Male" value="M"></v-radio>
                 <v-radio class="gender-input" label="Female" value="F"></v-radio>
               </v-radio-group>
@@ -90,6 +89,12 @@
               aria-label="register"
               @click.prevent="register"
             >Register</button>
+            <div class="login-tip text-center mt-5">
+              Already have an account?
+              <nuxt-link to="/login">
+                <span>Login</span>
+              </nuxt-link>
+            </div>
           </v-col>
           <v-col
             cols="12"
@@ -99,11 +104,6 @@
             <figure>
               <img src="@/assets/signup-image.jpg" alt="sing up image" />
             </figure>
-            <nuxt-link to="/login">
-              <div class="create-account text-center">
-                <div>I am already member</div>
-              </div>
-            </nuxt-link>
           </v-col>
         </v-row>
       </v-col>
@@ -170,7 +170,7 @@ export default {
 
 <style lang="scss" scoped>
 .signup {
-  font-family: Poppins, sans-serif;
+  font-family: Montserrat, sans-serif;
   &__block {
     margin: 150px 0;
     padding: 50px 100px;
@@ -191,21 +191,29 @@ export default {
     .signup-header {
       img {
         object-fit: cover;
-        width: 60px;
+        width: 45%;
         height: auto;
       }
       .signup-title {
         line-height: 1.66;
         margin: 0;
         padding: 0;
-        font-weight: bold;
+        font-weight: 400;
         color: #222;
-        font-size: 36px;
+        font-size: 22px;
       }
     }
     .signup-button {
-      padding: 7px 7vh;
+      width: 100%;
+      padding: 7px 0;
       font-weight: 500;
+    }
+    .login-tip {
+      font-size: 14px;
+      span {
+        font-weight: 500;
+        color: #2281c2;
+      }
     }
   }
   @media screen and (max-width: 1368px) {
@@ -220,10 +228,10 @@ export default {
     &__left {
       .signup-header {
         img {
-          width: 55px;
+          width: 40%;
         }
         .signup-title {
-          font-size: 34px;
+          font-size: 20px;
         }
       }
       .gender-title {
@@ -242,8 +250,10 @@ export default {
         font-size: 15px;
       }
       .signup-button {
-        padding: 7px 7vh;
         font-size: 15px;
+      }
+      .login-tip {
+        font-size: 13px;
       }
     }
   }
@@ -260,10 +270,10 @@ export default {
     &__left {
       .signup-header {
         img {
-          width: 50px;
+          width: 38%;
         }
         .signup-title {
-          font-size: 32px;
+          font-size: 18px;
         }
       }
       .gender-title {
@@ -279,11 +289,14 @@ export default {
       .gender-input::v-deep input,
       .input-date::v-deep label,
       .input-date::v-deep input {
-        font-size: 14px;
+        font-size: 13px;
       }
       .signup-button {
-        padding: 5px 6.5vh;
+        padding: 5px 0;
         font-size: 14px;
+      }
+      .login-tip {
+        font-size: 12px;
       }
     }
   }
@@ -296,14 +309,17 @@ export default {
       .create-account {
         font-size: 13px;
       }
+      img {
+        display: none;
+      }
     }
     &__left {
       .signup-header {
         img {
-          width: 50px;
+          width: 35%;
         }
         .signup-title {
-          font-size: 30px;
+          font-size: 16px;
         }
       }
       .gender-title {
@@ -322,7 +338,7 @@ export default {
         font-size: 13px;
       }
       .signup-button {
-        padding: 5px 6vh;
+        padding: 5px 0;
         font-size: 13px;
       }
     }

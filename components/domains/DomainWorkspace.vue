@@ -1,5 +1,5 @@
 <template>
-  <v-row class="domain-detail mt-5 mt-md-0">
+  <v-row class="domain-detail mb-5 mb-md-0">
     <v-col cols="12" sm="10" md="8" class="mx-auto" @click.stop="models.isOpen = true">
       <v-row class="align-center border-radius-10 mx-0 py-3">
         <v-col cols="12" sm="8" md="8" lg="9">
@@ -75,7 +75,7 @@ export default {
         );
 
         const { status } = res.data;
-        if (status === 204) {
+        if (status === 200) {
           this.showAlert400 = true;
           setTimeout(() => {
             this.domainSelected = [];
@@ -155,6 +155,11 @@ export default {
     .added {
       font-size: 15px;
     }
+    .text-left {
+      .btn-remove {
+        left: 30%;
+      }
+    }
   }
   @media (max-width: 960px) {
     .domain {
@@ -164,6 +169,11 @@ export default {
     .added {
       font-size: 14px;
     }
+    .text-left {
+      .btn-remove {
+        left: 20%;
+      }
+    }
   }
   @media (max-width: 600px) {
     .domain {
@@ -172,6 +182,11 @@ export default {
     }
     .added {
       font-size: 12px;
+    }
+    .text-left {
+      .btn-remove {
+        left: 10%;
+      }
     }
   }
 }

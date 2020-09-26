@@ -74,9 +74,9 @@
       />
     </v-dialog>
     <v-snackbar v-model="showAlert" top color="success">
-      Delete domains is successfully
+      {{ message }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert=false">Close</v-btn>
       </template>
     </v-snackbar>
   </v-list>
@@ -121,6 +121,7 @@ export default {
     showAlert: false,
     loading: false,
     dnsVerified: false,
+    message: ''
   }),
   created() {
     if (typeof localStorage !== 'undefined' && localStorage.token) {
@@ -132,8 +133,9 @@ export default {
       this.loading = true;
       try {
         const resDeleteDomain = await deleteDomain(this.token, this.domain.id);
-        const { status } = resDeleteDomain.data;
+        const { status, message } = resDeleteDomain.data;
         if (status === 200) {
+          this.message = message
           this.showAlert = true;
           setTimeout(() => {
             this.closeRemoveModal();
@@ -142,7 +144,8 @@ export default {
           }, 1000);
         }
       } catch (error) {
-        const { status } = error.response;
+        const { status, data } = error.response;
+        this.message = data.message
         if (status === 401) {
           this.$router.push('/login');
         }

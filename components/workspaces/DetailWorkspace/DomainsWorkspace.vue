@@ -1,32 +1,15 @@
 <template>
   <div class="domain">
-    <v-row class="domain__menu">
-      <v-col cols="12" sm="10" md="8" class="mx-auto py-0 py-md-3">
-        <v-row class="align-center">
-          <v-col cols="6" sm="7" md="8" lg="9">
-            <div class="d-flex align-center">
-              <div class="domain-count pr-4">{{ total }} Domain(s)</div>
-            </div>
-          </v-col>
-          <v-col cols="6" sm="5" md="4" lg="3" class="text-right">
-            <button
-              class="button-normal add-new-domain"
-              aria-label="New Domain"
-              @click.stop="openAddLinkDomainModal = true"
-            >Add more domain</button>
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-row>
     <div class="domain__diviner"></div>
     <v-row class="domain__sub-menu">
       <v-col cols="10" md="8" class="mx-auto py-0">
-        <v-row class="d-flex align-center py-3">
-          <v-col cols="7" sm="9" lg="10">
+        <v-row class="d-flex align-center">
+          <v-col cols="7" sm="9" lg="10" class="d-flex align-center">
             <div class="domains pr-4">Domain</div>
-          </v-col>
-          <v-col cols="5" sm="3" lg="2" class="text-center">
-            <div class="added">Added on</div>
+            <div class="d-flex align-center hover-btn">
+              <button class="plus-button" @click.stop="openAddLinkDomainModal = true"></button>
+              <div class="ml-4 add-more-domain">Add more domain</div>
+            </div>
           </v-col>
         </v-row>
       </v-col>
@@ -59,11 +42,10 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
+
 import Domain from '@/components/domains/DomainWorkspace';
 import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
-
-import { getDomainsWorkspace } from '@/services/api';
 
 export default {
   components: {
@@ -86,7 +68,7 @@ export default {
   },
   watch: {
     page(val) {
-      this.getDomainsWorkspace(val);
+      this.setDomainsWorkspace({ page: val, id: this.$route.params.id });
     },
   },
   created() {
@@ -102,42 +84,15 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
-    ...mapMutations({
-      setDomainsTotalPageWorkspace: 'workspaces/setDomainsTotalPageWorkspace',
-    }),
     ...mapActions({
       setDomainsWorkspace: 'workspaces/setDomainsWorkspace',
-      setDomainsTotalWorkspace: 'workspaces/setDomainsTotalWorkspace',
     }),
     closeModalAddLinksDomain() {
       this.openAddLinkDomainModal = false;
-      this.getDomainsWorkspace();
+      this.setDomainsWorkspace({ page: this.page, id: this.$route.params.id });
     },
     updateDomains() {
-      this.getDomainsWorkspace();
-    },
-    async getDomainsWorkspace() {
-      const { token, page } = this;
-      try {
-        const resDomainWorkspace = await getDomainsWorkspace(
-          token,
-          this.$route.params.id,
-          page
-        );
-        const { status, data } = resDomainWorkspace.data;
-
-        if (status === 200) {
-          const { domains, total, totalPage } = data;
-          this.setDomainsWorkspace(domains);
-          this.setDomainsTotalWorkspace(total);
-          this.setDomainsTotalPageWorkspace(totalPage);
-        }
-      } catch (error) {
-        const { status } = error.response;
-        if (status === 401) {
-          this.$router.push('/login');
-        }
-      }
+      this.setDomainsWorkspace({ page: this.page, id: this.$route.params.id });
     },
     handleResize() {
       if (process.client) {
@@ -151,58 +106,53 @@ export default {
 <style lang="scss" scoped>
 .domain {
   font-family: Poppins, sans-serif;
-  &__menu {
-    .domain-count {
-      font-size: 18px;
-      line-height: 24px;
-      letter-spacing: 0.2px;
-    }
-    .add-new-domain {
-      font-weight: 500;
-      padding: 7px 35px;
-      font-size: 16px;
-      line-height: 24px;
-    }
-    @media (max-width: 1366px) {
-      .domain-count {
-        font-size: 17px;
-        line-height: 22px;
-      }
-      .add-new-domain {
-        font-size: 15px;
-        line-height: 22px;
-      }
-    }
-    @media (max-width: 960px) {
-      .domain-count {
-        font-size: 16px;
-        line-height: 20px;
-      }
-      .add-new-domain {
-        font-size: 14px;
-        line-height: 20px;
-      }
-    }
-    @media (max-width: 600px) {
-      .domain-count {
-        font-size: 14px;
-        line-height: 18px;
-      }
-
-      .add-new-domain {
-        font-size: 12px;
-        line-height: 20px;
-      }
-    }
-  }
   &__sub-menu {
     .domains,
     .added {
       font-weight: 600;
-      font-size: 12px;
+      font-size: 13px;
     }
-    @media (max-width: 960px) {
-      display: none;
+    .hover-btn {
+      .plus-button {
+        border: 2px solid #3c64b1;
+        background-color: #fff;
+        font-size: 16px;
+        height: 2em;
+        width: 2em;
+        border-radius: 999px;
+        position: relative;
+        &:after,
+        &:before {
+          content: '';
+          display: block;
+          background-color: #3c64b1;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+        &:before {
+          height: 1.2em;
+          width: 4px;
+          border-radius: 100px;
+        }
+        &:after {
+          height: 4px;
+          width: 1.2em;
+          border-radius: 100px;
+        }
+      }
+      .add-more-domain {
+        font-size: 13px;
+        font-weight: 500;
+        transition: 0.3s all ease-in-out;
+        opacity: 0;
+      }
+      &:hover {
+        .add-more-domain {
+          opacity: 1;
+        }
+      }
     }
   }
   &__diviner {
@@ -215,5 +165,8 @@ export default {
       display: none;
     }
   }
+}
+.dialog::v-deep .v-dialog {
+  background-color: #fff;
 }
 </style>

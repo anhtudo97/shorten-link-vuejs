@@ -80,7 +80,11 @@
       max-width="900"
       :fullscreen="width < 600 ? true : false"
     >
-      <DetailLinkModal :id="id" :slashtag="slashtag" @closeModalDetailLink="closeModalDetailLink" />
+      <DetailLinkModal
+        :id="id"
+        :slashtag="slashtag"
+        @closeModalDetailLink="closeModalDetailLink"
+      />
     </v-dialog>
     <v-dialog
       v-model="modalEditLink"
@@ -88,15 +92,31 @@
       max-width="900"
       :fullscreen="width < 600 ? true : false"
     >
-      <CreateNewLink :id="id" :edit="true" @closeModalEditNewLink="closeModalEditNewLink" />
+      <CreateNewLink
+        :id="id"
+        :edit="true"
+        :form-link="formLink"
+        @closeModalAddNewLink="closeModalEditNewLink"
+      />
     </v-dialog>
     <v-dialog v-model="isRemoveModal" persistent width="500">
-      <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
+      <RemoveModal
+        name="link"
+        @closeRemoveModal="closeRemoveModal"
+        @removeElement="removeLink"
+      />
     </v-dialog>
     <v-snackbar v-model="showAlert" top color="success">
       Delete link is successfully
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
   </v-row>
@@ -153,7 +173,7 @@ export default {
   }),
   computed: {
     shorten() {
-      return `https://${this.domain}/${this.slashtag}`;
+      return `${this.domain}/${this.slashtag}`;
     },
     createAt() {
       const today = Date.parse(new Date());
