@@ -39,6 +39,15 @@ const api = axios.create({
 //   return client.post('domain/domains', { token, name });
 // };
 
+// shorten without sign in
+export const shortendLink = (
+    destination
+) => {
+    return api.post('shorten', {
+        destination,
+    });
+};
+
 export const createNewUser = (
     fullName,
     email,
