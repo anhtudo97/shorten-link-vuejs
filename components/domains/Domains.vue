@@ -62,30 +62,33 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
 import Domain from '@/components/domains/Domain';
 import CreateNewDomain from '@/components/domains/CreateNewDomain';
-import { getDomains } from '@/services/api';
 export default {
   components: {
     Domain,
     CreateNewDomain,
   },
   fetchOnServer: false,
-  async fetch() {
-    await this.getDomains(1);
+  fetch() {
+    this.setDomains({ page: this.page });
   },
   data: () => ({
     openModalCreateNewDomain: false,
     width: 0,
-    domains: [],
     page: 1,
-    token: '',
-    total: 0,
-    totalPage: 1,
   }),
+  computed: {
+    ...mapGetters({
+      domains: 'domains/getDomains',
+      total: 'domains/getTotal',
+      totalPage: 'domains/getTotalPage',
+    }),
+  },
   watch: {
     page(val) {
-      this.getDomains(val);
+      this.setDomains({ page: val });
     },
   },
   created() {
@@ -101,28 +104,12 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
+    ...mapActions({
+      setDomains: 'domains/setDomains',
+    }),
     closeModalCreateNewDomain() {
       this.openModalCreateNewDomain = false;
-      this.getDomains(1);
-    },
-    async getDomains(page = 1) {
-      const { token } = this;
-      try {
-        const resDomain = await getDomains(token, page);
-        const { status, data } = resDomain.data;
-        if (status === 200) {
-          const { domains, total, totalPage } = data;
-          this.total = total;
-          this.totalPage = totalPage;
-          this.domains = domains;
-        }
-      } catch (error) {
-        const { status } = error.response.data;
-        if (status === 401) {
-          this.$router.push('/login');
-
-        }
-      }
+      this.setDomains({ page: this.page });
     },
     handleResize() {
       if (process.client) {

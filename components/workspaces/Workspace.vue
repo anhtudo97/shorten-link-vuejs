@@ -1,62 +1,45 @@
 <template>
   <div class="workspace mb-5">
-    <v-row class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0">
-      <v-col
-        cols="7"
-        sm="8"
-        md="9"
-        class="workspace__name my-3"
-        @click.stop="openModalDetailModal = true"
-      >
-        <div class="d-flex">
-          <img
-            class="img"
-            src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
-            alt="avatar"
+    <nuxt-link :to="`workspaces/${workspace.id}?name=${workspace.name}`">
+      <v-row class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0">
+        <v-col cols="7" sm="8" md="9" class="workspace__name my-3">
+          <div class="d-flex">
+            <img
+              class="img"
+              src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
+              alt="avatar"
+            />
+            <div class="name-text px-5 text-overflow-hidden">{{ workspace.name }}</div>
+          </div>
+        </v-col>
+        <v-col cols="5" sm="4" md="3" class="text-md-center text-right workspace__content">
+          <div class="date">{{ createdDate }}</div>
+        </v-col>
+        <v-dialog
+          v-model="openModalMemberModal"
+          class="dialog"
+          max-width="650"
+          :fullscreen="width < 600 ? true : false"
+        >
+          <ManagementMemberModal :workspace="workspace" @closeModalMembers="closeModalMembers" />
+        </v-dialog>
+        <v-dialog v-model="isRemoveModal" persistent max-width="500">
+          <RemoveModal
+            name="workspace"
+            :loading="loading"
+            @closeRemoveModal="closeRemoveModal"
+            @removeElement="removeWorkspace"
           />
-          <div class="name-text px-5 text-overflow-hidden">{{ workspace.name }}</div>
-        </div>
-      </v-col>
-      <v-col cols="5" sm="4" md="3" class="text-md-center text-right workspace__content">
-        <div class="date">{{ createdDate }}</div>
-      </v-col>
-
-      <v-dialog
-        v-model="openModalDetailModal"
-        max-width="1000"
-        :fullscreen="width < 600 ? true : false"
-      >
-        <DetailWorkspaceModal
-          :workspace="workspace"
-          :joined="joined"
-          @closeModalDetailWorkspace="closeModalDetailWorkspace"
-        />
-      </v-dialog>
-
-      <v-dialog
-        v-model="openModalMemberModal"
-        class="dialog"
-        max-width="650"
-        :fullscreen="width < 600 ? true : false"
-      >
-        <ManagementMemberModal :workspace="workspace" @closeModalMembers="closeModalMembers" />
-      </v-dialog>
-      <v-dialog v-model="isRemoveModal" persistent max-width="500">
-        <RemoveModal
-          name="workspace"
-          :loading="loading"
-          @closeRemoveModal="closeRemoveModal"
-          @removeElement="removeWorkspace"
-        />
-      </v-dialog>
-      <v-dialog
-        v-model="openAddLinkDomainModal"
-        max-width="700"
-        :fullscreen="width < 600 ? true : false"
-      >
-        <AddLinksDomainsModal @closeModalAddLinksDomain="closeModalAddLinksDomain" />
-      </v-dialog>
-    </v-row>
+        </v-dialog>
+        <v-dialog
+          v-model="openAddLinkDomainModal"
+          max-width="700"
+          :fullscreen="width < 600 ? true : false"
+        >
+          <AddLinksDomainsModal @closeModalAddLinksDomain="closeModalAddLinksDomain" />
+        </v-dialog>
+      </v-row>
+    </nuxt-link>
     <v-snackbar v-model="showAlert" top color="success">
       Delete workspace is successfully
       <template v-slot:action="{ attrs }">
@@ -70,12 +53,10 @@
 import { format } from 'date-fns';
 import { deleteWorkspace } from '@/services/api';
 
-import DetailWorkspaceModal from '@/components/workspaces/DetailWorkspaceModal';
 import ManagementMemberModal from '@/components/workspaces/ManagementMembersModal';
 import AddLinksDomainsModal from '@/components/workspaces/AddLinksDomainsModal';
 export default {
   components: {
-    DetailWorkspaceModal,
     ManagementMemberModal,
     AddLinksDomainsModal,
   },
@@ -90,7 +71,6 @@ export default {
     },
   },
   data: () => ({
-    openModalDetailModal: false,
     openModalMemberModal: false,
     openAddLinkDomainModal: false,
     isRemoveModal: false,
@@ -120,10 +100,6 @@ export default {
     reload() {
       window.location.reload();
     },
-    closeModalDetailWorkspace() {
-      this.openModalDetailModal = false;
-      this.$emit('closeCreateNewWorkspace');
-    },
     closeModalMembers() {
       this.openModalMemberModal = false;
     },
@@ -148,7 +124,7 @@ export default {
           }, 1000);
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -163,6 +139,9 @@ export default {
 
 <style lang="scss" scoped>
 .workspace {
+  a {
+    color: #000;
+  }
   cursor: pointer;
   .border-radius-10 {
     border: 1px solid #e8e9ea;
@@ -203,16 +182,6 @@ export default {
       }
     }
   }
-  // &:hover {
-  //   .workspace__content {
-  //     .date {
-  //       opacity: 0;
-  //     }
-  //     .modify {
-  //       opacity: 1;
-  //     }
-  //   }
-  // }
   .dialog-detail-600::v-deep .v-dialog {
     display: block;
     @media screen and (min-width: 600px) {

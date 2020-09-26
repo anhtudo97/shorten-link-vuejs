@@ -1,22 +1,31 @@
 export const state = () => ({
-  notifications: [
-    {
-      id: 1,
-      name: 'Workspace name',
-      Workspace_id: 1432,
-      createdAt: '2020-08-26T10:10:25.704675+07:00',
-    },
-    {
-      id: 2,
-      name: 'Workspace name 2',
-      Workspace_id: 123,
-      createdAt: '2020-08-27T10:10:25.704675+07:00',
-    },
-  ],
+    notifications: [],
+    total: 0
 });
 
 export const getters = {
-  getNotifications: (state) => {
-    return state.notifications;
-  },
+    getNotifications: (state) => {
+        return state.notifications;
+    },
+    getTotal: (state) => {
+        return state.total;
+    },
 };
+
+export const mutations = {
+    setNotifications: (state, notifications) => {
+        state.notifications = notifications;
+    },
+    setTotal: (state, total) => {
+        state.total = total;
+    },
+};
+
+export const actions = {
+    setNotifications({ commit }, notifications) {
+        commit('setNotifications', notifications)
+    },
+    setTotal({ commit }, total) {
+        commit('setTotal', total)
+    },
+}

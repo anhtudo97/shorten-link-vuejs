@@ -95,9 +95,6 @@ export default {
     }
   },
   methods: {
-    reload() {
-      window.location.reload();
-    },
     callaction() {
       if (this.edit) {
         this.updateWorkspace();
@@ -114,12 +111,11 @@ export default {
           this.showAlert = true;
           setTimeout(() => {
             this.$emit('closeCreateNewWorkspace');
-            this.reload();
             this.loading = false;
           }, 2000);
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
           return;
@@ -151,7 +147,7 @@ export default {
           }, 2000);
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
         return;
       } finally {

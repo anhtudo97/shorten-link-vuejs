@@ -1,12 +1,11 @@
 <template>
   <div class="link">
-    <v-row class="link__menu mx-0">
+    <v-row class="link__menu">
       <v-col cols="12" sm="10" md="8" class="mx-auto py-3">
         <v-row class="align-center">
           <v-col cols="7" sm="8" lg="9">
             <div class="d-flex align-center flex-wrap">
-              <div class="menu-text my-3 pr-4">{{ total }} Link(s)</div>
-              <div class="menu-selection my-3 mr-4 d-flex">
+              <div class="menu-selection mr-4 my-3 d-flex">
                 <div
                   class="d-flex align-center"
                   @click="models.sortModal = true"
@@ -15,7 +14,7 @@
                   <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
               </div>
-              <div class="menu-selection my-3 mr-4 d-flex">
+              <div class="menu-selection my-3 d-flex">
                 <div
                   class="d-flex align-center"
                   @click="models.filterModal = true"
@@ -24,20 +23,12 @@
                   <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
               </div>
-              <v-text-field
-                v-model="name"
-                class="search-form"
-                label="Searching link ... "
-                outlined
-                dense
-                hide-details="auto"
-              ></v-text-field>
             </div>
           </v-col>
           <v-col cols="5" sm="4" lg="3" class="text-right">
             <button
               class="button-normal add-new-link"
-              aria-label="New Link"
+              aria-label="new link"
               @click.stop="models.modal = true"
             >
               New Link
@@ -46,40 +37,37 @@
         </v-row>
       </v-col>
     </v-row>
-    <client-only>
-      <div v-if="$fetchState.pending" class="d-flex justify-center">
-        <v-progress-circular
-          indeterminate
-          color="primary"
-        ></v-progress-circular>
-      </div>
-      <div v-else class="link__management">
-        <transition-group name="slide-fade" mode="in-out" tag="section">
-          <div v-for="link in links" :key="link.id">
-            <Link
-              :id="link.id"
-              :link="link.destination"
-              :slashtag="link.slashtag"
-              :clicks="link.clicks"
-              :date="link.createdAt"
-              :domain="link.domain.name"
-              @closeModalAddNewLink="closeModalAddNewLink"
-            />
-          </div>
-        </transition-group>
-        <v-row v-if="links.length !== 0" justify="center">
-          <v-col cols="8">
-            <v-container class="max-width">
-              <v-pagination
-                v-model="page"
-                class="my-4"
-                :length="totalPage"
-              ></v-pagination>
-            </v-container>
-          </v-col>
-        </v-row>
-      </div>
-    </client-only>
+    <div class="link__management">
+      <transition-group
+        name="slide-fade"
+        mode="out-in"
+        tag="section"
+        class="py-0"
+      >
+        <div v-for="link in links" :key="link.id">
+          <Link
+            :id="link.id"
+            :link="link.destination"
+            :slashtag="link.slashtag"
+            :clicks="link.clicks"
+            :date="link.createdAt"
+            :domain="link.domain.name"
+            @closeModalAddNewLink="closeModalAddNewLink"
+          />
+        </div>
+      </transition-group>
+      <v-row v-if="links.length !== 0" justify="center">
+        <v-col cols="8">
+          <v-container class="max-width">
+            <v-pagination
+              v-model="page"
+              class="my-4"
+              :length="totalPage"
+            ></v-pagination>
+          </v-container>
+        </v-col>
+      </v-row>
+    </div>
     <v-dialog
       v-model="models.modal"
       class="link__dialog"
@@ -95,7 +83,10 @@
       />
     </v-dialog>
     <v-dialog v-model="models.filterModal" max-width="700">
-      <FilterModal @closeModal="models.filterModal = false" />
+      <MemberModal
+        @updateFilter="updateFilter"
+        @closeModal="models.filterModal = false"
+      />
     </v-dialog>
   </div>
 </template>
@@ -105,24 +96,16 @@ import { mapGetters, mapMutations, mapActions } from 'vuex';
 import Link from '@/components/links/Link';
 import CreateNewLink from '@/components/links/CreateNewLink';
 import SortModal from '@/components/links/SortModal';
-import FilterModal from '@/components/links/FilterModal';
+import MemberModal from '@/components/links/MemberModal';
 
 export default {
   components: {
     Link,
     CreateNewLink,
     SortModal,
-    FilterModal,
-  },
-  fetchOnServer: false,
-  async fetch() {
-    await this.updateLinks({
-      page: this.page,
-    });
+    MemberModal,
   },
   data: () => ({
-    name: '',
-    keySort: 'Sort By',
     models: {
       base: false,
       modal: false,
@@ -131,33 +114,21 @@ export default {
     },
     width: 0,
     page: 1,
+    domainSelected: [],
+    userIdsSelected: [],
   }),
   computed: {
     ...mapGetters({
-      sort: 'links/getSort',
-      direction: 'links/getDirection',
-      domainSelected: 'links/getDomainSelected',
-      workspaceSelected: 'links/getWorkspaceSelected',
-      links: 'links/getLinks',
-      total: 'links/getTotal',
-      totalPage: 'links/getTotalPage',
+      sort: 'workspaces/getLinksSort',
+      direction: 'workspaces/getLinksDirection',
+      links: 'workspaces/getLinksWorkspace',
+      total: 'workspaces/getLinksTotalWorkspace',
+      totalPage: 'workspaces/getLinksTotalPageWorkspace',
     }),
   },
   watch: {
-    '$route.query': '$fetch',
     page(val) {
-      this.updateLinks({
-        page: val,
-      });
-    },
-    name(val) {
-      setTimeout(
-        this.updateLinks({
-          page: 1,
-          name: val,
-        }),
-        2000
-      );
+      this.setLinksWorkspace({ page: val, id: this.$route.params.id });
     },
   },
   beforeMount() {
@@ -169,33 +140,30 @@ export default {
   },
   methods: {
     ...mapMutations({
-      setSort: 'links/setSort',
-      setDirection: 'links/setDirection',
-      setDomainSelected: 'links/setDomainSelected',
-      setWorkspaceSelected: 'links/setWorkspaceSelected',
+      setLinksSort: 'workspaces/setLinksSort',
+      setLinksDirection: 'workspaces/setLinksDirection',
+      setLinksTotalPageWorkspace: 'workspaces/setLinksTotalPageWorkspace',
+      setLinksDomainSelected: 'workspaces/setLinksDomainSelected',
+      setLinksUserIdsSelected: 'workspaces/setLinksUserIdsSelected',
     }),
     ...mapActions({
-      updateLinks: 'links/updateLinks',
+      setLinksWorkspace: 'workspaces/setLinksWorkspace',
+      setLinksTotalWorkspace: 'workspaces/setLinksTotalWorkspace',
     }),
     updateSort(sort, direction) {
-      this.setSort(sort);
-      this.setDirection(direction);
-      this.updateLinks({
-        page: this.page,
-      });
+      this.setLinksSort(sort);
+      this.setLinksDirection(direction);
+      this.setLinksWorkspace({ page: this.page, id: this.$route.params.id });
+      this.$forceUpdate();
     },
-    updateFilter(domainSelected, workspaceSelected) {
-      this.setDomainSelected(domainSelected);
-      this.setWorkspaceSelected(workspaceSelected);
-      this.updateLinks({
-        page: this.page,
-      });
+    updateFilter(domainSelected, userIdsSelected) {
+      this.setLinksDomainSelected(domainSelected);
+      this.setLinksUserIdsSelected(userIdsSelected);
+      this.setLinksWorkspace({ page: this.page, id: this.$route.params.id });
     },
     closeModalAddNewLink() {
       this.models.modal = false;
-      this.updateLinks({
-        page: this.page,
-      });
+      this.setLinksWorkspace({ page: this.page, id: this.$route.params.id });
     },
     handleResize() {
       if (process.client) {
@@ -222,7 +190,7 @@ export default {
       border: 0.5px solid #dddddd;
       box-sizing: border-box;
       border-radius: 4px;
-      padding: 7px 20px;
+      padding: 5px 20px;
       cursor: pointer;
       img {
         align-self: center;
@@ -296,10 +264,6 @@ export default {
           }
         }
       }
-      .search-form::v-deep input,
-      .search-form::v-deep label {
-        font-size: 15px;
-      }
       .add-new-link {
         font-size: 16px;
         line-height: 22px;
@@ -332,10 +296,6 @@ export default {
           }
         }
       }
-      .search-form::v-deep input,
-      .search-form::v-deep label {
-        font-size: 14px;
-      }
       .add-new-link {
         padding: 5px 30px;
         font-size: 15px;
@@ -364,10 +324,6 @@ export default {
             line-height: 18px;
           }
         }
-      }
-      .search-form::v-deep input,
-      .search-form::v-deep label {
-        font-size: 13px;
       }
       .add-new-link {
         font-size: 15px;

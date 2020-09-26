@@ -24,22 +24,17 @@
             <figure>
               <img src="@/assets/signin-image.jpg" alt="sign in image" />
             </figure>
-            <nuxt-link to="/sign-up">
-              <div class="create-account text-center">
-                <div>Create an account</div>
-              </div>
-            </nuxt-link>
           </v-col>
           <v-col cols="12" sm="6" class="login__right">
-            <div class="login-header d-flex align-center">
+            <div class="login-header text-center align-center">
               <nuxt-link to="/">
                 <div class="header__logo mr-4">
-                  <img src="~/assets/logo.png" />
+                  <img src="~/assets/logo_RELINKS.png" />
                 </div>
               </nuxt-link>
-              <div class="login-title">Login</div>
+              <div class="login-title">Login to your dashboard</div>
             </div>
-            <form action="" @keyup.enter="login">
+            <form action @keyup.enter="login">
               <v-text-field
                 v-model="form.email"
                 class="input-name mt-4 mt-sm-6"
@@ -55,15 +50,21 @@
                 hide-details="auto"
                 :rules="[required('password')]"
               />
+            </form>
+            <div class="text-center">
               <button
                 :disabled="isLoading"
-                class="button-normal login-button mt-8 mt-sm-10"
+                class="button-normal login-button mt-8 mt-sm-10 mr-4"
                 aria-label="Login"
                 @click.prevent="login"
-              >
-                Login
-              </button>
-            </form>
+              >Login</button>
+              <div class="signup-tip mt-5">
+                Don’t have a Relinks account yet?
+                <nuxt-link to="/sign-up">
+                  <span>Get started</span>
+                </nuxt-link>
+              </div>
+            </div>
           </v-col>
         </v-row>
       </v-col>
@@ -93,6 +94,9 @@ export default {
       setToken: 'setToken',
       setHeaders: 'setHeaders',
     }),
+    redirectSignup() {
+      this.$router.push('/sign-up');
+    },
     async login() {
       this.isLoading = true;
       try {
@@ -109,7 +113,6 @@ export default {
 
           localStorage.token = token;
           localStorage.email = email;
-
           setTimeout(() => {
             this.showAlert = false;
             this.isLoading = false;
@@ -117,7 +120,6 @@ export default {
           }, 500);
         }
       } catch (error) {
-        console.log(error);
         this.showAlertError = true;
         setTimeout(() => {
           this.showAlertError = false;
@@ -158,22 +160,29 @@ export default {
     .login-header {
       img {
         object-fit: cover;
-        width: 60px;
+        width: 45%;
         height: auto;
       }
       .login-title {
         line-height: 1.66;
         margin: 0;
         padding: 0;
-        font-weight: bold;
+        font-weight: 400;
         color: #222;
-        font-size: 36px;
-        font-weight: 600;
+        font-size: 22px;
       }
     }
     .login-button {
-      padding: 7px 7vh;
+      width: 100%;
+      padding: 7px 0;
       font-weight: 500;
+    }
+    .signup-tip {
+      font-size: 14px;
+      span {
+        font-weight: 500;
+        color: #2281c2;
+      }
     }
   }
   @media screen and (max-width: 1368px) {
@@ -197,17 +206,18 @@ export default {
       .login-header {
         img {
           object-fit: cover;
-          width: 60px;
+          width: 40%;
           height: auto;
         }
         .login-title {
-          font-size: 34px;
+          font-size: 20px;
         }
       }
       .login-button {
         font-size: 15px;
-        padding: 5px 6.5vh;
-        font-weight: 500;
+      }
+      .signup-tip {
+        font-size: 13px;
       }
     }
   }
@@ -226,23 +236,22 @@ export default {
     .input-password::v-deep input,
     .input-checkbox::v-deep label,
     .input-checkbox::v-deep input {
-      font-size: 14px;
+      font-size: 13px;
     }
     &__right {
       .login-header {
         img {
-          object-fit: cover;
-          width: 55px;
-          height: auto;
+          width: 38%;
         }
         .login-title {
-          font-size: 32px;
+          font-size: 18px;
         }
       }
       .login-button {
         font-size: 14px;
-        padding: 5px 6vh;
-        font-weight: 500;
+      }
+      .signup-tip {
+        font-size: 12px;
       }
     }
   }
@@ -251,33 +260,26 @@ export default {
       padding: 30px 30px;
     }
     &__left {
+      img {
+        display: none;
+      }
       .create-account {
         font-size: 13px;
       }
-    }
-    .input-name::v-deep label,
-    .input-name::v-deep input,
-    .input-password::v-deep label,
-    .input-password::v-deep input,
-    .input-checkbox::v-deep label,
-    .input-checkbox::v-deep input {
-      font-size: 13px;
     }
     &__right {
       .login-header {
         img {
           object-fit: cover;
-          width: 50px;
+          width: 35%;
           height: auto;
         }
         .login-title {
-          font-size: 28px;
+          font-size: 16px;
         }
       }
       .login-button {
         font-size: 13px;
-        padding: 5px 5.5vh;
-        font-weight: 500;
       }
     }
   }

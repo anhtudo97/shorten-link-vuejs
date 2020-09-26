@@ -1,7 +1,7 @@
 <template>
-  <v-row class="link-detail mx-3">
-    <v-col cols="12" sm="10" md="8" class="mx-auto px-0 border-radius-10">
-      <v-row class="align-center mx-0">
+  <v-row class="link-detail">
+    <v-col cols="12" sm="10" md="8" class="mx-auto">
+      <v-row class="align-center border-radius-10 ma-0 py-3">
         <v-col cols="12" md="8" @click.stop="models.isOpen = true">
           <div class="shortened-link text-overflow-hidden">{{ shorten }}</div>
           <div class="origin-link pt-2 text-overflow-hidden">{{ link }}</div>
@@ -14,7 +14,7 @@
               <div class="d-flex link-services">
                 <v-tooltip top nudge-left="10">
                   <template v-slot:activator="{ on, attrs }">
-                    <a :href="shorten">
+                    <a :href="`https://${shorten}`" target="_blank">
                       <img
                         :src="require('@/assets/icons/route-solid.svg')"
                         alt="route"
@@ -80,7 +80,11 @@
       max-width="900"
       :fullscreen="width < 600 ? true : false"
     >
-      <DetailLinkModal :id="id" :slashtag="slashtag" @closeModalDetailLink="closeModalDetailLink" />
+      <DetailLinkModal
+        :id="id"
+        :slashtag="slashtag"
+        @closeModalDetailLink="closeModalDetailLink"
+      />
     </v-dialog>
     <v-dialog
       v-model="modalEditLink"
@@ -88,15 +92,31 @@
       max-width="900"
       :fullscreen="width < 600 ? true : false"
     >
-      <CreateNewLink :id="id" :edit="true" @closeModalEditNewLink="closeModalEditNewLink" />
+      <CreateNewLink
+        :id="id"
+        :edit="true"
+        :form-link="formLink"
+        @closeModalAddNewLink="closeModalEditNewLink"
+      />
     </v-dialog>
     <v-dialog v-model="isRemoveModal" persistent width="500">
-      <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
+      <RemoveModal
+        name="link"
+        @closeRemoveModal="closeRemoveModal"
+        @removeElement="removeLink"
+      />
     </v-dialog>
-     <v-snackbar v-model="showAlert" top color="success">
+    <v-snackbar v-model="showAlert" top color="success">
       Delete link is successfully
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
   </v-row>
@@ -153,7 +173,7 @@ export default {
   }),
   computed: {
     shorten() {
-      return `https://${this.domain}/${this.slashtag}`;
+      return `${this.domain}/${this.slashtag}`;
     },
     createAt() {
       const today = Date.parse(new Date());
@@ -216,9 +236,8 @@ export default {
           }, 1000);
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
-
       }
     },
     openModalUpdate() {
@@ -230,8 +249,6 @@ export default {
 
 <style lang="scss" scoped>
 .link-detail {
-  cursor: pointer;
-  margin-bottom: 20px;
   .border-radius-10 {
     border: 1px solid #e8e9ea;
     border-radius: 10px;
@@ -252,6 +269,7 @@ export default {
     }
   }
   .shortened-link {
+    cursor: pointer;
     font-weight: 600;
     font-size: 20px;
     line-height: 28px;

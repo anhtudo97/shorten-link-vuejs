@@ -13,41 +13,6 @@
         </div>
       </div>
     </div>
-
-    <div class="border-b">
-      <transition-group v-if="domain_joined.length > 0" name="slide-fade" mode="out-in">
-        <div
-          v-for="(item, index) in domain_joined"
-          :key="`Domain__${index}`"
-          class="d-flex justify-space-between dialog-add-links-domains__domain align-center"
-        >
-          <div class="member-name">{{ item.name }}</div>
-          <button
-            :disabled="loading"
-            class="button-warning member-action"
-            aria-label="Remove"
-            @click="removeDomainsToWorkspace(item.id)"
-          >Remove</button>
-        </div>
-      </transition-group>
-      <div
-        v-else
-        class="d-flex justify-space-between dialog-add-links-domains__domain align-center"
-      >
-        <div class="member-name">Dont have any domains</div>
-      </div>
-      <v-row v-if="totalPageJoined >1" class="py-0 mx-0">
-        <v-col cols="12" class="py-0">
-          <v-container class="max-width py-0">
-            <v-pagination
-              v-model="pageDomainWorkspace"
-              class="text-right"
-              :length="totalPageJoined"
-            ></v-pagination>
-          </v-container>
-        </v-col>
-      </v-row>
-    </div>
     <v-row
       class="mx-0 justify-space-between py-3 align-center dialog-add-links-domains__menu border-b"
     >
@@ -59,32 +24,33 @@
         @click="addDomainsToWorkspace"
       >Add more</button>
     </v-row>
-    <transition-group name="slide-fade" mode="out-in">
-      <div
-        v-for="(item, index) in unjoined"
-        :key="`Domain__${index}`"
-        class="d-flex justify-space-between dialog-add-links-domains__undomain align-center"
-      >
-        <v-checkbox
-          v-model="domainSelected"
-          class="checkbox-member"
-          :disabled="loading"
-          :label="item.name"
-          :value="item.id"
-        ></v-checkbox>
+    <transition name="slide-fade" mode="in-out">
+      <div v-if="lazyLoading">
+        <div
+          v-for="(item, index) in unjoined"
+          :key="`Domain__${index}`"
+          class="d-flex justify-space-between dialog-add-links-domains__undomain align-center"
+        >
+          <v-checkbox
+            v-model="domainSelected"
+            class="checkbox-member"
+            :disabled="loading"
+            :label="item.name"
+            :value="item.id"
+          ></v-checkbox>
+        </div>
       </div>
-    </transition-group>
-    <v-row v-if="totalPageJoined >1" class="py-0 mx-0">
-      <v-col cols="12" class="py-0">
-        <v-container class="max-width py-0">
-          <v-pagination v-model="pageDomain" class="text-right" :length="totalPageDomains"></v-pagination>
-        </v-container>
-      </v-col>
-    </v-row>
-     <v-snackbar v-model="showAlert400" top color="success">
+    </transition>
+    <v-snackbar v-model="showAlert400" top color="success">
       Delete domain is successfully
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert400 = false">Close</v-btn>
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert400 = false"
+        >Close</v-btn>
       </template>
     </v-snackbar>
   </v-list>
@@ -95,28 +61,21 @@ import {
   getDomainsWorkspace,
   getDomains,
   addDomainsWorkspace,
-  removeDomainWorkspace,
 } from '@/services/api';
 export default {
-  props: {
-    workspace: {
-      type: Object,
-      default: () => {},
-    },
-  },
   async fetch() {
     await this.getDomains();
     await this.getDomainsWorkspace();
     this.domainSelected = [];
   },
   data: () => ({
-    tabs: null,
     pageDomain: 1,
     pageDomainWorkspace: 1,
     domain_joined: [],
     domains: [],
     domainSelected: [],
     loading: false,
+    lazyLoading: false,
     showAlert400: false,
     totalJoined: 1,
     totalDomains: 1,
@@ -126,32 +85,29 @@ export default {
   computed: {
     unjoined() {
       const names = [...this.domain_joined].map((x) => x.name);
-      return this.domains.filter((x) => {
+      const temp = [...this.domains].filter((x) => {
         if (!names.includes(x.name)) return x;
       });
-    },
-    domainIsSelected() {
-      return this.domainSelected;
-    },
-  },
-  watch: {
-    pageDomainWorkspace() {
-      this.getDomainsWorkspace();
-    },
-    pageDomain() {
-      this.getDomains();
+      return temp;
     },
   },
   created() {
+    this.delayLoading();
     if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
   },
   methods: {
+    delayLoading() {
+      this.lazyLoading = false;
+      setTimeout(() => {
+        this.lazyLoading = true;
+      }, 3000);
+    },
     async getDomains() {
       const { token, pageDomain } = this;
       try {
-        const resDomain = await getDomains(token, pageDomain);
+        const resDomain = await getDomains(token, pageDomain, false, 20);
         const statusDomain = resDomain.data.status;
 
         if (statusDomain === 200) {
@@ -161,20 +117,21 @@ export default {
           this.totalPageDomains = totalPage;
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
-
         }
       }
     },
     async getDomainsWorkspace() {
-      const { token, workspace, pageDomainWorkspace } = this;
+      const { token, pageDomainWorkspace } = this;
       try {
         const resDomainWorkspace = await getDomainsWorkspace(
           token,
-          workspace.id,
-          pageDomainWorkspace
+          this.$route.params.id,
+          pageDomainWorkspace,
+          false,
+          20
         );
         const statusDomainWorkspace = resDomainWorkspace.data.status;
 
@@ -185,23 +142,18 @@ export default {
           this.totalPageJoined = totalPage;
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
-
         }
       }
     },
     async addDomainsToWorkspace() {
-      await this.addDomains();
-      // await this.getDomainsWorkspace();
-    },
-    async addDomains() {
       this.loading = true;
       try {
         const res = await addDomainsWorkspace(
           this.token,
-          this.workspace.id,
+          this.$route.params.id,
           this.domainSelected
         );
         const { status } = res.data;
@@ -210,46 +162,15 @@ export default {
           this.showAlert = true;
           setTimeout(() => {
             this.domainSelected = [];
-            this.$emit('updateDomains');
+            this.$emit('closeModalAddLinksDomain');
             this.loading = false;
           }, 300);
         }
       } catch (error) {
         this.domainSelected = [];
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
-
-        }
-      }
-    },
-    async removeDomainsToWorkspace(id) {
-      await this.removeFromList(id);
-      await this.getDomainsWorkspace();
-    },
-    async removeFromList(id) {
-      this.loading = true;
-      try {
-        const res = await removeDomainWorkspace(
-          this.token,
-          this.workspace.id,
-          id
-        );
-        const { status } = res.data;
-        if (status === 204) {
-          this.showAlert400 = true;
-          setTimeout(() => {
-            this.domainSelected = [];
-            this.$emit('updateDomains');
-            this.loading = false;
-            this.showAlert400 = false;
-          }, 300);
-        }
-      } catch (error) {
-        const { status } = error.response.data;
-        if (status === 401) {
-          this.$router.push('/login');
-
         }
       }
     },
@@ -259,6 +180,7 @@ export default {
 
 <style lang="scss" scoped>
 .dialog-add-links-domains {
+  height: 100%;
   font-family: Poppins, sans-serif;
   &__header {
     padding: 1vh 4vh;

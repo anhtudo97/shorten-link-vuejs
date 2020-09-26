@@ -3,19 +3,21 @@
     <v-row class="workspaces__menu mx-0">
       <v-col cols="12" sm="10" md="8" class="mx-auto py-2 py-md-3 py-lg-6">
         <v-row class="align-center justify-space-between main-menu px-3 px-sm-0">
-          <v-col cols class="px-0 d-flex">
+          <v-col cols="12" md="8" class="px-0 d-flex">
             <button
+              :class="[!joined ? 'active':'']"
               class="menu-text menu-text-left"
               aria-label="total workspace"
               @click="joined = false"
             >{{ total }} Workspace(s)</button>
             <button
+              :class="[joined ? 'active':'']"
               class="menu-text menu-text-right"
               aria-label="total workspace joined"
               @click="joined = true"
             >{{ totalJoined }} Workspace(s) joined</button>
           </v-col>
-          <v-col class="text-right px-0">
+          <v-col cols="12" md="4" class="text-md-right text-left px-0">
             <button
               class="button-normal menu-button"
               aria-label="new workspace"
@@ -91,7 +93,7 @@
 </template>
 
 <script>
-import { getWorkspaces, getWorkspacesJoined } from '@/services/api';
+import { mapGetters, mapActions } from 'vuex';
 import Workspace from '@/components/workspaces/Workspace';
 import CreateNewWorkspaceModal from '@/components/workspaces/CreateNewWorkspace';
 export default {
@@ -103,8 +105,8 @@ export default {
     if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
-    await this.getWorkspaces(1);
-    await this.getWorkspacesJoined(1);
+    await this.setWorkspaces({ page: 1 });
+    await this.setWorkspacesJoined({ page: 1 });
   },
   data: () => ({
     openCreateNewWorkspace: false,
@@ -113,22 +115,26 @@ export default {
     joined: false,
     // default
     page: 1,
-    workspaces: [],
-    total: 0,
-    totalPage: 1,
     // joined
     pageJoined: 1,
-    workspacesJoined: [],
-    totalJoined: 0,
-    totalPageJoined: 1,
   }),
   fetchOnServer: false,
+  computed: {
+    ...mapGetters({
+      workspaces: 'workspaces/getWorkspaces',
+      total: 'workspaces/getTotal',
+      totalPage: 'workspaces/getTotalPage',
+      workspacesJoined: 'workspaceJoined/getWorkspaces',
+      totalJoined: 'workspaceJoined/getTotal',
+      totalPageJoined: 'workspaceJoined/getTotalPage',
+    }),
+  },
   watch: {
     page(val) {
-      this.getWorkspaces(val);
+      this.setWorkspaces({ page: val });
     },
     pageJoined(val) {
-      this.getWorkspacesJoined(val);
+      this.setWorkspacesJoined({ page: val });
     },
   },
   beforeMount() {
@@ -139,46 +145,18 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
+    ...mapActions({
+      setWorkspaces: 'workspaces/setWorkspaces',
+      setWorkspacesJoined: 'workspaceJoined/setWorkspaces',
+    }),
     closeCreateNewWorkspace() {
       this.openCreateNewWorkspace = false;
-      this.getWorkspaces(1);
-      this.getWorkspacesJoined(1);
+      this.setWorkspaces({ page: 1 });
+      this.setWorkspacesJoined({ page: 1 });
     },
     handleResize() {
       if (process.client) {
         this.width = window.innerWidth;
-      }
-    },
-    async getWorkspaces(page) {
-      const { token } = this;
-      try {
-        const resWorkspace = await getWorkspaces(token, page);
-        const { status, data } = resWorkspace.data;
-        if (status === 200) {
-          const { workspaces, total, totalPage } = data;
-          this.total = total;
-          this.totalPage = totalPage;
-          this.workspaces = workspaces;
-        }
-      } catch (error) {
-        const { status } = error.response.data;
-        if (status === 401) this.$router.push('/login');
-      }
-    },
-    async getWorkspacesJoined(page) {
-      const { token } = this;
-      try {
-        const resWorkspace = await getWorkspacesJoined(token, page);
-        const { status, data } = resWorkspace.data;
-        if (status === 200) {
-          const { invitations, total, totalPage } = data;
-          this.totalJoined = total;
-          this.totalPageJoined = totalPage;
-          this.workspacesJoined = invitations;
-        }
-      } catch (error) {
-        const { status } = error.response.data;
-        if (status === 401) this.$router.push('/login');
       }
     },
   },
@@ -191,6 +169,8 @@ export default {
     border-bottom: 1px solid #c4c4c4;
     .menu-text {
       padding: 7px 35px;
+      font-weight: 500;
+      color: #3c64b1;
     }
     .menu-text-left {
       border: 0.5px solid #ddd;
@@ -247,6 +227,10 @@ export default {
     @media (max-width: 960px) {
       display: none;
     }
+  }
+  .active {
+    background-color: #3c64b1;
+    color: #fff;
   }
 }
 </style>

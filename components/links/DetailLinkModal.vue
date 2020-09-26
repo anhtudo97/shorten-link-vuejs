@@ -2,7 +2,10 @@
   <v-list class="modal-detail-link py-5">
     <div class="d-flex justify-space-between px-4">
       <div></div>
-      <div class="modal-detail-link__dialog-icon pa-2" @click="$emit('closeModalDetailLink')">
+      <div
+        class="modal-detail-link__dialog-icon pa-2"
+        @click="$emit('closeModalDetailLink')"
+      >
         <img src="@/assets/svg/close.svg" alt="close" />
       </div>
     </div>
@@ -11,17 +14,35 @@
         <div
           class="d-flex justify-space-between modal-detail-link__dialog-main align-center mb-10 flex-wrap"
         >
-          <a
-            :href="`https://${shorten}`"
-            class="main-title text-overflow-hidden pb-3 pb-sm-0"
-          >{{ shorten }}</a>
+          <div class="d-flex align-center">
+            <img
+              class="img-favicon mr-3"
+              :src="
+                `https://www.google.com/s2/favicons?domain=${destination}`
+              "
+              alt="favicon"
+            />
+            <a
+              :href="`https://${shorten}`"
+              target="_blank"
+              class="main-title text-overflow-hidden pb-3 pb-sm-0"
+              >{{ shorten }}</a
+            >
+          </div>
           <div class="d-flex dialog-link-service align-center">
-            <div v-clipboard="`https://${shorten}`" class="dialog-button-copy mr-3">Copy</div>
+            <div
+              v-clipboard="`https://${shorten}`"
+              class="dialog-button-copy mr-3"
+            >
+              Copy
+            </div>
             <button
               class="dialog-button button-normal"
               aria-label="Edit"
               @click.stop="modalEditLink = true"
-            >Edit</button>
+            >
+              Edit
+            </button>
           </div>
         </div>
         <div class="modal-detail-link__dialog-sub">
@@ -46,7 +67,9 @@
               <div class="information-title">Original link</div>
             </v-col>
             <v-col cols="12" md="9">
-              <div class="information-content content-border">{{ destination }}</div>
+              <div class="information-content content-border">
+                {{ destination }}
+              </div>
             </v-col>
           </v-row>
           <v-row class="information d-flex align-center">
@@ -58,7 +81,9 @@
                 class="remove-button button-warning"
                 aria-label="Remove this link"
                 @click.stop="isRemoveModal = true"
-              >Remove this link</button>
+              >
+                Remove this link
+              </button>
             </v-col>
           </v-row>
         </div>
@@ -70,15 +95,30 @@
       max-width="900"
       :fullscreen="width < 600 ? true : false"
     >
-      <CreateNewLink :id="id" :edit="true" @closeModalAddNewLink="closeModalAddNewLink" />
+      <CreateNewLink
+        :id="id"
+        :edit="true"
+        @closeModalAddNewLink="closeModalAddNewLink"
+      />
     </v-dialog>
     <v-dialog v-model="isRemoveModal" persistent width="500">
-      <RemoveModal name="link" @closeRemoveModal="closeRemoveModal" @removeElement="removeLink" />
+      <RemoveModal
+        name="link"
+        @closeRemoveModal="closeRemoveModal"
+        @removeElement="removeLink"
+      />
     </v-dialog>
     <v-snackbar v-model="showAlert" top color="success">
       Delete link is successfully
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
   </v-list>
@@ -166,7 +206,7 @@ export default {
           this.shorten = `${domain.name}/${slashtag}`;
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -185,7 +225,7 @@ export default {
           }, 1000);
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
       }
     },
@@ -209,6 +249,11 @@ export default {
     }
   }
   &__dialog-main {
+    .img-favicon {
+      object-fit: cover;
+      width: auto;
+      height: 16px;
+    }
     .main-title {
       cursor: pointer;
       font-size: 24px;

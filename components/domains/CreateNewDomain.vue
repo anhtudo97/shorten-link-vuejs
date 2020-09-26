@@ -9,7 +9,9 @@
         <img src="@/assets/svg/close.svg" alt="close" />
       </div>
     </div>
-    <div class="dialog-create-new-domain__title">Connect a domain name you already own</div>
+    <div class="dialog-create-new-domain__title">
+      Connect a domain name you already own
+    </div>
     <div class="dialog-create-new-domain__description mb-10">
       Configure a domain name you already own to use as a branded domain for
       your links.
@@ -36,19 +38,35 @@
           class="button-normal dialog-create-new-domain__button"
           aria-label="Create new domain"
           @click.prevent="createNewDomain"
-        >Create new domain</button>
+        >
+          Create new domain
+        </button>
       </v-col>
     </v-row>
     <v-snackbar v-model="showAlert" top color="success">
       {{ message }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert=false">Close</v-btn>
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
     <v-snackbar v-model="showAlert400" top color="error">
       {{ message }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert400 = false">Close</v-btn>
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert400 = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
   </v-list>
@@ -89,6 +107,7 @@ export default {
           );
           const { status, message } = resNewDomain.data;
           this.message = message;
+          this.destinationDomain = '';
           if (status === 200) {
             this.showAlert = true;
             setTimeout(() => {
@@ -108,7 +127,6 @@ export default {
           setTimeout(() => {
             this.showAlert400 = false;
             this.loading = false;
-            this.destinationDomain = '';
           }, 2000);
         }
       }

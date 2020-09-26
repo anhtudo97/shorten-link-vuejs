@@ -4,7 +4,7 @@
       <v-row class="header d-flex align-center mx-0">
         <nuxt-link to="/">
           <div class="logo">
-            <img src="~/assets/logo.png" alt="logo"/>
+            <img src="~/assets/logo.png" alt="logo" />
           </div>
         </nuxt-link>
         <v-spacer></v-spacer>
@@ -20,21 +20,70 @@
                 d="M7 15.7c1.11 0 2-0.89 2-2H5c0 1.11 0.89 2 2 2z"
               />
             </svg>
-            <span class="notification--num">5</span>
+            <span class="notification--num">{{ total }}</span>
           </div>
         </nuxt-link>
       </v-row>
     </div>
     <nuxt-link v-for="item in items" :key="item.id" :to="item.link">
-      <div class="navigation-drawer__item text-center">
-        <div class="noselect" :class="[activatedRoute(item.link)]">{{item.name}}</div>
+      <div
+        v-if="
+          item.name !== 'Log out' &&
+            item.name !== 'Sign up' &&
+            item.name !== 'Login'
+        "
+        class="navigation-drawer__item text-center"
+      >
+        <div class="noselect" :class="[activatedRoute(item.link)]">
+          {{ item.name }}
+        </div>
       </div>
     </nuxt-link>
+    <div v-if="token !== ''">
+      <nuxt-link v-for="item in items" :key="item.id" :to="item.link">
+        <div
+          v-if="item.name === 'Log out'"
+          class="navigation-drawer__item text-center"
+          @click="logout"
+        >
+          <div class="noselect" :class="[activatedRoute(item.link)]">
+            {{ item.name }}
+          </div>
+        </div>
+      </nuxt-link>
+    </div>
+    <div v-else>
+      <nuxt-link v-for="item in items" :key="item.id" :to="item.link">
+        <div
+          v-if="item.name === 'Sign up' || item.name === 'Login'"
+          class="navigation-drawer__item text-center"
+        >
+          <div class="noselect" :class="[activatedRoute(item.link)]">
+            {{ item.name }}
+          </div>
+        </div>
+      </nuxt-link>
+    </div>
   </v-list>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
+import { getInvitations } from '@/services/api';
 export default {
+  async fetch() {
+    if (
+      typeof localStorage !== 'undefined' &&
+      localStorage.token &&
+      localStorage.email
+    ) {
+      this.token = localStorage.token;
+      this.email = localStorage.email;
+    }
+    if (this.token !== '') {
+      await this.getInvitaions();
+    }
+  },
   data: () => ({
     items: [
       {
@@ -67,11 +116,50 @@ export default {
         name: 'Contact us',
         link: '/contact',
       },
+      {
+        id: 8,
+        name: 'Log out',
+        link: '/',
+      },
     ],
+    token: '',
+    email: null,
   }),
+  fetchOnServer: false,
+  computed: {
+    ...mapGetters({
+      notifications: 'notifications/getNotifications',
+      total: 'notifications/getTotal',
+    }),
+  },
   methods: {
     activatedRoute(route) {
       return route === this.$route.path ? 'active-route' : '';
+    },
+    ...mapActions({
+      setNotifications: 'notifications/setNotifications',
+      setTotal: 'notifications/setTotal',
+    }),
+    async getInvitaions() {
+      try {
+        const res = await getInvitations(this.token, 1);
+        const { status, data } = res.data;
+        if (status === 200) {
+          const { total, invitations } = data;
+          this.setNotifications(invitations);
+          this.setTotal(total);
+        }
+      } catch (error) {
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
+      }
+    },
+    logout() {
+      this.$store.commit('setUser', null);
+      this.$store.commit('setToken', 'Bearer ' + null);
+      this.$store.commit('setHeaders', 'Bearer ' + null);
+      window.localStorage.clear();
+      this.$router.push('/');
     },
   },
 };

@@ -7,10 +7,9 @@
       </div>
     </div>
     <div class="modal-sort__title">Filter by</div>
-    <button class="button-normal modal-sort__button mt-3" aria-label="Filter" @click="updateFilterBy()">Filter</button>
     <v-row justify="center">
       <v-col cols="12" md="6">
-        <div>Domains</div>
+        <div class="font-weight-medium">Domains</div>
         <v-checkbox
           v-for="domain in domains"
           :key="domain.id"
@@ -19,10 +18,11 @@
           dense
           :label="domain.name"
           :value="domain.id"
+          @change="updateFilterBy()"
         />
       </v-col>
       <v-col cols="12" md="6">
-        <div>Workspaces</div>
+        <div class="font-weight-medium">Workspaces</div>
         <v-checkbox
           v-for="w in workspaces"
           :key="w.id"
@@ -31,6 +31,7 @@
           dense
           :label="w.name"
           :value="w.id"
+          @change="updateFilterBy()"
         />
       </v-col>
     </v-row>
@@ -41,6 +42,7 @@
 </template>
 
 <script>
+import { mapMutations, mapActions } from 'vuex';
 import { getWorkspaces, getDomains } from '@/services/api';
 export default {
   data: () => ({
@@ -58,8 +60,19 @@ export default {
     }
   },
   methods: {
+    ...mapMutations({
+      setDomainSelected: 'links/setDomainSelected',
+      setWorkspaceSelected: 'links/setWorkspaceSelected',
+    }),
+    ...mapActions({
+      updateLinks: 'links/updateLinks',
+    }),
     updateFilterBy() {
-      this.$emit('updateFilter', this.domainsSelected, this.workspacesSelected);
+      this.setDomainSelected(this.domainsSelected);
+      this.setWorkspaceSelected(this.workspacesSelected);
+      this.updateLinks({
+        page: 1,
+      });
     },
 
     async infiniteScroll($state) {
@@ -93,9 +106,8 @@ export default {
           }
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
-
       }
     },
   },

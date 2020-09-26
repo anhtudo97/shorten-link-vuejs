@@ -4,7 +4,7 @@
       <div class="header d-flex align-center mx-0 mx-sm-6 mx-lg-8 mx-xl-10">
         <nuxt-link to="/">
           <div class="header__logo">
-            <img src="~/assets/logo.png" alt="logo"/>
+            <img src="~/assets/logo_R.png" alt="logo" />
           </div>
         </nuxt-link>
         <ul>
@@ -25,7 +25,10 @@
               </div>
             </nuxt-link>
             <nuxt-link to="/sign-up">
-              <button class="button-normal header__signup py-2 px-6 font-weight-bold" aria-label="Signup">Sign up</button>
+              <button
+                class="button-normal header__signup py-2 px-6 font-weight-bold"
+                aria-label="Signup"
+              >Sign up</button>
             </nuxt-link>
           </div>
           <div v-else class="d-flex align-center">
@@ -41,7 +44,7 @@
                     d="M7 15.7c1.11 0 2-0.89 2-2H5c0 1.11 0.89 2 2 2z"
                   />
                 </svg>
-                <span class="notification--num">{{total}}</span>
+                <span class="notification--num">{{ total }}</span>
               </div>
             </nuxt-link>
             <div class="pr-4 header__signup">{{ email }}</div>
@@ -60,7 +63,7 @@
           <v-row class="header d-flex align-center mx-2 mx-sm-7 py-0">
             <nuxt-link to="/">
               <div class="header__logo">
-                <img src="@/assets/logo.png" alt="logo"/>
+                <img src="@/assets/logo.png" alt="logo" />
               </div>
             </nuxt-link>
             <v-spacer></v-spacer>
@@ -73,6 +76,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
 import { getInvitations } from '@/services/api';
 export default {
   async fetch() {
@@ -85,16 +89,7 @@ export default {
       this.email = localStorage.email;
     }
     if (this.token !== '') {
-      try {
-        const res = await getInvitations(this.token, 1);
-        const { status, data } = res.data;
-        if (status === 200) {
-          this.total = data.total;
-        }
-      } catch (error) {
-        const { status } = error.response.data;
-        if (status === 401) this.$router.push('/login');
-      }
+      await this.getInvitaions();
     }
   },
   data: () => ({
@@ -122,10 +117,33 @@ export default {
     ],
     token: '',
     email: null,
-    total: 0,
   }),
+  computed: {
+    ...mapGetters({
+      notifications: 'notifications/getNotifications',
+      total: 'notifications/getTotal',
+    }),
+  },
   fetchOnServer: false,
   methods: {
+    ...mapActions({
+      setNotifications: 'notifications/setNotifications',
+      setTotal: 'notifications/setTotal',
+    }),
+    async getInvitaions() {
+      try {
+        const res = await getInvitations(this.token, 1);
+        const { status, data } = res.data;
+        if (status === 200) {
+          const { total, invitations } = data;
+          this.setNotifications(invitations);
+          this.setTotal(total);
+        }
+      } catch (error) {
+        const { status } = error.response;
+        if (status === 401) this.$router.push('/login');
+      }
+    },
     logout() {
       this.$store.commit('setUser', null);
       this.$store.commit('setToken', 'Bearer ' + null);

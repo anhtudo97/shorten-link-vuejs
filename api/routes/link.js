@@ -3,20 +3,14 @@ import { getLinks } from '../services/api';
 const routeLink = new Router();
 
 routeLink.get('/', (req, res) => {
-  res.send({ msg: 'link' });
+    res.send({ msg: 'link' });
 });
 
-routeLink.post('/links', async (req, res) => {
-  const { token } = req.body;
-  console.log(token);
-  let result = null;
-  try {
-    result = await getLinks(token);
-  } catch (error) {
-    console.log(error);
-  }
-  console.log(result)
-  // res.send(result.data);
+routeLink.post('/links', async(req, res) => {
+    const { token } = req.body;
+    try {
+        await getLinks(token);
+    } catch (error) {}
 });
 
 export default routeLink;

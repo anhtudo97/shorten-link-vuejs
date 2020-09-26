@@ -7,10 +7,9 @@
       </div>
     </div>
     <div class="modal-sort__title">Filter by</div>
-    <button class="button-normal modal-sort__button mt-3" aria-label="Filters" @click="updateFilterBy()">Filter</button>
     <v-row justify="center">
       <v-col cols="12" md="6">
-        <div>Domains</div>
+        <div class="font-weight-medium">Domains</div>
         <v-checkbox
           v-for="domain in domains"
           :key="domain.id"
@@ -19,10 +18,11 @@
           dense
           :label="domain.name"
           :value="domain.id"
+          @change="updateFilterBy()"
         />
       </v-col>
       <v-col cols="12" md="6">
-        <div>Members</div>
+        <div class="font-weight-medium">Members</div>
         <div v-if="members.length !== 0">
           <v-checkbox
             v-for="mem in members"
@@ -30,8 +30,9 @@
             v-model="memberSelected"
             class="modal-sort__checkbox"
             dense
-            :label="mem.name"
+            :label="mem.fullName"
             :value="mem.id"
+            @change="updateFilterBy()"
           />
         </div>
         <div v-else class="mt-4">Have not any member</div>
@@ -66,7 +67,7 @@ export default {
   },
   methods: {
     updateFilterBy() {
-      this.$emit('updateFilter', this.domainsSelected, this.workspacesSelected);
+      this.$emit('updateFilter', this.domainsSelected, this.memberSelected);
     },
     async infiniteScroll($state) {
       const { token, pageMembers, pageDomains, workspaceId } = this;
@@ -81,7 +82,6 @@ export default {
           workspaceId,
           pageMembers
         );
-
         const statusDomains = resDomains.data.status;
         const statusMembers = resMembers.data.status;
 
@@ -106,9 +106,8 @@ export default {
           }
         }
       } catch (error) {
-        const { status } = error.response.data;
+        const { status } = error.response;
         if (status === 401) this.$router.push('/login');
-
       }
     },
   },

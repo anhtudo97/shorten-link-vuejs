@@ -16,7 +16,7 @@
           src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
         />
         <div>
-          <div class="dialog-name-text px-5">{{ user.fullname }}</div>
+          <div class="dialog-name-text px-5">{{ user.fullName }}</div>
           <div class="dialog-email-text px-5">
             <button disabled class="date-text" aria-label="email">{{ user.email }}</button>
           </div>
@@ -26,7 +26,7 @@
     <div class="mt-16 mb-4 border-b">
       <div class="d-flex dialog-detail-user__info align-center mb-5">
         <img src="@/assets/svg/calendar.svg" alt="calendar" class="mr-3" />
-        <div class="info-text">Joined on {{ createdDate }}</div>
+        <div class="info-text">Accout is created at {{ createdDate }}</div>
       </div>
     </div>
   </v-list>
