@@ -11,7 +11,7 @@
           cols="12"
           sm="6"
           class="footer-title text-center text-md-right"
-        >God Group © Copyright 2020</v-col>
+        >Relinks team © Copyright 2020</v-col>
       </v-row>
     </v-col>
   </div>

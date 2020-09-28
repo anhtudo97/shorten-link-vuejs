@@ -45,14 +45,14 @@
         <slide-fade-transition mode="out-in">
           <div v-if="isShorten">
             <Shorten
-              :data="data"
               v-for="(data, index) in links"
               :key="`index_${index}`"
+              :data="data"
             />
           </div>
         </slide-fade-transition>
         <div key="false" class="text-center shorten-policy">
-          By clicking shorten, you agree to God Group’s
+          By clicking shorten, you agree to Relinks team’s
           <strong class="text-underline">Terms</strong> &
           <strong class="text-underline">Conditions and Privacy Policy</strong>
         </div>
@@ -103,7 +103,6 @@ export default {
     if (this.$cookies.get('links')) {
       this.isShorten = true;
       this.links = JSON.parse(this.$cookies.get('links'));
-      console.log(JSON.parse(this.$cookies.get('links')));
       this.$forceUpdate();
     }
   },
@@ -147,7 +146,6 @@ export default {
             60 * 60 * 24 * 30
           );
         } catch (error) {
-          console.log(error);
           const { status, data } = error.response;
           this.message = data.message;
           if (status === 401) this.$router.push('/login');
