@@ -45,7 +45,11 @@
         </v-row>
         <slide-fade-transition mode="out-in">
           <div v-if="isShorten">
-            <Shorten :data="data" />
+            <Shorten
+              :data="data"
+              v-for="(data, index) in links"
+              :key="`index_${index}`"
+            />
           </div>
         </slide-fade-transition>
         <div key="false" class="text-center shorten-policy">
@@ -94,7 +98,16 @@ export default {
     message: '',
     view: 'v-a',
     showAlert400: false,
+    links: [],
   }),
+  // created() {
+  //   if (this.$cookies.get('links')) {
+  //     this.isShorten = true;
+  //     this.links = this.$cookies.get('links');
+  //     console.log(this.links);
+  //     // this.$forceUpdate();
+  //   }
+  // },
   methods: {
     validURL(str) {
       const pattern = new RegExp(
@@ -126,7 +139,12 @@ export default {
             this.isShorten = true;
             this.data = data;
           }
+          this.links.push(data);
+          if (!this.$cookies.get('links')) {
+            this.$cookies.set('links', JSON.stringify(this.links, null, 2));
+          }
         } catch (error) {
+          console.log(error);
           const { status, data } = error.response;
           this.message = data.message;
           if (status === 401) this.$router.push('/login');

@@ -37,6 +37,7 @@ module.exports = {
     plugins: [
         { src: '@/plugins/clickOutside', ssr: false },
         { src: '@/plugins/infiniteLoading', ssr: false },
+        { src: '@/plugins/vueCookies', ssr: false },
     ],
     /*
      ** Auto import components
