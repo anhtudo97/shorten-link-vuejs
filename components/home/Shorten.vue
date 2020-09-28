@@ -1,21 +1,23 @@
 <template>
-  <v-row class="shortened justify-space-between align-center mx-0 mb-2">
-    <v-col cols="12" md="7" lg="6" class="shortened__shortened-link">
-      <div class="link-text text-overflow-hidden">
-        {{ data.destination }}
-      </div>
-    </v-col>
-    <v-col cols="12" md="5" lg="6" class="shortened__shortened-service">
-      <div class="d-flex flex-wrap justify-space-between">
-        <div class="shortened-link align-self-center">
-          <a :href="data.shortUrl">{{ data.shortUrl }}</a>
+  <transition name="fade" mode="out-in">
+    <v-row class="shortened justify-space-between align-center mx-0 mb-2">
+      <v-col cols="12" md="7" lg="6" class="shortened__shortened-link">
+        <div class="link-text text-overflow-hidden">
+          {{ data.destination }}
         </div>
-        <div v-clipboard="data.shortUrl" class="shortened-button">
-          <div class="shortened-text">Copy</div>
+      </v-col>
+      <v-col cols="12" md="5" lg="6" class="shortened__shortened-service">
+        <div class="d-flex flex-wrap justify-space-between">
+          <div class="shortened-link align-self-center">
+            <a :href="data.shortUrl">{{ data.shortUrl }}</a>
+          </div>
+          <div v-clipboard="data.shortUrl" class="shortened-button">
+            <div class="shortened-text">Copy</div>
+          </div>
         </div>
-      </div>
-    </v-col>
-  </v-row>
+      </v-col>
+    </v-row>
+  </transition>
 </template>
 
 <script>

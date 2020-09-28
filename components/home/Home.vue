@@ -100,14 +100,14 @@ export default {
     showAlert400: false,
     links: [],
   }),
-  // created() {
-  //   if (this.$cookies.get('links')) {
-  //     this.isShorten = true;
-  //     this.links = this.$cookies.get('links');
-  //     console.log(this.links);
-  //     // this.$forceUpdate();
-  //   }
-  // },
+  created() {
+    if (this.$cookies.isKey('links')) {
+      this.isShorten = true;
+      this.links = JSON.parse(this.$cookies.get('links'));
+      console.log(JSON.parse(this.$cookies.get('links')));
+      this.$forceUpdate();
+    }
+  },
   methods: {
     validURL(str) {
       const pattern = new RegExp(
@@ -129,6 +129,8 @@ export default {
         !this.destination.includes('https')
       ) {
         str = 'http://' + this.destination;
+      } else {
+        str = this.destination;
       }
       if (this.valid) {
         try {
@@ -140,9 +142,11 @@ export default {
             this.data = data;
           }
           this.links.push(data);
-          if (!this.$cookies.get('links')) {
-            this.$cookies.set('links', JSON.stringify(this.links, null, 2));
-          }
+          this.$cookies.set(
+            'links',
+            JSON.stringify(this.links, null, 2),
+            60 * 60 * 24 * 30
+          );
         } catch (error) {
           console.log(error);
           const { status, data } = error.response;
