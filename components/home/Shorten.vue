@@ -53,6 +53,7 @@ export default {
       line-height: 24px;
     }
     .shortened-button {
+      cursor: pointer;
       background-color: #cedafa;
       padding: 5px 20px;
       border-radius: 10px;
