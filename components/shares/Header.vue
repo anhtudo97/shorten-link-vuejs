@@ -109,11 +109,6 @@ export default {
         name: 'Workspaces',
         route: '/workspaces',
       },
-      {
-        id: 4,
-        name: 'Contact',
-        route: '/contact',
-      },
     ],
     token: '',
     email: null,

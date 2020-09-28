@@ -8,6 +8,7 @@
 body,
 html {
     height: 100%;
+    background-color: #fff;
     font-family: Montserrat, sans-serif;
 }
 
@@ -52,7 +53,7 @@ button {
 .button-primary {
     cursor: pointer;
     background-color: #3c64b1;
-    border-radius: 10px;
+    border-radius: 4px;
     color: #fff;
     text-align: center;
     font-weight: bold;

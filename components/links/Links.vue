@@ -27,7 +27,7 @@
               <v-text-field
                 v-model="name"
                 class="search-form"
-                label="Searching link ... "
+                label="Search link ... "
                 outlined
                 dense
                 hide-details="auto"

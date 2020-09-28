@@ -1,6 +1,8 @@
 <template>
   <v-list class="dialog-member-workspace">
-    <div class="d-flex justify-space-between dialog-member-workspace__title border-b">
+    <div
+      class="d-flex justify-space-between dialog-member-workspace__title border-b"
+    >
       <div class="d-flex align-center flex-wrap">
         <div class="dialog-title mr-4">{{ $route.query.name }}</div>
       </div>
@@ -20,7 +22,9 @@
         class="button-normal dialog-button font-weight-medium px-4"
         aria-label="send"
         @click.stop="inviteMembers"
-      >Send the invitations</button>
+      >
+        Send the invitations
+      </button>
     </div>
     <div
       class="d-flex flex-wrap justify-space-between py-3 dialog-member-workspace__search border-b"
@@ -37,11 +41,13 @@
         @keyup.enter="searchMember"
       ></v-text-field>
       <button
-        :disabled="loading"
+        :disabled="loading || emailValid"
         class="button-normal search-button font-weight-medium px-10"
         aria-label="search"
         @click.stop="searchMember"
-      >Search</button>
+      >
+        Search
+      </button>
     </div>
     <transition-group name="slide-fade" mode="in-out">
       <div
@@ -62,7 +68,14 @@
     <v-snackbar v-model="showAlert" top color="success">
       {{ messages }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
     <v-snackbar v-model="showAlertError" top color="error">
@@ -74,17 +87,15 @@
           v-bind="attrs"
           aria-label="close"
           @click="showAlertError = false"
-        >Close</v-btn>
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
   </v-list>
 </template>
 
 <script>
-import {
-  getMember,
-  inviteMembers,
-} from '@/services/api';
+import { getMember, inviteMembers } from '@/services/api';
 import validations from '@/utils/validations';
 export default {
   props: {
@@ -106,10 +117,17 @@ export default {
     members: [],
     users: [],
     messages: '',
+    emailValid: true,
   }),
   computed: {
     unjoined() {
       return this.users;
+    },
+  },
+  watch: {
+    search() {
+      const regex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,24})+$/;
+      this.emailValid = !regex.test(this.search);
     },
   },
   created() {
@@ -136,19 +154,21 @@ export default {
         const { data } = res.data;
         const { users } = data;
         setTimeout(() => {
-          if (!this.isExistUsers(users[0].id)) {
-            this.users.push({
-              id: users[0].id,
-              name: users[0].fullName,
-              email: users[0].email,
-            });
-          } else {
-            this.messages = 'User is explored';
-            this.showAlertError = true;
-            setTimeout(() => {
-              this.loading = false;
-              this.showAlertError = false;
-            }, 1500);
+          if (users.length > 0) {
+            if (!this.isExistUsers(users[0].id)) {
+              this.users.push({
+                id: users[0].id,
+                name: users[0].fullName,
+                email: users[0].email,
+              });
+            } else {
+              this.messages = 'User is explored';
+              this.showAlertError = true;
+              setTimeout(() => {
+                this.loading = false;
+                this.showAlertError = false;
+              }, 1500);
+            }
           }
           this.loading = false;
         }, 1000);
@@ -188,7 +208,7 @@ export default {
         }, 2000);
       } catch (error) {
         const { status, data } = error.response;
-        const {message} = data
+        const { message } = data;
         if (status === 401) {
           this.$router.push('/login');
           return;

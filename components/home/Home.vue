@@ -5,81 +5,165 @@
         <v-row class="hero-banner align-center">
           <v-col cols="12" md="8">
             <div class="hero-banner__title">Create Click-Worthy Links</div>
-            <div
-              class="hero-banner__sub"
-            >Build and protect your brand using powerful, recognizable short links.</div>
+            <div class="hero-banner__sub">
+              Build and protect your brand using powerful, recognizable short
+              links.
+            </div>
           </v-col>
           <v-col cols="12" md="4">
-            <img src="@/assets/home.webp" alt="home"/>
+            <img src="@/assets/home.webp" alt="home" />
           </v-col>
         </v-row>
       </v-col>
     </v-row>
-    <v-row class="home__shorten mb-8 mx-0">
-      <v-col cols="12" md="8" class="mx-auto">
+    <v-row class="home__shorten mb-8">
+      <v-col cols="12" md="6" class="mx-auto">
         <v-row class="mb-3">
           <v-col cols="12" sm="8">
-            <v-text-field
-              background-color="white"
-              class="shorten-input"
-              placeholder="Enter your link"
-              outlined
-              dense
-              clearable
-              hide-details="auto"
-            ></v-text-field>
+            <form @submit.prevent="shortendLink()">
+              <v-text-field
+                v-model="destination"
+                background-color="white"
+                class="shorten-input"
+                placeholder="Enter your link"
+                outlined
+                clearable
+                hide-details="auto"
+              ></v-text-field>
+            </form>
           </v-col>
-          <v-col cols="12" sm="4" class="ma-md-0">
+          <v-col cols="12" sm="4" class="ma-md-0 align-self-center">
             <button
               class="shorten-button button-primary"
               aria-label="Action"
-              @click="isShorten = !isShorten"
-            >{{isShorten ? 'Copy':'Shorten'}}</button>
+              @click.stop="shortendLink()"
+            >
+              Shorten URL
+            </button>
           </v-col>
         </v-row>
         <slide-fade-transition mode="out-in">
-          <div v-if="!isShorten" key="false" class="text-center shorten-policy">
-            By clicking shorten, you agree to God Group’s
-            <strong class="text-underline">Terms</strong> &
-            <strong class="text-underline">Conditions and Privacy Policy</strong>
+          <div v-if="isShorten">
+            <Shorten
+              :data="data"
+              v-for="(data, index) in links"
+              :key="`index_${index}`"
+            />
           </div>
-          <v-row v-else key="true" class="shortened justify-space-between mb-0 mb-md-3">
-            <v-col cols="12" md="7" lg="8" class="shortened__shortened-link">
-              <div
-                class="link-text text-overflow-hidden"
-              >https://vuetifyjs.com/en/components/buttons/#buttons</div>
-            </v-col>
-            <v-col cols="12" md="5" lg="4" class="shortened__shortened-service">
-              <div class="d-flex flex-wrap justify-space-between">
-                <div class="shortened-link align-self-center">
-                  <a href="https://bit.ly/3hC00TH">https://bit.ly/3hC00TH</a>
-                </div>
-                <div class="shortened-button">
-                  <div class="shortened-text">Copy</div>
-                </div>
-              </div>
-            </v-col>
-          </v-row>
         </slide-fade-transition>
+        <div key="false" class="text-center shorten-policy">
+          By clicking shorten, you agree to God Group’s
+          <strong class="text-underline">Terms</strong> &
+          <strong class="text-underline">Conditions and Privacy Policy</strong>
+        </div>
       </v-col>
     </v-row>
     <Business />
+    <v-snackbar v-model="showAlert400" top color="error">
+      {{ message }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert403 = false"
+          >Close</v-btn
+        >
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
 <script>
+import { shortendLink } from '@/services/api';
+import Shorten from '@/components/home/Shorten';
 import Business from '@/components/home/HomeBusiness';
 import SlideFadeTransition from '@/components/shares/SlideFadeTransition';
 export default {
   components: {
+    Shorten,
     Business,
     SlideFadeTransition,
   },
-  data() {
-    return {
-      isShorten: false,
-      view: 'v-a',
-    };
+  data: () => ({
+    destination: '',
+    data: {
+      destination: '',
+      shortUrl: '',
+    },
+    isShorten: false,
+    valid: false,
+    message: '',
+    view: 'v-a',
+    showAlert400: false,
+    links: [],
+  }),
+  created() {
+    if (this.$cookies.get('links')) {
+      this.isShorten = true;
+      this.links = JSON.parse(this.$cookies.get('links'));
+      console.log(JSON.parse(this.$cookies.get('links')));
+      this.$forceUpdate();
+    }
+  },
+  methods: {
+    validURL(str) {
+      const pattern = new RegExp(
+        '^(https?:\\/\\/)?' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+          '(\\#[-a-z\\d_]*)?$',
+        'i'
+      ); // fragment locator
+      this.valid = !!pattern.test(str);
+    },
+    async shortendLink() {
+      this.validURL(this.destination);
+      let str = '';
+      if (
+        !this.destination.includes('http') ||
+        !this.destination.includes('https')
+      ) {
+        str = 'http://' + this.destination;
+      } else {
+        str = this.destination;
+      }
+      if (this.valid) {
+        try {
+          const res = await shortendLink(str);
+          const { status, data } = res.data;
+
+          if (status === 200) {
+            this.isShorten = true;
+            this.data = data;
+          }
+          this.links.push(data);
+          this.$cookies.set(
+            'links',
+            JSON.stringify(this.links, null, 2),
+            60 * 60 * 24 * 30
+          );
+        } catch (error) {
+          console.log(error);
+          const { status, data } = error.response;
+          this.message = data.message;
+          if (status === 401) this.$router.push('/login');
+          this.showAlert400 = true;
+          setTimeout(() => {
+            this.showAlert400 = false;
+          }, 1500);
+        }
+      } else {
+        this.message = 'Invalid URL';
+        this.showAlert400 = true;
+        setTimeout(() => {
+          this.showAlert400 = false;
+        }, 1500);
+      }
+    },
   },
 };
 </script>
@@ -102,7 +186,7 @@ export default {
         letter-spacing: 0.3px;
         color: #737b7d;
       }
-      img{
+      img {
         object-fit: cover;
         width: 100%;
         height: auto;
@@ -160,7 +244,7 @@ export default {
       height: 100%;
     }
     .shorten-button {
-      padding: 10px 0;
+      padding: 15px 0;
       width: 100%;
       font-size: 18px;
       line-height: 24px;
@@ -175,6 +259,7 @@ export default {
     }
     .shorten-policy {
       color: white;
+      font-size: 15px;
       .text-underline {
         cursor: pointer;
         text-decoration: underline;
@@ -187,80 +272,6 @@ export default {
       }
       @media (max-width: 600px) {
         font-size: 12px;
-      }
-    }
-    .shortened {
-      align-items: center;
-      background-color: #fff;
-      border-radius: 10px;
-      margin: 0;
-      padding: 10px 15px;
-      &__shortened-link {
-        font-size: 18px;
-        line-height: 24px;
-      }
-      &__shortened-service {
-        align-items: center;
-        .shortened-link {
-          color: #3c64b1;
-          font-size: 18px;
-          line-height: 24px;
-        }
-        .shortened-button {
-          background-color: #cedafa;
-          padding: 5px 20px;
-          border-radius: 10px;
-        }
-      }
-      @media (max-width: 1366px) {
-        &__shortened-link {
-          font-size: 14px;
-          line-height: 20px;
-        }
-        &__shortened-service {
-          align-items: center;
-          .shortened-link {
-            font-size: 14px;
-            line-height: 20px;
-          }
-          .shortened-button {
-            font-size: 14px;
-            line-height: 20px;
-          }
-        }
-      }
-      @media (max-width: 960px) {
-        &__shortened-link {
-          font-size: 12px;
-          line-height: 18px;
-        }
-        &__shortened-service {
-          .shortened-link {
-            font-size: 12px;
-            line-height: 18px;
-          }
-          .shortened-button {
-            font-size: 12px;
-            line-height: 18px;
-          }
-        }
-      }
-      @media (max-width: 600px) {
-        padding: 10px 0;
-        &__shortened-link {
-          font-size: 10px;
-          line-height: 16px;
-        }
-        &__shortened-service {
-          .shortened-link {
-            font-size: 10px;
-            line-height: 16px;
-          }
-          .shortened-button {
-            font-size: 10px;
-            line-height: 16px;
-          }
-        }
       }
     }
   }
