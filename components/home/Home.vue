@@ -27,13 +27,12 @@
                 class="shorten-input"
                 placeholder="Enter your link"
                 outlined
-                dense
                 clearable
                 hide-details="auto"
               ></v-text-field>
             </form>
           </v-col>
-          <v-col cols="12" sm="4" class="ma-md-0">
+          <v-col cols="12" sm="4" class="ma-md-0 align-self-center">
             <button
               class="shorten-button button-primary"
               aria-label="Action"
@@ -245,7 +244,7 @@ export default {
       height: 100%;
     }
     .shorten-button {
-      padding: 10px 0;
+      padding: 15px 0;
       width: 100%;
       font-size: 18px;
       line-height: 24px;

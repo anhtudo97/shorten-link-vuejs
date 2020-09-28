@@ -1,12 +1,12 @@
 <template>
   <transition name="fade" mode="out-in">
     <v-row class="shortened justify-space-between align-center mx-0 mb-3">
-      <v-col cols="12" md="7" lg="6" class="shortened__shortened-link">
+      <v-col cols="12" md="7" lg="5" class="shortened__shortened-link">
         <div class="link-text text-overflow-hidden">
           {{ data.destination }}
         </div>
       </v-col>
-      <v-col cols="12" md="5" lg="6" class="shortened__shortened-service">
+      <v-col cols="12" md="5" lg="7" class="shortened__shortened-service">
         <div class="d-flex flex-wrap justify-space-between">
           <div class="shortened-link align-self-center">
             <a :href="data.shortUrl">{{ data.shortUrl }}</a>
@@ -44,17 +44,17 @@ export default {
   border-radius: 10px;
   padding: 5px 15px;
   &__shortened-link {
-    font-size: 18px;
     line-height: 24px;
   }
   &__shortened-service {
     align-items: center;
     .shortened-link {
       color: #3c64b1;
-      font-size: 18px;
+
       line-height: 24px;
     }
     .shortened-button {
+      height: 100%;
       cursor: pointer;
       background-color: #cedafa;
       padding: 5px 20px;
