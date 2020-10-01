@@ -9,7 +9,7 @@
       <v-col cols="12" md="5" lg="7" class="shortened__shortened-service">
         <div class="d-flex flex-wrap justify-space-between">
           <div class="shortened-link align-self-center">
-            <a :href="data.shortUrl">{{ data.shortUrl }}</a>
+            <a :href="data.shortUrl" target="_blank">{{ data.shortUrl }}</a>
           </div>
           <div v-clipboard="data.shortUrl" class="shortened-button">
             <div class="shortened-text">Copy</div>
