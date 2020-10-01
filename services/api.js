@@ -2,7 +2,7 @@ import axios from 'axios';
 // const API_URL = process.env.API_URL || 'http://localhost:3000';
 // const API_URL = process.env.WEB_API_URL || 'https://api.shorten.godmerch.com';
 const api = axios.create({
-    baseURL: `http://139.180.213.253`,
+    baseURL: `https://api.relinks.co`,
 });
 // const client = axios.create({
 //   baseURL: `${API_URL}/api`,
