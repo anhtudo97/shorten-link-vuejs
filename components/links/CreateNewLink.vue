@@ -251,7 +251,7 @@ export default {
         str = 'http://' + str;
         this.destinationUrl = str;
       }
-      if (this.valid) {
+      if (this.valid && !this.edit) {
         this.loading = true;
         await Promise.all([this.getTitle(str), this.getSlashTag(str)]);
         this.loading = false;
@@ -417,40 +417,31 @@ export default {
     async updateLink() {
       this.loading = true;
       const { destinationUrl, title, slashTag, domainId } = this;
-      if (!this.checkSlash) {
-        try {
-          const resUpdateLink = await updateLink(
-            this.token,
-            this.id,
-            destinationUrl,
-            domainId,
-            slashTag,
-            title
-          );
-          const { status, message } = resUpdateLink.data;
-          this.message = message;
-          if (status === 200) {
-            this.showAlert = true;
-            setTimeout(() => {
-              this.showAlert = false;
-              this.$emit('closeModalEditNewLink');
-              this.loading = false;
-            }, 1000);
-          }
-        } catch (error) {
-          const { status, data } = error.response;
-          this.message = data.message;
-          if (status === 401) {
-            this.$router.push('/login');
-          }
+      try {
+        const resUpdateLink = await updateLink(
+          this.token,
+          this.id,
+          destinationUrl,
+          domainId,
+          slashTag,
+          title
+        );
+        const { status, message } = resUpdateLink.data;
+        this.message = message;
+        if (status === 200) {
+          this.showAlert = true;
+          setTimeout(() => {
+            this.showAlert = false;
+            this.$emit('closeModalEditNewLink');
+            this.loading = false;
+          }, 1000);
         }
-      } else {
-        this.message = 'Slash tag is existed';
-        this.showAlert403 = true;
-        setTimeout(() => {
-          this.showAlert403 = false;
-          this.loading = false;
-        }, 2000);
+      } catch (error) {
+        const { status, data } = error.response;
+        this.message = data.message;
+        if (status === 401) {
+          this.$router.push('/login');
+        }
       }
     },
   },
