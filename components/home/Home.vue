@@ -16,7 +16,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row class="home__shorten mb-8">
+    <v-row class="home__shorten mb-8 mx-0">
       <v-col cols="12" md="6" class="mx-auto">
         <v-row class="mb-3">
           <v-col cols="12" sm="8">
