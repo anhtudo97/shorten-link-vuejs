@@ -63,7 +63,7 @@
           <v-row class="header d-flex align-center mx-2 mx-sm-7 py-0">
             <nuxt-link to="/">
               <div class="header__logo">
-                <img src="@/assets/logo.png" alt="logo" />
+                <img src="@/assets/logo_R.png" alt="logo" />
               </div>
             </nuxt-link>
             <v-spacer></v-spacer>
