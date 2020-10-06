@@ -52,9 +52,19 @@
               :rules="[(v) => !!v || 'Password is required']"
             ></v-text-field>
             <div class="mt-4 mt-sm-6">
-              <v-radio-group v-model="form.gender" :mandatory="false" dense hide-details="auto" row>
+              <v-radio-group
+                v-model="form.gender"
+                :mandatory="false"
+                dense
+                hide-details="auto"
+                row
+              >
                 <v-radio class="gender-input" label="Male" value="M"></v-radio>
-                <v-radio class="gender-input" label="Female" value="F"></v-radio>
+                <v-radio
+                  class="gender-input"
+                  label="Female"
+                  value="F"
+                ></v-radio>
               </v-radio-group>
             </div>
             <v-menu
@@ -79,8 +89,20 @@
               </template>
               <v-date-picker v-model="form.date" no-title scrollable>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" aria-label="cancel" @click="form.menu = false">Cancel</v-btn>
-                <v-btn text color="primary" aria-label="OK" @click="$refs.menu.save(form.date)">OK</v-btn>
+                <v-btn
+                  text
+                  color="primary"
+                  aria-label="cancel"
+                  @click="form.menu = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  aria-label="OK"
+                  @click="$refs.menu.save(form.date)"
+                  >OK</v-btn
+                >
               </v-date-picker>
             </v-menu>
             <button
@@ -88,7 +110,19 @@
               class="button-normal signup-button mt-6 mt-sm-8"
               aria-label="register"
               @click.prevent="register"
-            >Register</button>
+            >
+              Register
+            </button>
+            <div class="text-center term-policy mt-5">
+              By creating an account you agree to our
+              <nuxt-link to="/login">
+                <span class="font-weight-bold">terms</span>
+              </nuxt-link>
+              and
+              <nuxt-link to="/login">
+                <span class="font-weight-bold">privacy policy</span>
+              </nuxt-link>
+            </div>
             <div class="login-tip text-center mt-5">
               Already have an account?
               <nuxt-link to="/login">
@@ -208,6 +242,12 @@ export default {
       padding: 7px 0;
       font-weight: 500;
     }
+    .term-policy {
+      font-size: 14px;
+      span {
+        color: #2281c2;
+      }
+    }
     .login-tip {
       font-size: 14px;
       span {
@@ -252,6 +292,9 @@ export default {
       .signup-button {
         font-size: 15px;
       }
+      .term-policy {
+        font-size: 13px;
+      }
       .login-tip {
         font-size: 13px;
       }
@@ -294,6 +337,12 @@ export default {
       .signup-button {
         padding: 5px 0;
         font-size: 14px;
+      }
+      .term-policy {
+        font-size: 13px;
+        span {
+          color: #2281c2;
+        }
       }
       .login-tip {
         font-size: 12px;
@@ -339,6 +388,9 @@ export default {
       }
       .signup-button {
         padding: 5px 0;
+        font-size: 13px;
+      }
+      .term-policy {
         font-size: 13px;
       }
     }

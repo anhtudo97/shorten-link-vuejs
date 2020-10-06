@@ -1,6 +1,9 @@
 <template>
-  <transition name="fade" mode="out-in">
-    <v-row class="shortened justify-space-between align-center mx-0 mb-3">
+  <transition-group name="fade" mode="out-in">
+    <v-row
+      key="1"
+      class="shortened justify-space-between align-center mx-0 mb-3"
+    >
       <v-col cols="12" md="7" lg="5" class="shortened__shortened-link">
         <div class="link-text text-overflow-hidden">
           {{ data.destination }}
@@ -11,13 +14,30 @@
           <div class="shortened-link align-self-center">
             <a :href="data.shortUrl" target="_blank">{{ data.shortUrl }}</a>
           </div>
-          <div v-clipboard="data.shortUrl" class="shortened-button">
+          <div
+            v-clipboard="data.shortUrl"
+            class="shortened-button"
+            @click="onClickCopy"
+          >
             <div class="shortened-text">Copy</div>
           </div>
         </div>
       </v-col>
     </v-row>
-  </transition>
+    <v-snackbar key="2" v-model="showAlert" centered color="success">
+      Link copied
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert = false"
+          >Close</v-btn
+        >
+      </template>
+    </v-snackbar>
+  </transition-group>
 </template>
 
 <script>
@@ -35,6 +55,17 @@ export default {
       },
     },
   },
+  data: () => ({
+    showAlert: false,
+  }),
+  methods:{
+    onClickCopy(){
+      this.showAlert = true;
+      setTimeout(() => {
+        this.showAlert = false
+      }, 1500);
+    }
+  }
 };
 </script>
 

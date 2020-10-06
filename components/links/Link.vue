@@ -1,5 +1,5 @@
 <template>
-  <v-row class="link-detail">
+  <v-row class="link-detail px-3">
     <v-col cols="12" sm="10" md="8" class="mx-auto">
       <v-row class="align-center border-radius-10 ma-0 py-3">
         <v-col cols="12" md="8" @click.stop="models.isOpen = true">
@@ -8,7 +8,9 @@
         </v-col>
         <v-col cols="12" md="4">
           <div class="d-flex justify-space-between align-center shortened-info">
-            <div class="shortened-clicks">{{ clicks }} click(s)</div>
+            <div class="shortened-clicks">
+              {{ clicks }} {{ clicks > 1 ? 'click' : 'clicks' }}
+            </div>
             <div>
               <div class="shortened-date">{{ createAt }}</div>
               <div class="d-flex link-services">
