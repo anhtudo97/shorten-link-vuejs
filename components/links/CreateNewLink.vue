@@ -247,7 +247,7 @@ export default {
         'i'
       ); // fragment locator
       this.valid = !!pattern.test(str);
-      if (!str.includes('http') || !str.includes('https')) {
+      if (!str.includes('http') && !str.includes('https')) {
         str = 'http://' + str;
         this.destinationUrl = str;
       }
