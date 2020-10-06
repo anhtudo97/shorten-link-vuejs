@@ -28,7 +28,9 @@
               <button
                 class="button-normal header__signup py-2 px-6 font-weight-bold"
                 aria-label="Signup"
-              >Sign up</button>
+              >
+                Sign up
+              </button>
             </nuxt-link>
           </div>
           <div v-else class="d-flex align-center">
@@ -52,7 +54,9 @@
               class="button-normal header__signup py-2 px-6 font-weight-bold"
               aria-label="Logout"
               @click.prevent="logout"
-            >Logout</button>
+            >
+              Logout
+            </button>
           </div>
         </client-only>
       </div>
@@ -67,7 +71,9 @@
               </div>
             </nuxt-link>
             <v-spacer></v-spacer>
-            <v-app-bar-nav-icon @click.stop="$emit('openModal')"></v-app-bar-nav-icon>
+            <v-app-bar-nav-icon
+              @click.stop="$emit('openModal')"
+            ></v-app-bar-nav-icon>
           </v-row>
         </v-col>
       </v-row>
@@ -175,6 +181,13 @@ export default {
     font-size: 14px;
     line-height: 18px;
     color: #3c64b1;
+    border-radius: 4px;
+    padding: 10px 24px;
+    transition: 0.2s all ease-in-out;
+    &:hover {
+      color: #fff;
+      background-color: #3c64b1;
+    }
   }
   &__signup {
     font-weight: bold;

@@ -5,14 +5,26 @@
         <v-row class="align-center">
           <v-col cols="7" sm="8" lg="9">
             <div class="d-flex align-center flex-wrap">
-              <div class="menu-selection mr-4 my-3 d-flex">
-                <div
-                  class="d-flex align-center"
-                  @click="models.sortModal = true"
-                >
-                  <div class="selection-text pr-2">Sort by</div>
-                  <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
-                </div>
+              <div class="menu-selection my-3 mr-4 d-flex">
+                <v-menu offset-y rounded>
+                  <template v-slot:activator="{ on, attrs }">
+                    <div v-bind="attrs" class="d-flex align-center" v-on="on">
+                      <div class="selection-text pr-2">Sort by</div>
+                      <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
+                    </div>
+                  </template>
+                  <v-list>
+                    <v-list-item @click="updateSort('created_at', 'DESC')">
+                      <v-list-item-title>The lastest</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="updateSort('slashtag', 'ASC')">
+                      <v-list-item-title>Slash tag A - Z</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="updateSort('slashtag', 'DESC')">
+                      <v-list-item-title>Slash tag Z - A</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
               </div>
               <div class="menu-selection my-3 d-flex">
                 <div
@@ -76,12 +88,6 @@
     >
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
-    <v-dialog v-model="models.sortModal" max-width="400">
-      <SortModal
-        @updateSort="updateSort"
-        @closeModal="models.sortModal = false"
-      />
-    </v-dialog>
     <v-dialog v-model="models.filterModal" max-width="700">
       <MemberModal
         @updateFilter="updateFilter"
@@ -95,21 +101,18 @@
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import Link from '@/components/links/Link';
 import CreateNewLink from '@/components/links/CreateNewLink';
-import SortModal from '@/components/links/SortModal';
 import MemberModal from '@/components/links/MemberModal';
 
 export default {
   components: {
     Link,
     CreateNewLink,
-    SortModal,
     MemberModal,
   },
   data: () => ({
     models: {
       base: false,
       modal: false,
-      sortModal: false,
       filterModal: false,
     },
     width: 0,

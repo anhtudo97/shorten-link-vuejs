@@ -7,13 +7,34 @@
             <div class="d-flex align-center flex-wrap">
               <div class="menu-text my-3 pr-4">{{ total }} Link(s)</div>
               <div class="menu-selection my-3 mr-4 d-flex">
-                <div
-                  class="d-flex align-center"
-                  @click="models.sortModal = true"
-                >
-                  <div class="selection-text pr-2">Sort by</div>
-                  <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
-                </div>
+                <v-menu offset-y rounded="true">
+                  <template v-slot:activator="{ on, attrs }">
+                    <div v-bind="attrs" class="d-flex align-center" v-on="on">
+                      <div class="selection-text pr-2">Sort by</div>
+                      <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
+                    </div>
+                  </template>
+                  <div class="menu-list">
+                    <div
+                      class="menu-list__item"
+                      @click="updateSort('created_at', 'DESC')"
+                    >
+                      The lastest
+                    </div>
+                    <div
+                      class="menu-list__item"
+                      @click="updateSort('slashtag', 'ASC')"
+                    >
+                      Slash tag A - Z
+                    </div>
+                    <div
+                      class="menu-list__item"
+                      @click="updateSort('slashtag', 'DESC')"
+                    >
+                      Slash tag Z - A
+                    </div>
+                  </div>
+                </v-menu>
               </div>
               <div class="menu-selection my-3 mr-4 d-flex">
                 <div
@@ -88,12 +109,6 @@
     >
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
-    <v-dialog v-model="models.sortModal" max-width="400">
-      <SortModal
-        @updateSort="updateSort"
-        @closeModal="models.sortModal = false"
-      />
-    </v-dialog>
     <v-dialog v-model="models.filterModal" max-width="700">
       <FilterModal @closeModal="models.filterModal = false" />
     </v-dialog>
@@ -104,14 +119,12 @@
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import Link from '@/components/links/Link';
 import CreateNewLink from '@/components/links/CreateNewLink';
-import SortModal from '@/components/links/SortModal';
 import FilterModal from '@/components/links/FilterModal';
 
 export default {
   components: {
     Link,
     CreateNewLink,
-    SortModal,
     FilterModal,
   },
   fetchOnServer: false,
@@ -126,7 +139,6 @@ export default {
     models: {
       base: false,
       modal: false,
-      sortModal: false,
       filterModal: false,
     },
     width: 0,
@@ -230,26 +242,6 @@ export default {
         width: 12px;
         height: auto;
         opacity: 0.7;
-      }
-      .selection-modal {
-        background-color: #fff;
-        position: absolute;
-        top: 45px;
-        left: 0;
-        border: 0.5px solid #dddddd;
-        box-sizing: border-box;
-        border-radius: 4px;
-        padding: 10px 30px;
-        .modal-title {
-          font-size: 20px;
-          line-height: 26px;
-        }
-        .modal-option {
-          font-size: 16px;
-          line-height: 24px;
-          white-space: nowrap;
-          padding: 5px 0;
-        }
       }
     }
     .add-new-link {

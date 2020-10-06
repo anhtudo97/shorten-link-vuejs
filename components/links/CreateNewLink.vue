@@ -11,8 +11,8 @@
       <v-textarea
         v-model.lazy="destinationUrl"
         auto-grow
-        label="Destination your URL"
-        hint="Type or paste your URL"
+        label="Destination URL"
+        hint="Type or paste a link (URL)"
         outlined
         dense
         rows="1"

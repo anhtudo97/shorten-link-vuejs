@@ -7,13 +7,31 @@
             <div class="d-flex align-center flex-wrap">
               <div class="menu-text my-3 pr-4">{{ total }} Link(s)</div>
               <div class="menu-selection my-3 mr-4 d-flex">
-                <div class="d-flex align-center" @click="models.sortModal = true">
-                  <div class="selection-text pr-2">Sort by</div>
-                  <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
-                </div>
+                <v-menu offset-y rounded>
+                  <template v-slot:activator="{ on, attrs }">
+                    <div v-bind="attrs" class="d-flex align-center" v-on="on">
+                      <div class="selection-text pr-2">Sort by</div>
+                      <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
+                    </div>
+                  </template>
+                  <v-list>
+                    <v-list-item @click="updateSort('created_at', 'DESC')">
+                      <v-list-item-title>The lastest</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="updateSort('slashtag', 'ASC')">
+                      <v-list-item-title>Slash tag A - Z</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="updateSort('slashtag', 'DESC')">
+                      <v-list-item-title>Slash tag Z - A</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
               </div>
               <div class="menu-selection my-3 d-flex">
-                <div class="d-flex align-center" @click="models.filterModal = true">
+                <div
+                  class="d-flex align-center"
+                  @click="models.filterModal = true"
+                >
                   <div class="selection-text pr-2">Filter by</div>
                   <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
@@ -21,7 +39,13 @@
             </div>
           </v-col>
           <v-col cols="5" sm="4" lg="3" class="text-right">
-            <button class="button-normal add-new-link" aria-label="new link" @click.stop="models.modal = true">New Link</button>
+            <button
+              class="button-normal add-new-link"
+              aria-label="new link"
+              @click.stop="models.modal = true"
+            >
+              New Link
+            </button>
           </v-col>
         </v-row>
       </v-col>
@@ -44,7 +68,11 @@
       <v-row v-if="links.length !== 0" justify="center">
         <v-col cols="8">
           <v-container class="max-width">
-            <v-pagination v-model="page" class="my-4" :length="totalPage"></v-pagination>
+            <v-pagination
+              v-model="page"
+              class="my-4"
+              :length="totalPage"
+            ></v-pagination>
           </v-container>
         </v-col>
       </v-row>
@@ -57,11 +85,11 @@
     >
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
-    <v-dialog v-model="models.sortModal" max-width="400">
-      <SortModal @updateSort="updateSort" @closeModal="models.sortModal = false" />
-    </v-dialog>
     <v-dialog v-model="models.filterModal" max-width="700">
-      <MemberModal @updateFilter="updateFilter" @closeModal="models.filterModal = false" />
+      <MemberModal
+        @updateFilter="updateFilter"
+        @closeModal="models.filterModal = false"
+      />
     </v-dialog>
   </div>
 </template>
@@ -70,7 +98,6 @@
 import { mapGetters, mapMutations } from 'vuex';
 import Link from '@/components/links/Link';
 import CreateNewLink from '@/components/links/CreateNewLink';
-import SortModal from '@/components/links/SortModal';
 import MemberModal from '@/components/links/MemberModal';
 
 import { getLinksWorkspaces } from '@/services/api';
@@ -79,7 +106,6 @@ export default {
   components: {
     Link,
     CreateNewLink,
-    SortModal,
     MemberModal,
   },
   fetchOnServer: false,
@@ -165,7 +191,6 @@ export default {
       } catch (error) {
         const { status } = error.response;
         if (status === 401) this.$router.push('/login');
-
       }
     },
     updateSort(sort, direction) {
