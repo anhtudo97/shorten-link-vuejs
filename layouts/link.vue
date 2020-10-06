@@ -14,7 +14,7 @@
 import Header from '@/components/shares/Header';
 import Drawer from '@/components/shares/NavigationDrawer';
 export default {
-  // middleware: 'authentication',
+  middleware: 'authentication',
   components: {
     Header,
     Drawer,
@@ -25,10 +25,6 @@ export default {
   }),
   beforeMount() {
     this.delayLoading();
-    if (typeof localStorage !== 'undefined' && localStorage.token) {
-    } else {
-      this.$router.push('/login');
-    }
   },
   methods: {
     openModal() {

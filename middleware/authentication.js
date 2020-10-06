@@ -1,19 +1,11 @@
 export default function(context) {
   // Universal keys
-  const {
-    store,
-    redirect,
-  } = context;
+  const { redirect } = context;
   // Server-side
   // Client-side
-  // if (process.client) {
-  //   const { from, nuxtState } = context;
-  //   if (!window.localStorage.getItem('token')) {
-  //     return redirect('/login');
-  //   }
-  // }
-
-  if (store.state.token === null) {
-    return redirect('/login');
+  if (process.client) {
+    if (!window.localStorage.getItem('token')) {
+      return redirect('/login');
+    }
   }
 }

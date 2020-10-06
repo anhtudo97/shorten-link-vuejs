@@ -34,11 +34,19 @@
           </v-col>
           <v-col cols="12" sm="4" class="ma-md-0 align-self-center">
             <button
-              class="shorten-button button-primary"
+              :disabled="loading"
+              class="shorten-button"
               aria-label="Action"
               @click.stop="shortendLink()"
             >
-              Shorten URL
+              <div v-if="loading">
+                <img
+                  class="loading"
+                  src="@/assets/svg/Ellipsis-1s-200px.svg"
+                  alt="loading"
+                />
+              </div>
+              <div v-else class="btn-text">Shorten URL</div>
             </button>
           </v-col>
         </v-row>
@@ -92,6 +100,7 @@ export default {
       destination: '',
       shortUrl: '',
     },
+    loading: false,
     isShorten: false,
     valid: false,
     message: '',
@@ -131,6 +140,7 @@ export default {
         str = this.destination;
       }
       if (this.valid) {
+        this.loading = true;
         try {
           const res = await shortendLink(str);
           const { status, data } = res.data;
@@ -145,6 +155,8 @@ export default {
             JSON.stringify(this.links, null, 2),
             60 * 60 * 24 * 30
           );
+          this.loading = false;
+          this.destination = ''
         } catch (error) {
           const { status, data } = error.response;
           this.message = data.message;
@@ -152,6 +164,8 @@ export default {
           this.showAlert400 = true;
           setTimeout(() => {
             this.showAlert400 = false;
+            this.loading = false;
+            this.destination = ''
           }, 1500);
         }
       } else {
@@ -238,14 +252,35 @@ export default {
         line-height: 18px;
       }
     }
+
     .shorten-input::v-deep v-input__control {
       height: 100%;
     }
     .shorten-button {
-      padding: 15px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      // padding: 15px 0;
       width: 100%;
+      border-radius: 4px;
+      background-color: #3c64b1;
       font-size: 18px;
-      line-height: 24px;
+      line-height: 18px;
+      .loading {
+        margin-top: 3px;
+        object-fit: cover;
+        width: auto;
+        height: 50px;
+      }
+      .btn-text {
+        color: #fff;
+        text-align: center;
+        font-weight: bold;
+        margin: 18px 0;
+      }
+      &:hover {
+        background-color: #2a5bd7;
+      }
       @media (max-width: 1366px) {
         font-size: 14px;
         line-height: 20px;
