@@ -53,7 +53,7 @@
         <slide-fade-transition mode="out-in">
           <div v-if="isShorten">
             <Shorten
-              v-for="(data, index) in links"
+              v-for="(data, index) in shortenLinks"
               :key="`index_${index}`"
               :data="data"
             />
@@ -108,6 +108,7 @@ export default {
     data: {
       destination: '',
       shortUrl: '',
+      date: '',
     },
     loading: false,
     isShorten: false,
@@ -117,6 +118,15 @@ export default {
     showAlert400: false,
     links: [],
   }),
+  computed: {
+    shortenLinks() {
+      const temp = [...this.links].sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
+      console.log(temp);
+      return temp;
+    },
+  },
   created() {
     if (this.$cookies.get('links')) {
       this.isShorten = true;
@@ -156,9 +166,14 @@ export default {
 
           if (status === 200) {
             this.isShorten = true;
-            this.data = data;
+            const { destination, shortUrl } = data;
+            this.data = {
+              destination,
+              shortUrl,
+              date: new Date(),
+            };
           }
-          this.links.push(data);
+          this.links.push(this.data);
           this.$cookies.set(
             'links',
             JSON.stringify(this.links, null, 2),
