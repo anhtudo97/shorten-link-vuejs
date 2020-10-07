@@ -7,39 +7,64 @@
       </div>
     </div>
     <div class="modal-sort__title">Filter by</div>
-    <v-row justify="center">
-      <v-col cols="12" md="6">
-        <div class="font-weight-medium">Domains</div>
-        <v-checkbox
-          v-for="domain in domains"
-          :key="domain.id"
-          v-model="domainsSelected"
-          class="modal-sort__checkbox"
-          dense
-          :label="domain.name"
-          :value="domain.id"
-          @change="updateFilterBy()"
-        />
+    <v-row class="d-flex modal-sort__tab mt-3">
+      <v-col
+        cols="6"
+        :class="[tab === 'domains' ? 'active' : '']"
+        class="font-weight-medium tab-title cursor-pointer text-center"
+        @click="tab = 'domains'"
+      >
+        Domains
       </v-col>
-      <v-col cols="12" md="6">
-        <div class="font-weight-medium">Members</div>
-        <div v-if="members.length !== 0">
-          <v-checkbox
-            v-for="mem in members"
-            :key="mem.id"
-            v-model="memberSelected"
-            class="modal-sort__checkbox"
-            dense
-            :label="mem.fullName"
-            :value="mem.id"
-            @change="updateFilterBy()"
-          />
-        </div>
-        <div v-else class="mt-4">Have not any member</div>
+      <v-col
+        cols="6"
+        :class="[tab === 'members' ? 'active' : '']"
+        class="font-weight-medium tab-title cursor-pointer text-center"
+        @click="tab = 'members'"
+      >
+        Members
       </v-col>
     </v-row>
+    <v-row justify="center">
+      <transition name="fade" mode="in-out">
+        <v-col v-if="tab === 'domains'" cols="12">
+          <div v-if="members.length !== 0">
+            <v-checkbox
+              v-for="domain in domains"
+              :key="domain.id"
+              v-model="domainsSelected"
+              class="modal-sort__checkbox"
+              dense
+              :label="domain.name"
+              :value="domain.id"
+              @change="updateFilterBy()"
+            />
+          </div>
+          <div v-else class="mt-4 text-notification">Have not any domains</div>
+        </v-col>
+      </transition>
+      <transition name="fade" mode="in-out">
+        <v-col v-if="tab === 'members'" cols="12">
+          <div v-if="members.length !== 0">
+            <v-checkbox
+              v-for="mem in members"
+              :key="mem.id"
+              v-model="memberSelected"
+              class="modal-sort__checkbox"
+              dense
+              :label="mem.fullName"
+              :value="mem.id"
+              @change="updateFilterBy()"
+            />
+          </div>
+          <div v-else class="mt-4 text-notification">Have not any member</div>
+        </v-col>
+      </transition>
+    </v-row>
     <client-only>
-      <infinite-loading spinner="waveDots" @infinite="infiniteScroll"></infinite-loading>
+      <infinite-loading spinner="waveDots" @infinite="infiniteScroll"
+        ><div slot="no-more"></div
+      ></infinite-loading>
     </client-only>
   </v-list>
 </template>
@@ -56,6 +81,7 @@ export default {
     pageDomains: 1,
     token: '',
     workspaceId: '',
+    tab: 'domains',
   }),
   mounted() {
     this.workspaceId = this.$route.params.id;
@@ -136,7 +162,17 @@ export default {
     font-weight: 500;
     padding: 5px 4vh;
   }
-
+  &__tab {
+    .tab-title {
+      color: #000;
+      transition: all 0.3s ease-in-out;
+      border-bottom: 2px solid #fff;
+    }
+    .active {
+      color: #3c64b1;
+      border-bottom-color: #3c64b1;
+    }
+  }
   @media screen and (max-width: 1368px) {
     &__title {
       font-size: 20px;
@@ -147,6 +183,14 @@ export default {
     }
     &__checkbox::v-deep label,
     &__checkbox::v-deep input {
+      font-size: 15px;
+    }
+    &__tab {
+      .tab-title {
+        font-size: 15px;
+      }
+    }
+    .text-notification {
       font-size: 15px;
     }
   }
@@ -162,6 +206,14 @@ export default {
     &__checkbox::v-deep input {
       font-size: 14px;
     }
+    &__tab {
+      .tab-title {
+        font-size: 14px;
+      }
+    }
+    .text-notification {
+      font-size: 14px;
+    }
   }
   @media screen and (max-width: 600px) {
     &__title {
@@ -173,6 +225,14 @@ export default {
     }
     &__checkbox::v-deep label,
     &__checkbox::v-deep input {
+      font-size: 13px;
+    }
+    &__tab {
+      .tab-title {
+        font-size: 13px;
+      }
+    }
+    .text-notification {
       font-size: 13px;
     }
   }

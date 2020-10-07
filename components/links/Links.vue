@@ -5,7 +5,7 @@
         <v-row class="align-center">
           <v-col cols="7" sm="8" lg="9">
             <div class="d-flex align-center flex-wrap">
-              <div class="menu-text my-3 pr-4">{{ total }} Link(s)</div>
+              <div class="menu-text my-3 pr-4 w-6">{{ total }} Link(s)</div>
               <div class="menu-selection my-3 mr-4 d-flex">
                 <v-menu offset-y rounded="true">
                   <template v-slot:activator="{ on, attrs }">
@@ -37,12 +37,8 @@
                 </v-menu>
               </div>
               <div class="menu-selection my-3 mr-4 d-flex">
-                <div
-                  class="d-flex align-center"
-                  @click="models.filterModal = true"
-                >
+                <div class="d-flex align-center" @click="drawer = !drawer">
                   <div class="selection-text pr-2">Filter by</div>
-                  <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
               </div>
               <v-text-field
@@ -109,9 +105,15 @@
     >
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
-    <v-dialog v-model="models.filterModal" max-width="700">
-      <FilterModal @closeModal="models.filterModal = false" />
-    </v-dialog>
+    <v-navigation-drawer
+      v-model="drawer"
+      absolute
+      right
+      temporary
+      style="width:40%;"
+    >
+      <FilterModal @closeModal="drawer = false"/>
+    </v-navigation-drawer>
   </div>
 </template>
 
@@ -143,6 +145,7 @@ export default {
     },
     width: 0,
     page: 1,
+    drawer: false,
   }),
   computed: {
     ...mapGetters({

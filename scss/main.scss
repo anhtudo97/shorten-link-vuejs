@@ -33,7 +33,7 @@ button {
   color: #fff;
 }
 
-.font-semiblod{
+.font-semiblod {
   font-weight: 600;
 }
 
@@ -88,6 +88,26 @@ button {
   border-bottom: 1px solid #e8e9ea;
 }
 
+.w-1 {
+  width: 1rem;
+}
+
+.w-2 {
+  width: 2rem;
+}
+
+.w-3 {
+  width: 3rem;
+}
+
+.w-6 {
+  width: 6rem;
+}
+
+.-mx-3{
+  margin: 0 -12px;
+}
+
 .menu-list {
   font-family: Poppins, sans-serif;
   background: #fff;
@@ -124,37 +144,35 @@ button {
 }
 
 /* Enter and leave animations can use different */
-
 /* durations and timing functions.              */
-
 .slide-fade-enter-active {
-  transition: all 0.2s ease;
+  transition: all 0.2s ease-in-out;
 }
-
 .slide-fade-leave-active {
   transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
 }
-
-.slide-fade-enter,
-.slide-fade-leave-to
-/* .slide-fade-leave-active below version 2.1.8 */
-
- {
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
   transform: translateX(10px);
   opacity: 0;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-1rem);
 }
 
-.fade-enter,
-.fade-leave-to
-/* .fade-leave-active below version 2.1.8 */
-
- {
-  opacity: 0;
+.fade-leave-active {
+  position: absolute;
+  width: 100%;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 1s;
+}
+.fade-move {
+  transition: all 1s;
 }
 
 .list-item {

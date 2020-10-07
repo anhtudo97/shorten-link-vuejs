@@ -3,6 +3,7 @@ import InfiniteLoading from 'vue-infinite-loading'
 
 Vue.use(InfiniteLoading, {
   slots: {
+    noResults: '',
     noMore: '', // you can pass a string value
   },
 });

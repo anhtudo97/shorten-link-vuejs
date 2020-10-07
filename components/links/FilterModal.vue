@@ -7,36 +7,59 @@
       </div>
     </div>
     <div class="modal-sort__title">Filter by</div>
-    <v-row justify="center">
-      <v-col cols="12" md="6">
-        <div class="font-weight-medium">Domains</div>
-        <v-checkbox
-          v-for="domain in domains"
-          :key="domain.id"
-          v-model="domainsSelected"
-          class="modal-sort__checkbox"
-          dense
-          :label="domain.name"
-          :value="domain.id"
-          @change="updateFilterBy()"
-        />
+    <v-row class="d-flex modal-sort__tab mt-3">
+      <v-col
+        cols="6"
+        :class="[tab === 'domains' ? 'active' : '']"
+        class="font-weight-medium tab-title cursor-pointer text-center"
+        @click="tab = 'domains'"
+      >
+        Domains
       </v-col>
-      <v-col cols="12" md="6">
-        <div class="font-weight-medium">Workspaces</div>
-        <v-checkbox
-          v-for="w in workspaces"
-          :key="w.id"
-          v-model="workspacesSelected"
-          class="modal-sort__checkbox"
-          dense
-          :label="w.name"
-          :value="w.id"
-          @change="updateFilterBy()"
-        />
+      <v-col
+        cols="6"
+        :class="[tab === 'workspaces' ? 'active' : '']"
+        class="font-weight-medium tab-title cursor-pointer text-center"
+        @click="tab = 'workspaces'"
+      >
+        Workspaces
       </v-col>
     </v-row>
+    <v-row justify="center">
+      <transition name="fade" mode="in-out">
+        <v-col v-if="tab === 'domains'" cols="12">
+          <v-checkbox
+            v-for="domain in domains"
+            :key="domain.id"
+            v-model="domainsSelected"
+            class="modal-sort__checkbox"
+            dense
+            :label="domain.name"
+            :value="domain.id"
+            @change="updateFilterBy()"
+          />
+        </v-col>
+      </transition>
+      <transition name="fade" mode="in-out">
+        <v-col v-if="tab === 'workspaces'" cols="12">
+          <v-checkbox
+            v-for="w in workspaces"
+            :key="w.id"
+            v-model="workspacesSelected"
+            class="modal-sort__checkbox"
+            dense
+            :label="w.name"
+            :value="w.id"
+            @change="updateFilterBy()"
+          />
+        </v-col>
+      </transition>
+    </v-row>
     <client-only>
-      <infinite-loading spinner="waveDots" @infinite="infiniteScroll"></infinite-loading>
+      <infinite-loading
+        spinner="waveDots"
+        @infinite="infiniteScroll"
+      ></infinite-loading>
     </client-only>
   </v-list>
 </template>
@@ -53,6 +76,7 @@ export default {
     pageDomains: 1,
     pageWorkspaces: 1,
     token: '',
+    tab: 'domains',
   }),
   created() {
     if (typeof localStorage !== 'undefined' && localStorage.token) {
@@ -136,7 +160,17 @@ export default {
     font-weight: 500;
     padding: 5px 4vh;
   }
-
+  &__tab {
+    .tab-title {
+      color: #000;
+      transition: all 0.3s ease-in-out;
+      border-bottom: 2px solid #fff;
+    }
+    .active {
+      color: #3c64b1;
+      border-bottom-color: #3c64b1;
+    }
+  }
   @media screen and (max-width: 1368px) {
     &__title {
       font-size: 20px;
@@ -148,6 +182,11 @@ export default {
     &__checkbox::v-deep label,
     &__checkbox::v-deep input {
       font-size: 15px;
+    }
+    &__tab {
+      .tab-title {
+        font-size: 15px;
+      }
     }
   }
   @media screen and (max-width: 960px) {
@@ -162,6 +201,11 @@ export default {
     &__checkbox::v-deep input {
       font-size: 14px;
     }
+    &__tab {
+      .tab-title {
+        font-size: 14px;
+      }
+    }
   }
   @media screen and (max-width: 600px) {
     &__title {
@@ -174,6 +218,11 @@ export default {
     &__checkbox::v-deep label,
     &__checkbox::v-deep input {
       font-size: 13px;
+    }
+    &__tab {
+      .tab-title {
+        font-size: 13px;
+      }
     }
   }
 }
