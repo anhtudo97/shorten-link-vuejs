@@ -3,14 +3,14 @@
     <v-row class="home__hero mx-0 mb-8">
       <v-col cols="10" md="8" class="mx-auto">
         <v-row class="hero-banner align-center">
-          <v-col cols="12" md="8">
+          <v-col cols="12" md="7" lg="8">
             <div class="hero-banner__title">Create Click-Worthy Links</div>
             <div class="hero-banner__sub">
               Build and protect your brand using powerful, recognizable short
               links.
             </div>
           </v-col>
-          <v-col cols="12" md="4">
+          <v-col cols="12" md="5" lg="4">
             <img src="@/assets/home.webp" alt="home" />
           </v-col>
         </v-row>
@@ -61,8 +61,17 @@
         </slide-fade-transition>
         <div key="false" class="text-center shorten-policy">
           By clicking shorten, you agree to Relinks team’s
-          <strong class="text-underline">Terms</strong> &
-          <strong class="text-underline">Conditions and Privacy Policy</strong>
+          <nuxt-link to="/terms-conditions">
+            <strong class="text-white cursor-pointer text-decoration-underline"
+              >Terms of Use</strong
+            >
+          </nuxt-link>
+          &
+          <nuxt-link to="/privacy-policy">
+            <strong class="text-white cursor-pointer text-decoration-underline"
+              >Privacy Policy</strong
+            >
+          </nuxt-link>
         </div>
       </v-col>
     </v-row>
@@ -156,7 +165,7 @@ export default {
             60 * 60 * 24 * 30
           );
           this.loading = false;
-          this.destination = ''
+          this.destination = '';
         } catch (error) {
           const { status, data } = error.response;
           this.message = data.message;
@@ -165,7 +174,7 @@ export default {
           setTimeout(() => {
             this.showAlert400 = false;
             this.loading = false;
-            this.destination = ''
+            this.destination = '';
           }, 1500);
         }
       } else {
@@ -182,7 +191,7 @@ export default {
 
 <style lang="scss" scoped>
 .home {
-  font-family: Montserrat, sans-serif;
+  font-family: Poppins, sans-serif;
   &__hero {
     margin-top: 10vh;
     .hero-banner {
@@ -293,10 +302,6 @@ export default {
     .shorten-policy {
       color: white;
       font-size: 15px;
-      .text-underline {
-        cursor: pointer;
-        text-decoration: underline;
-      }
       @media (max-width: 1366px) {
         font-size: 15px;
       }

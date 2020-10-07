@@ -115,12 +115,12 @@
             </button>
             <div class="text-center term-policy mt-5">
               By creating an account you agree to our
-              <nuxt-link to="/login">
-                <span class="font-weight-bold">terms</span>
+              <nuxt-link to="/terms-conditions">
+                <span class="font-weight-bold text-blue-deep">terms</span>
               </nuxt-link>
               and
-              <nuxt-link to="/login">
-                <span class="font-weight-bold">privacy policy</span>
+              <nuxt-link to="/privacy-policy">
+                <span class="font-weight-bold text-blue-deep">privacy policy</span>
               </nuxt-link>
             </div>
             <div class="login-tip text-center mt-5">

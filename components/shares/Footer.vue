@@ -3,15 +3,17 @@
     <v-col cols="12" md="8" class="mx-auto py-0 py-md-3">
       <v-row class="justify-space-between">
         <v-col cols="12" sm="6" class="d-flex justify-center justify-md-start">
-          <div class="footer-title">Terms & Conditions</div>
+          <nuxt-link to="/terms-conditions">
+            <div class="footer-title">Terms & Conditions</div>
+          </nuxt-link>
           <div class="rect-20"></div>
-          <div class="footer-title">Privacy Policy</div>
+          <nuxt-link to="/privacy-policy">
+            <div class="footer-title">Privacy Policy</div>
+          </nuxt-link>
         </v-col>
-        <v-col
-          cols="12"
-          sm="6"
-          class="footer-title text-center text-md-right"
-        >Relinks team © Copyright 2020</v-col>
+        <v-col cols="12" sm="6" class="footer-title text-center text-md-right"
+          >Relinks team © Copyright 2020</v-col
+        >
       </v-row>
     </v-col>
   </div>
