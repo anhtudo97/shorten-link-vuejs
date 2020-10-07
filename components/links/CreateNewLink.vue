@@ -35,7 +35,30 @@
                   :label="domain.name"
                   :disabled="loading"
                   item-disabled="isUse"
-                />
+                  single-line
+                >
+                  <template v-slot:item="data">
+                    <nuxt-link
+                      v-if="data.item.name === 'addMore'"
+                      to="/domains"
+                    >
+                      <div class="d-flex management-domain align-center">
+                        <div
+                          class="image-management d-flex align-self-center mr-7"
+                        >
+                          <img
+                            class=""
+                            src="@/assets/svg/management.svg"
+                            alt="management"
+                          />
+                          <div class="overlay"></div>
+                        </div>
+                        <div class="text-management">Management Domains</div>
+                      </div>
+                    </nuxt-link>
+                    <div v-else>{{ data.item.name }}</div>
+                  </template>
+                </v-select>
               </v-col>
               <v-col cols="12" md="6" class="py-0">
                 <div class="modal-mask__sub-title">Slash tag</div>
@@ -60,9 +83,32 @@
                   item-value="id"
                   dense
                   outlined
+                  single-line
                   menu-props="auto"
                   :disabled="loading || edit"
-                />
+                >
+                  <template v-slot:item="data">
+                    <nuxt-link
+                      v-if="data.item.name === 'addMore'"
+                      to="/workspaces"
+                    >
+                      <div class="d-flex management-domain align-center">
+                        <div
+                          class="image-management d-flex align-self-center mr-7"
+                        >
+                          <img
+                            class=""
+                            src="@/assets/svg/management.svg"
+                            alt="management"
+                          />
+                          <div class="overlay"></div>
+                        </div>
+                        <div class="text-management">Management Workspaces</div>
+                      </div>
+                    </nuxt-link>
+                    <div v-else>{{ data.item.name }}</div>
+                  </template>
+                </v-select>
               </v-col>
               <v-col cols="12" md="6" class="py-0">
                 <div class="modal-mask__sub-title">Web title</div>
@@ -206,21 +252,32 @@ export default {
   }),
   computed: {
     tempDomains() {
-      return this.domains.map((x) => {
+      let temp = this.domains.map((x) => {
         return {
           id: x.id,
           name: x.name,
           isUse: !x.dnsVerified,
         };
       });
+      temp = temp.concat({
+        id: 1,
+        name: 'addMore',
+        isUse: false,
+      });
+      return temp;
     },
     tempWorkspaces() {
-      return this.workspaces.map((x) => {
+      let temp = this.workspaces.map((x) => {
         return {
           id: x.id,
           name: x.name,
         };
       });
+      temp = temp.concat({
+        id: 1,
+        name: 'addMore',
+      });
+      return temp;
     },
   },
   watch: {

@@ -101,7 +101,7 @@
       v-model="models.modal"
       class="link__dialog"
       max-width="900"
-      :fullscreen="width < 600 ? true : false"
+      :fullscreen="width < 700 ? true : false"
     >
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
