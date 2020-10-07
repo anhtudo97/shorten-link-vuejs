@@ -10,7 +10,7 @@ module.exports = {
      ** See https://nuxtjs.org/api/configuration-head
      */
     head: {
-        titleTemplate: '%s - Relinks',
+        titleTemplate: '%s',
         title: 'Relinks' || '',
         htmlAttrs: {
             lang: 'en',

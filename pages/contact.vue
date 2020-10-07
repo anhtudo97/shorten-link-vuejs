@@ -7,7 +7,7 @@
 <script>
 import Contact from '@/components/contact/contact';
 export default {
-  layout: 'contact',
+  layout: 'other',
   components: {
     Contact,
   },
