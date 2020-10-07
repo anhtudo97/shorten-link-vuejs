@@ -184,11 +184,11 @@ export default {
         return `${Math.ceil(diffTime)} second(s) ago`;
       }
       if (diffTime < 3600 * 1000) {
-        return `${Math.ceil(diffTime / (60 * 1000))} min(s) ago`;
+        return `${Math.floor(diffTime / (60 * 1000))} min(s) ago`;
       } else if (diffTime < 1000 * 60 * 60 * 24) {
-        return `${Math.ceil(diffTime / (3600 * 1000))} hour(s) ago`;
+        return `${Math.floor(diffTime / (3600 * 1000))} hour(s) ago`;
       } else {
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         return `${diffDays} day(s) ago`;
       }
     },

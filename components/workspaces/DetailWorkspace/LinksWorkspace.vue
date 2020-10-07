@@ -29,10 +29,9 @@
               <div class="menu-selection my-3 d-flex">
                 <div
                   class="d-flex align-center"
-                  @click="models.filterModal = true"
+                  @click="drawer = true"
                 >
                   <div class="selection-text pr-2">Filter by</div>
-                  <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
               </div>
             </div>
@@ -54,7 +53,7 @@
         name="slide-fade"
         mode="out-in"
         tag="section"
-        class="py-0"
+        class="py-0 -mx-3"
       >
         <div v-for="link in links" :key="link.id">
           <Link
@@ -88,12 +87,15 @@
     >
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
-    <v-dialog v-model="models.filterModal" max-width="700">
-      <MemberModal
-        @updateFilter="updateFilter"
-        @closeModal="models.filterModal = false"
-      />
-    </v-dialog>
+    <v-navigation-drawer
+      v-model="drawer"
+      absolute
+      right
+      temporary
+      style="width:40%;"
+    >
+      <MemberModal @updateFilter="updateFilter" @closeModal="drawer = false" />
+    </v-navigation-drawer>
   </div>
 </template>
 
@@ -119,6 +121,7 @@ export default {
     page: 1,
     domainSelected: [],
     userIdsSelected: [],
+    drawer: false,
   }),
   computed: {
     ...mapGetters({

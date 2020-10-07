@@ -27,13 +27,9 @@
                   </v-list>
                 </v-menu>
               </div>
-              <div class="menu-selection my-3 d-flex">
-                <div
-                  class="d-flex align-center"
-                  @click="models.filterModal = true"
-                >
+              <div class="menu-selection my-3 mr-4 d-flex">
+                <div class="d-flex align-center" @click="drawer = !drawer">
                   <div class="selection-text pr-2">Filter by</div>
-                  <img :src="require('@/assets/svg/ar.svg')" alt="arrow" />
                 </div>
               </div>
             </div>
@@ -85,12 +81,15 @@
     >
       <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
     </v-dialog>
-    <v-dialog v-model="models.filterModal" max-width="700">
-      <MemberModal
-        @updateFilter="updateFilter"
-        @closeModal="models.filterModal = false"
-      />
-    </v-dialog>
+    <v-navigation-drawer
+      v-model="drawer"
+      absolute
+      right
+      temporary
+      style="width:40%;"
+    >
+      <MemberModal @updateFilter="updateFilter" @closeModal="drawer = false" />
+    </v-navigation-drawer>
   </div>
 </template>
 
@@ -139,6 +138,7 @@ export default {
     totalPage: 0,
     domainSelected: [],
     userIdsSelected: [],
+    drawer: false,
   }),
   computed: {
     ...mapGetters({ sort: 'links/getSort', direction: 'links/getDirection' }),
