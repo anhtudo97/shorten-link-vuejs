@@ -1,125 +1,133 @@
 <template>
   <v-list class="modal-detail-link py-5">
-    <div class="d-flex justify-space-between px-4">
-      <div></div>
-      <div
-        class="modal-detail-link__dialog-icon pa-2"
-        @click="$emit('closeModalDetailLink')"
-      >
-        <img src="@/assets/svg/close.svg" alt="close" />
-      </div>
-    </div>
-    <v-row class="mx-0">
-      <v-col cols="12" class="px-3 px-sm-5">
-        <div
-          class="d-flex justify-space-between modal-detail-link__dialog-main align-center mb-10 flex-wrap"
-        >
-          <div class="d-flex align-center">
-            <img
-              loading="lazy"
-              class="img-favicon mr-3"
-              :src="`https://www.google.com/s2/favicons?domain=${destination}`"
-              alt="favicon"
-            />
-            <a
-              :href="`https://${shorten}`"
-              target="_blank"
-              class="main-title text-overflow-hidden pb-3 pb-sm-0"
-              >{{ shorten }}</a
-            >
+    <transition name="fade" mode="in-out">
+      <div v-if="!loading">
+        <div class="d-flex justify-space-between px-4">
+          <div></div>
+          <div
+            class="modal-detail-link__dialog-icon pa-2"
+            @click="$emit('closeModalDetailLink')"
+          >
+            <img src="@/assets/svg/close.svg" alt="close" />
           </div>
-          <div class="d-flex dialog-link-service align-center">
+        </div>
+        <v-row class="mx-0">
+          <v-col cols="12" class="px-3 px-sm-5">
             <div
-              v-clipboard="`https://${shorten}`"
-              class="dialog-button-copy mr-3"
+              class="d-flex justify-space-between modal-detail-link__dialog-main align-center mb-10 flex-wrap"
             >
-              Copy
-            </div>
-            <button
-              class="dialog-button button-normal"
-              aria-label="Edit"
-              @click.stop="modalEditLink = true"
-            >
-              Edit
-            </button>
-          </div>
-        </div>
-        <div class="modal-detail-link__dialog-sub">
-          <v-row class="information d-flex align-center">
-            <v-col cols="12" md="3">
-              <div class="information-title">Created date</div>
-            </v-col>
-            <v-col cols="12" md="9">
-              <div class="information-content">{{ createdDate }}</div>
-            </v-col>
-          </v-row>
-          <v-row class="information d-flex align-center">
-            <v-col cols="12" md="3">
-              <div class="information-title">Title</div>
-            </v-col>
-            <v-col cols="12" md="9">
-              <div class="information-content content-border">{{ title }}</div>
-            </v-col>
-          </v-row>
-          <v-row class="information d-flex align-center">
-            <v-col cols="12" md="3">
-              <div class="information-title">Original link</div>
-            </v-col>
-            <v-col cols="12" md="9">
-              <div class="information-content content-border">
-                {{ destination }}
+              <div class="d-flex align-center">
+                <img
+                  loading="lazy"
+                  class="img-favicon mr-3"
+                  :src="
+                    `https://www.google.com/s2/favicons?domain=${destination}`
+                  "
+                  alt="favicon"
+                />
+                <a
+                  :href="`https://${shorten}`"
+                  target="_blank"
+                  class="main-title text-overflow-hidden pb-3 pb-sm-0"
+                  >{{ shorten }}</a
+                >
               </div>
-            </v-col>
-          </v-row>
-          <v-row class="information d-flex align-center">
-            <v-col cols="12" md="3">
-              <div class="information-title">Remove</div>
-            </v-col>
-            <v-col cols="12" md="9">
-              <button
-                class="remove-button button-warning"
-                aria-label="Remove this link"
-                @click.stop="isRemoveModal = true"
-              >
-                Remove this link
-              </button>
-            </v-col>
-          </v-row>
-        </div>
-      </v-col>
-    </v-row>
-    <v-dialog
-      v-model="modalEditLink"
-      class="link__dialog"
-      max-width="900"
-      :fullscreen="width < 600 ? true : false"
-    >
-      <CreateNewLink
-        :id="id"
-        :edit="true"
-        @closeModalAddNewLink="closeModalAddNewLink"
-      />
-    </v-dialog>
-    <v-dialog v-model="isRemoveModal" persistent width="500">
-      <RemoveModal
-        name="link"
-        @closeRemoveModal="closeRemoveModal"
-        @removeElement="removeLink"
-      />
-    </v-dialog>
-    <v-snackbar v-model="showAlert" top color="success">
-      Delete link is successfully
-      <template v-slot:action="{ attrs }">
-        <v-btn
-          color="white"
-          text
-          v-bind="attrs"
-          aria-label="close"
-          @click="showAlert = false"
-          >Close</v-btn
+              <div class="d-flex dialog-link-service align-center">
+                <div
+                  v-clipboard="`https://${shorten}`"
+                  class="dialog-button-copy mr-3"
+                >
+                  Copy
+                </div>
+                <button
+                  class="dialog-button button-normal"
+                  aria-label="Edit"
+                  @click.stop="modalEditLink = true"
+                >
+                  Edit
+                </button>
+              </div>
+            </div>
+            <div class="modal-detail-link__dialog-sub">
+              <v-row class="information d-flex align-center">
+                <v-col cols="12" md="3">
+                  <div class="information-title">Created date</div>
+                </v-col>
+                <v-col cols="12" md="9">
+                  <div class="information-content">{{ createdDate }}</div>
+                </v-col>
+              </v-row>
+              <v-row class="information d-flex align-center">
+                <v-col cols="12" md="3">
+                  <div class="information-title">Title</div>
+                </v-col>
+                <v-col cols="12" md="9">
+                  <div class="information-content content-border">
+                    {{ title }}
+                  </div>
+                </v-col>
+              </v-row>
+              <v-row class="information d-flex align-center">
+                <v-col cols="12" md="3">
+                  <div class="information-title">Original link</div>
+                </v-col>
+                <v-col cols="12" md="9">
+                  <div class="information-content content-border">
+                    {{ destination }}
+                  </div>
+                </v-col>
+              </v-row>
+              <v-row class="information d-flex align-center">
+                <v-col cols="12" md="3">
+                  <div class="information-title">Remove</div>
+                </v-col>
+                <v-col cols="12" md="9">
+                  <button
+                    class="remove-button button-warning"
+                    aria-label="Remove this link"
+                    @click.stop="isRemoveModal = true"
+                  >
+                    Remove this link
+                  </button>
+                </v-col>
+              </v-row>
+            </div>
+          </v-col>
+        </v-row>
+        <v-dialog
+          v-model="modalEditLink"
+          class="link__dialog"
+          max-width="900"
+          :fullscreen="width < 600 ? true : false"
         >
-      </template>
-    </v-snackbar>
+          <CreateNewLink
+            :id="id"
+            :edit="true"
+            @closeModalAddNewLink="closeModalAddNewLink"
+          />
+        </v-dialog>
+        <v-dialog v-model="isRemoveModal" persistent width="500">
+          <RemoveModal
+            name="link"
+            @closeRemoveModal="closeRemoveModal"
+            @removeElement="removeLink"
+          />
+        </v-dialog>
+        <v-snackbar v-model="showAlert" top color="success">
+          Delete link is successfully
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="white"
+              text
+              v-bind="attrs"
+              aria-label="close"
+              @click="showAlert = false"
+              >Close</v-btn
+            >
+          </template>
+        </v-snackbar>
+      </div>
+    </transition>
   </v-list>
 </template>
 
@@ -200,6 +208,7 @@ export default {
       }
     },
     async getLink() {
+      this.loading = true;
       try {
         const resLink = await getLink(this.token, this.id);
         const { status, data } = resLink.data;
@@ -209,6 +218,7 @@ export default {
           this.title = title;
           this.destination = destination;
           this.shorten = `${domain.name}/${slashtag}`;
+          this.loading = false;
         }
       } catch (error) {
         const { status } = error.response;

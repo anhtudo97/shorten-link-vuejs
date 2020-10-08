@@ -39,6 +39,7 @@
                 v-model="form.email"
                 class="input-name mt-4 mt-sm-6"
                 label="Your email"
+                placeholder="Enter you email"
                 hide-details="auto"
                 :rules="[required('email'), emailFormat()]"
               />
@@ -46,6 +47,7 @@
                 v-model="form.password"
                 class="input-password mt-4 mt-sm-6"
                 label="Password"
+                placeholder="Enter password"
                 type="password"
                 hide-details="auto"
                 :rules="[required('password')]"
