@@ -123,7 +123,6 @@ export default {
       const temp = [...this.links].sort(
         (a, b) => new Date(b.date) - new Date(a.date)
       );
-      console.log(temp);
       return temp;
     },
   },

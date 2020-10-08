@@ -80,6 +80,7 @@
               :clicks="link.clicks"
               :date="link.createdAt"
               :domain="link.domain.name"
+              @refetchLinks="refetchLinks"
               @closeModalAddNewLink="closeModalAddNewLink"
             />
           </div>
@@ -103,7 +104,10 @@
       max-width="900"
       :fullscreen="width < 700 ? true : false"
     >
-      <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
+      <CreateNewLink
+        @refetchLinks="refetchLinks"
+        @closeModalAddNewLink="closeModalAddNewLink"
+      />
     </v-dialog>
     <v-navigation-drawer
       v-model="drawer"
@@ -112,7 +116,7 @@
       temporary
       style="width:40%;"
     >
-      <FilterModal @closeModal="drawer = false"/>
+      <FilterModal @closeModal="drawer = false" />
     </v-navigation-drawer>
   </div>
 </template>
@@ -202,6 +206,11 @@ export default {
     updateFilter(domainSelected, workspaceSelected) {
       this.setDomainSelected(domainSelected);
       this.setWorkspaceSelected(workspaceSelected);
+      this.updateLinks({
+        page: this.page,
+      });
+    },
+    refetchLinks() {
       this.updateLinks({
         page: this.page,
       });
