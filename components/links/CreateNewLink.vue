@@ -35,7 +35,30 @@
                   :label="domain.name"
                   :disabled="loading"
                   item-disabled="isUse"
-                />
+                  single-line
+                >
+                  <template v-slot:item="data">
+                    <nuxt-link
+                      v-if="data.item.name === 'addMore'"
+                      to="/domains"
+                    >
+                      <div class="d-flex management-domain align-center">
+                        <div
+                          class="image-management d-flex align-self-center mr-7"
+                        >
+                          <img
+                            class=""
+                            src="@/assets/svg/management.svg"
+                            alt="management"
+                          />
+                          <div class="overlay"></div>
+                        </div>
+                        <div class="text-management">Management Domains</div>
+                      </div>
+                    </nuxt-link>
+                    <div v-else>{{ data.item.name }}</div>
+                  </template>
+                </v-select>
               </v-col>
               <v-col cols="12" md="6" class="py-0">
                 <div class="modal-mask__sub-title">Slash tag</div>
@@ -60,9 +83,32 @@
                   item-value="id"
                   dense
                   outlined
+                  single-line
                   menu-props="auto"
                   :disabled="loading || edit"
-                />
+                >
+                  <template v-slot:item="data">
+                    <nuxt-link
+                      v-if="data.item.name === 'addMore'"
+                      to="/workspaces"
+                    >
+                      <div class="d-flex management-domain align-center">
+                        <div
+                          class="image-management d-flex align-self-center mr-7"
+                        >
+                          <img
+                            class=""
+                            src="@/assets/svg/management.svg"
+                            alt="management"
+                          />
+                          <div class="overlay"></div>
+                        </div>
+                        <div class="text-management">Management Workspaces</div>
+                      </div>
+                    </nuxt-link>
+                    <div v-else>{{ data.item.name }}</div>
+                  </template>
+                </v-select>
               </v-col>
               <v-col cols="12" md="6" class="py-0">
                 <div class="modal-mask__sub-title">Web title</div>
@@ -96,13 +142,25 @@
         </div>
       </transition>
     </div>
+    <v-dialog
+      v-model="openModalDetailLink"
+      class="dialog"
+      max-width="900"
+      :fullscreen="width < 700 ? true : false"
+    >
+      <DetailLink
+        :id="detailId"
+        :slashtag="detailSlashtag"
+        @closeModalDetailLink="closeModalDetailLink"
+      />
+    </v-dialog>
     <client-only>
       <infinite-loading
         spinner="waveDots"
         @infinite="infiniteScroll"
       ></infinite-loading>
     </client-only>
-    <v-snackbar v-model="showAlert" top color="success">
+    <v-snackbar v-model="showAlert" top color="success" timeout="2000">
       {{ message }}
       <template v-slot:action="{ attrs }">
         <v-btn
@@ -115,7 +173,7 @@
         >
       </template>
     </v-snackbar>
-    <v-snackbar v-model="showAlert403" top color="error">
+    <v-snackbar v-model="showAlert403" top color="error" timeout="2000">
       {{ message }}
       <template v-slot:action="{ attrs }">
         <v-btn
@@ -146,6 +204,9 @@ import {
   getDomainsWorkspace,
 } from '@/services/api';
 export default {
+  components: {
+    DetailLink: () => import('@/components/links/DetailLinkModal'),
+  },
   props: {
     edit: {
       type: Boolean,
@@ -203,24 +264,40 @@ export default {
     workspace: { name: 'Workspace', id: '' },
     domainId: '',
     message: '',
+    // detail link
+    detailId: '',
+    detailSlashtag: '',
+    openModalDetailLink: false,
+    width: 0,
   }),
   computed: {
     tempDomains() {
-      return this.domains.map((x) => {
+      let temp = this.domains.map((x) => {
         return {
           id: x.id,
           name: x.name,
           isUse: !x.dnsVerified,
         };
       });
+      temp = temp.concat({
+        id: 1,
+        name: 'addMore',
+        isUse: false,
+      });
+      return temp;
     },
     tempWorkspaces() {
-      return this.workspaces.map((x) => {
+      let temp = this.workspaces.map((x) => {
         return {
           id: x.id,
           name: x.name,
         };
       });
+      temp = temp.concat({
+        id: 1,
+        name: 'addMore',
+      });
+      return temp;
     },
   },
   watch: {
@@ -235,7 +312,19 @@ export default {
       this.token = localStorage.token;
     }
   },
+  beforeMount() {
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
+  },
   methods: {
+    handleResize() {
+      if (process.client) {
+        this.width = window.innerWidth;
+      }
+    },
     validURL: debounce(async function(str) {
       const pattern = new RegExp(
         '^(https?:\\/\\/)?' + // protocol
@@ -383,17 +472,17 @@ export default {
             title,
             workspace.id
           );
-          const { status, message } = resLink.data;
+          const { message, data } = resLink.data;
           this.message = message;
-          if (status === 200) {
-            this.showAlert = true;
-            setTimeout(() => {
-              this.destinationUrl = '';
-              this.valid = false;
-              this.$emit('closeModalAddNewLink');
-              this.loading = false;
-            }, 1000);
-          }
+          this.showAlert = true;
+          this.destinationUrl = '';
+          this.valid = false;
+          this.detailId = data.id;
+          this.detailSlashtag = data.slashtag;
+          this.$emit('closeModalAddNewLink');
+          this.$emit('refetchLinks');
+          this.loading = false;
+          this.openModalDetailLink = true;
         } catch (error) {
           const { status, data } = error.response;
           if (status === 401) {
@@ -407,8 +496,8 @@ export default {
           }, 1000);
         }
       } else {
-        this.showAlert403 = true;
         this.message = 'Slash tag is existed';
+        this.showAlert403 = true;
         setTimeout(() => {
           this.loading = false;
         }, 1000);
@@ -430,19 +519,20 @@ export default {
         this.message = message;
         if (status === 200) {
           this.showAlert = true;
-          setTimeout(() => {
-            this.showAlert = false;
-            this.$emit('closeModalEditNewLink');
-            this.loading = false;
-          }, 1000);
+          this.$emit('closeModalEditNewLink');
+          this.loading = false;
         }
       } catch (error) {
         const { status, data } = error.response;
         this.message = data.message;
+        this.showAlert403 = true;
         if (status === 401) {
           this.$router.push('/login');
         }
       }
+    },
+    closeModalDetailLink() {
+      this.openModalDetailLink = false;
     },
   },
 };

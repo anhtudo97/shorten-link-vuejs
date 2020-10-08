@@ -85,6 +85,7 @@
       <DetailLinkModal
         :id="id"
         :slashtag="slashtag"
+        @refetchLinks="$emit('refetchLinks')"
         @closeModalDetailLink="closeModalDetailLink"
       />
     </v-dialog>
@@ -97,6 +98,7 @@
       <CreateNewLink
         :id="id"
         :edit="true"
+        @refetchLinks="$emit('refetchLinks')"
         @closeModalAddNewLink="closeModalEditNewLink"
       />
     </v-dialog>

@@ -16,10 +16,9 @@
         >
           <div class="d-flex align-center">
             <img
+              loading="lazy"
               class="img-favicon mr-3"
-              :src="
-                `https://www.google.com/s2/favicons?domain=${destination}`
-              "
+              :src="`https://www.google.com/s2/favicons?domain=${destination}`"
               alt="favicon"
             />
             <a
@@ -131,6 +130,7 @@ import { getLink, deleteLink } from '@/services/api';
 import CreateNewLink from '@/components/links/CreateNewLink';
 import RemoveModal from '@/components/shares/RemoveModal';
 export default {
+  name: 'DetailLink',
   directives: { clipboard },
   components: {
     RemoveModal,
@@ -167,6 +167,11 @@ export default {
     createdDate() {
       const temp = new Date(this.date).toString().split(' ');
       return `${temp[0]} ${temp[1]} ${temp[2]} ${temp[3]}`;
+    },
+  },
+  watch: {
+    async id() {
+      await this.getLink();
     },
   },
   created() {

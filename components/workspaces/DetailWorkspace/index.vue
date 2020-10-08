@@ -4,7 +4,7 @@
       <v-col cols="12" sm="10" md="8" class="mx-auto py-2 py-md-3">
         <v-row class="align-center justify-space-between main-menu">
           <v-col cols="12" sm="3" class="text-center text-sm-left">
-            <v-menu offset-x :close-on-content-click="true">
+            <v-menu offset-y :close-on-content-click="true">
               <template v-slot:activator="{ on, attrs }">
                 <div v-bind="attrs" class="menu-button" v-on="on">
                   {{ $route.query.name }}

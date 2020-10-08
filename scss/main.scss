@@ -104,8 +104,35 @@ button {
   width: 6rem;
 }
 
-.-mx-3{
+.-mx-3 {
   margin: 0 -12px;
+}
+
+.management-domain {
+  margin-top: 5px;
+  width: 100%;
+  padding: 5px 0;
+  .image-management {
+    position: relative;
+    img {
+      object-fit: cover;
+      width: 25px;
+      height: auto;
+    }
+    .overlay{
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #3c64b1;
+      border-radius: 100%;
+      opacity: 0.5;
+    }
+  }
+
+  .text-management {
+  }
 }
 
 .menu-list {
