@@ -22,7 +22,7 @@
         <v-row>
           <v-col cols="12" sm="6" class="text-center text-sm-left login__left">
             <figure>
-              <img src="@/assets/signin-image.jpg" alt="sign in image" />
+              <img src="@/assets/svg/services.svg" alt="sign in image" />
             </figure>
           </v-col>
           <v-col cols="12" sm="6" class="login__right">

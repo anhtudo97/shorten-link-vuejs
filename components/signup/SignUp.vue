@@ -22,7 +22,7 @@
             <div class="signup-header text-center">
               <nuxt-link to="/">
                 <div class="header__logo mr-4">
-                  <img src="~/assets/logo_RELINKS.png" alt="logo" />
+                  <img src="@/assets/logo_RELINKS.png" alt="logo" />
                 </div>
               </nuxt-link>
               <div class="signup-title">Create a new account</div>
@@ -51,60 +51,6 @@
               hide-details="auto"
               :rules="[(v) => !!v || 'Password is required']"
             ></v-text-field>
-            <div class="mt-4 mt-sm-6">
-              <v-radio-group
-                v-model="form.gender"
-                :mandatory="false"
-                dense
-                hide-details="auto"
-                row
-              >
-                <v-radio class="gender-input" label="Male" value="M"></v-radio>
-                <v-radio
-                  class="gender-input"
-                  label="Female"
-                  value="F"
-                ></v-radio>
-              </v-radio-group>
-            </div>
-            <v-menu
-              ref="menu"
-              v-model="form.menu"
-              class="input-date mt-4 mt-sm-6"
-              :close-on-content-click="false"
-              :return-value.sync="form.date"
-              transition="scale-transition"
-              offset-y
-              min-width="290px"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                  v-model="form.date"
-                  class="input-date mt-4 mt-sm-6"
-                  label="Date of birth"
-                  readonly
-                  v-bind="attrs"
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-date-picker v-model="form.date" no-title scrollable>
-                <v-spacer></v-spacer>
-                <v-btn
-                  text
-                  color="primary"
-                  aria-label="cancel"
-                  @click="form.menu = false"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  text
-                  color="primary"
-                  aria-label="OK"
-                  @click="$refs.menu.save(form.date)"
-                  >OK</v-btn
-                >
-              </v-date-picker>
-            </v-menu>
             <button
               :disabled="isLoading"
               class="button-normal signup-button mt-6 mt-sm-8"
@@ -136,7 +82,7 @@
             class="text-center text-sm-right signup__right order-first order-sm-last"
           >
             <figure>
-              <img src="@/assets/signup-image.jpg" alt="sing up image" />
+              <img src="@/assets/svg/login.svg" alt="sing up image" />
             </figure>
           </v-col>
         </v-row>
