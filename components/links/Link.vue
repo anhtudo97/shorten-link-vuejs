@@ -30,7 +30,7 @@
                 </v-tooltip>
                 <v-tooltip top nudge-left="10">
                   <template v-slot:activator="{ on, attrs }">
-                    <div v-clipboard="shorten">
+                    <div v-clipboard="shorten" @click="showAlertCopy = true">
                       <img
                         :src="require('@/assets/icons/clone-solid.svg')"
                         alt="route"
@@ -122,6 +122,25 @@
         >
       </template>
     </v-snackbar>
+    <v-snackbar
+      key="2"
+      v-model="showAlertCopy"
+      centered
+      color="success"
+      timeout="2000"
+    >
+      Link copied
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert = false"
+          >Close</v-btn
+        >
+      </template>
+    </v-snackbar>
   </v-row>
 </template>
 
@@ -173,6 +192,7 @@ export default {
     modalEditLink: false,
     width: 0,
     showAlert: false,
+    showAlertCopy: false,
   }),
   computed: {
     shorten() {

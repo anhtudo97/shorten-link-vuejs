@@ -42,7 +42,7 @@
               <div v-if="loading">
                 <img
                   class="loading"
-                  src="@/assets/svg/Ellipsis-1s-200px.svg"
+                  :src="require('@/assets/svg/Ellipsis-1s-200px.gif')"
                   alt="loading"
                 />
               </div>
@@ -76,7 +76,7 @@
       </v-col>
     </v-row>
     <Business />
-    <v-snackbar v-model="showAlert400" top color="error">
+    <v-snackbar v-model="showAlert400" top color="error" timeout="2000">
       {{ message }}
       <template v-slot:action="{ attrs }">
         <v-btn
@@ -146,6 +146,14 @@ export default {
       ); // fragment locator
       this.valid = !!pattern.test(str);
     },
+    checkExistLink(link) {
+      let check = false;
+      this.links.forEach((l) => {
+        if (l.destination === link) check = true;
+        else check = false;
+      });
+      return check;
+    },
     async shortendLink() {
       this.validURL(this.destination);
       let str = '';
@@ -157,36 +165,46 @@ export default {
       } else {
         str = this.destination;
       }
-      if (this.valid) {
-        this.loading = true;
-        try {
-          const res = await shortendLink(str);
-          const { status, data } = res.data;
 
-          if (status === 200) {
-            this.isShorten = true;
-            const { destination, shortUrl } = data;
-            this.data = {
-              destination,
-              shortUrl,
-              date: new Date(),
-            };
+      if (this.valid) {
+        if (!this.checkExistLink(this.destination)) {
+          this.loading = true;
+          try {
+            const res = await shortendLink(str);
+            const { status, data } = res.data;
+
+            if (status === 200) {
+              this.isShorten = true;
+              const { destination, shortUrl } = data;
+              this.data = {
+                destination,
+                shortUrl,
+                date: new Date(),
+              };
+            }
+            this.links.push(this.data);
+            this.$cookies.set(
+              'links',
+              JSON.stringify(this.links, null, 2),
+              60 * 60 * 24 * 30
+            );
+            this.loading = false;
+            this.destination = '';
+          } catch (error) {
+            const { status, data } = error.response;
+            this.message = data.message;
+            if (status === 401) this.$router.push('/login');
+            this.showAlert400 = true;
+            setTimeout(() => {
+              this.showAlert400 = false;
+              this.loading = false;
+              this.destination = '';
+            }, 1500);
           }
-          this.links.push(this.data);
-          this.$cookies.set(
-            'links',
-            JSON.stringify(this.links, null, 2),
-            60 * 60 * 24 * 30
-          );
-          this.loading = false;
-          this.destination = '';
-        } catch (error) {
-          const { status, data } = error.response;
-          this.message = data.message;
-          if (status === 401) this.$router.push('/login');
+        } else {
+          this.message = 'Already shortened';
           this.showAlert400 = true;
           setTimeout(() => {
-            this.showAlert400 = false;
             this.loading = false;
             this.destination = '';
           }, 1500);
