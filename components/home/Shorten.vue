@@ -4,27 +4,38 @@
       key="1"
       class="shortened justify-space-between align-center mx-0 mb-3"
     >
-      <v-col cols="12" md="7" lg="5" class="shortened__shortened-link">
-        <div class="link-text text-overflow-hidden">
-          {{ data.destination }}
-        </div>
-      </v-col>
-      <v-col cols="12" md="5" lg="7" class="shortened__shortened-service">
+      <v-col cols="12" md="8" lg="8" class="shortened__shortened-link">
         <div class="d-flex flex-wrap justify-space-between">
           <div class="shortened-link align-self-center">
-            <a :href="data.shortUrl" target="_blank">{{ data.shortUrl }}</a>
+            <a :href="data.shortUrl" target="_blank">{{ shorten }}</a>
           </div>
-          <div
-            v-clipboard="data.shortUrl"
-            class="shortened-button"
-            @click="onClickCopy"
-          >
-            <div class="shortened-text">Copy</div>
+          <div class="link-text text-overflow-hidden">
+            {{ originUrl }}
           </div>
         </div>
       </v-col>
+      <v-col
+        cols="12"
+        md="4"
+        lg="4"
+        class="shortened__shortened-service text-center"
+      >
+        <button
+          v-clipboard="data.shortUrl"
+          class="shortened-button"
+          @click="onClickCopy"
+        >
+          <div class="shortened-text">Copy</div>
+        </button>
+      </v-col>
     </v-row>
-    <v-snackbar key="2" v-model="showAlert" centered color="success">
+    <v-snackbar
+      key="2"
+      v-model="showAlert"
+      centered
+      color="success"
+      timeout="2000"
+    >
       Link copied
       <template v-slot:action="{ attrs }">
         <v-btn
@@ -58,14 +69,33 @@ export default {
   data: () => ({
     showAlert: false,
   }),
-  methods:{
-    onClickCopy(){
+  computed: {
+    originUrl() {
+      let url = '';
+      if (this.data.destination.includes('https://')) {
+        url = this.data.destination.split('https://')[1];
+      }
+      if (this.data.destination.includes('http://')) {
+        url = this.data.destination.split('http://')[1];
+      }
+      return url;
+    },
+    shorten() {
+      let url = '';
+      if (this.data.shortUrl.includes('https://')) {
+        url = this.data.shortUrl.split('https://')[1];
+      }
+      if (this.data.shortUrl.includes('http://')) {
+        url = this.data.shortUrl.split('http://')[1];
+      }
+      return url;
+    },
+  },
+  methods: {
+    onClickCopy() {
       this.showAlert = true;
-      setTimeout(() => {
-        this.showAlert = false
-      }, 1500);
-    }
-  }
+    },
+  },
 };
 </script>
 
