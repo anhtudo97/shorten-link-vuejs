@@ -54,7 +54,7 @@
                   <div class="information-title">Created date</div>
                 </v-col>
                 <v-col cols="12" md="9">
-                  <div class="information-content">{{ createdDate }}</div>
+                  <div class="information-content">{{ createdDate }} by {{creator}}</div>
                 </v-col>
               </v-row>
               <v-row class="information d-flex align-center">
@@ -170,6 +170,7 @@ export default {
     shorten: '',
     loading: false,
     showAlert: false,
+    creator: ''
   }),
   computed: {
     createdDate() {
@@ -213,10 +214,11 @@ export default {
         const resLink = await getLink(this.token, this.id);
         const { status, data } = resLink.data;
         if (status === 200) {
-          const { createdAt, title, destination, domain, slashtag } = data;
+          const { createdAt, title, destination, domain, slashtag, creator } = data;
           this.date = createdAt;
           this.title = title;
           this.destination = destination;
+          this.creator = creator.fullName
           this.shorten = `${domain.name}/${slashtag}`;
           this.loading = false;
         }
@@ -252,6 +254,8 @@ export default {
 .modal-detail-link {
   font-family: Poppins, sans-serif;
   height: 100%;
+  min-height: 400px;
+  overflow: hidden;
   &__dialog-icon {
     cursor: pointer;
     height: 32px;
