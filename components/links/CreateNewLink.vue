@@ -340,7 +340,7 @@ export default {
         str = 'http://' + str;
         this.destinationUrl = str;
       }
-      if (this.valid && !this.edit) {
+      if (this.valid && !this.edit && this.domain.id !== '') {
         this.loading = true;
         await Promise.all([this.getTitle(str), this.getSlashTag(str)]);
         this.loading = false;
@@ -359,7 +359,7 @@ export default {
     },
     async getSlashTag(url) {
       try {
-        const resSlashTag = await getSlashTag(url);
+        const resSlashTag = await getSlashTag(url, this.domain.id);
         const { data } = resSlashTag.data;
         this.slashTag = data;
       } catch (error) {
@@ -368,14 +368,16 @@ export default {
       }
     },
     async checkSlashTagValid(tag) {
-      try {
-        const resSlashTag = await checkSlashTag(tag);
-        const { data } = resSlashTag.data;
-        this.checkSlash = data.exists;
-      } catch (error) {
-        const { status, data } = error.response;
-        this.message = data.message;
-        if (status === 401) this.$router.push('/login');
+      if (this.domain.id !== '') {
+        try {
+          const resSlashTag = await checkSlashTag(tag, this.domain.id);
+          const { data } = resSlashTag.data;
+          this.checkSlash = data.exists;
+        } catch (error) {
+          const { status, data } = error.response;
+          this.message = data.message;
+          if (status === 401) this.$router.push('/login');
+        }
       }
     },
     async infiniteScroll($state) {
