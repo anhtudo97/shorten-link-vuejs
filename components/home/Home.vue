@@ -149,7 +149,7 @@ export default {
     checkExistLink(link) {
       let check = false;
       this.links.forEach((l) => {
-        if (l.destination === link) check = true;
+        if (l.destination.includes(link)) check = true;
         else check = false;
       });
       return check;
