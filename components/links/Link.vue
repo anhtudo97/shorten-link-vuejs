@@ -3,7 +3,9 @@
     <v-col cols="12" sm="10" md="8" class="mx-auto">
       <v-row class="align-center border-radius-10 ma-0 py-3">
         <v-col cols="12" md="8" @click.stop="models.isOpen = true">
-          <div class="shortened-link text-overflow-hidden">{{ shorten }}</div>
+          <div ref="shorten" class="shortened-link text-overflow-hidden">
+            {{ shorten }}
+          </div>
           <div class="origin-link pt-2 text-overflow-hidden">{{ link }}</div>
         </v-col>
         <v-col cols="12" md="4">
@@ -30,7 +32,12 @@
                 </v-tooltip>
                 <v-tooltip top nudge-left="10">
                   <template v-slot:activator="{ on, attrs }">
-                    <div v-clipboard="shorten" @click="showAlertCopy = true">
+                    <button
+                      type="button"
+                      v-bind="attrs"
+                      v-on="on"
+                      @click="doCopy"
+                    >
                       <img
                         :src="require('@/assets/icons/clone-solid.svg')"
                         alt="route"
@@ -38,7 +45,7 @@
                         v-bind="attrs"
                         v-on="on"
                       />
-                    </div>
+                    </button>
                   </template>
                   <span class>Copy</span>
                 </v-tooltip>
@@ -243,6 +250,9 @@ export default {
     closeModalEditNewLink() {
       this.modalEditLink = false;
       this.$emit('closeModalAddNewLink');
+    },
+    doCopy() {
+      this.$copyText(this.shorten).then((this.showAlertCopy = true));
     },
     async removeLink() {
       try {
