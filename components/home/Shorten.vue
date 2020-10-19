@@ -20,7 +20,11 @@
         lg="4"
         class="shortened__shortened-service text-center"
       >
-        <button v-clipboard:copy="`http://${shorten}`" class="shortened-button">
+        <button
+          v-clipboard:copy="`http://${shorten}`"
+          class="shortened-button"
+          @click="showAlert = true"
+        >
           <div class="shortened-text">Copy</div>
         </button>
       </v-col>
