@@ -36,6 +36,7 @@
                 <div
                   v-clipboard:copy="`http://${shorten}`"
                   class="dialog-button-copy mr-3"
+                  @click="showAlertCopy = true"
                 >
                   Copy
                 </div>
