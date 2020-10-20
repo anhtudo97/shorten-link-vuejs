@@ -1,18 +1,27 @@
 <template>
   <div class="workspace mb-5">
     <nuxt-link :to="`workspaces/${workspace.id}?name=${workspace.name}`">
-      <v-row class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0">
-        <v-col cols="7" sm="8" md="9" class="workspace__name my-3">
+      <v-row
+        class="border-radius-10 align-center justify-space-between py-md-3 mx-3 mx-sm-0"
+      >
+        <v-col cols="6" sm="8" md="9" class="workspace__name my-3">
           <div class="d-flex">
             <img
               class="img"
               src="https://dashboard-cdn.rebrandly.com/support-images/new_default_avatar_team.png"
               alt="avatar"
             />
-            <div class="name-text px-5 text-overflow-hidden">{{ workspace.name }}</div>
+            <div class="name-text px-5 text-overflow-hidden">
+              {{ workspace.name }}
+            </div>
           </div>
         </v-col>
-        <v-col cols="5" sm="4" md="3" class="text-md-center text-right workspace__content">
+        <v-col
+          cols="6"
+          sm="4"
+          md="3"
+          class="text-md-center text-right workspace__content"
+        >
           <div class="date">{{ createdDate }}</div>
         </v-col>
         <v-dialog
@@ -21,7 +30,10 @@
           max-width="650"
           :fullscreen="width < 600 ? true : false"
         >
-          <ManagementMemberModal :workspace="workspace" @closeModalMembers="closeModalMembers" />
+          <ManagementMemberModal
+            :workspace="workspace"
+            @closeModalMembers="closeModalMembers"
+          />
         </v-dialog>
         <v-dialog v-model="isRemoveModal" persistent max-width="500">
           <RemoveModal
@@ -36,14 +48,23 @@
           max-width="700"
           :fullscreen="width < 600 ? true : false"
         >
-          <AddLinksDomainsModal @closeModalAddLinksDomain="closeModalAddLinksDomain" />
+          <AddLinksDomainsModal
+            @closeModalAddLinksDomain="closeModalAddLinksDomain"
+          />
         </v-dialog>
       </v-row>
     </nuxt-link>
     <v-snackbar v-model="showAlert" top color="success">
       Delete workspace is successfully
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
   </div>

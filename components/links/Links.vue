@@ -3,10 +3,10 @@
     <v-row class="link__menu mx-0">
       <v-col cols="12" sm="10" md="8" class="mx-auto py-3">
         <v-row class="align-center">
-          <v-col cols="7" sm="8" lg="9">
+          <v-col cols="12" sm="8" lg="9">
             <div class="d-flex align-center flex-wrap">
               <div class="menu-text my-3 pr-4 w-6">{{ total }} Link(s)</div>
-              <div class="menu-selection my-3 mr-4 d-flex">
+              <div class="menu-selection my-md-3 mr-4 d-flex">
                 <v-menu offset-y rounded="true">
                   <template v-slot:activator="{ on, attrs }">
                     <div v-bind="attrs" class="d-flex align-center" v-on="on">
@@ -36,7 +36,7 @@
                   </div>
                 </v-menu>
               </div>
-              <div class="menu-selection my-3 mr-4 d-flex">
+              <div class="menu-selection my-md-3 mr-4 d-flex">
                 <div class="d-flex align-center" @click="drawer = !drawer">
                   <div class="selection-text pr-2">Filter by</div>
                 </div>
@@ -51,7 +51,7 @@
               ></v-text-field>
             </div>
           </v-col>
-          <v-col cols="5" sm="4" lg="3" class="text-right">
+          <v-col cols="12" sm="4" lg="3" class="text-right">
             <button
               class="button-normal add-new-link"
               aria-label="New Link"
@@ -342,7 +342,7 @@ export default {
       }
       .add-new-link {
         padding: 5px 30px;
-        font-size: 15px;
+        font-size: 14px;
         line-height: 20px;
       }
     }
@@ -374,7 +374,7 @@ export default {
         font-size: 13px;
       }
       .add-new-link {
-        font-size: 15px;
+        font-size: 13px;
         line-height: 20px;
       }
     }

@@ -2,27 +2,35 @@
   <div class="workspaces">
     <v-row class="workspaces__menu mx-0">
       <v-col cols="12" sm="10" md="8" class="mx-auto py-2 py-md-3 py-lg-6">
-        <v-row class="align-center justify-space-between main-menu px-3 px-sm-0">
+        <v-row
+          class="align-center justify-space-between main-menu px-3 px-sm-0"
+        >
           <v-col cols="12" md="8" class="px-0 d-flex">
             <button
-              :class="[!joined ? 'active':'']"
+              :class="[!joined ? 'active' : '']"
               class="menu-text menu-text-left"
               aria-label="total workspace"
               @click="joined = false"
-            >{{ total }} Workspace(s)</button>
+            >
+              {{ total }} Workspace(s)
+            </button>
             <button
-              :class="[joined ? 'active':'']"
+              :class="[joined ? 'active' : '']"
               class="menu-text menu-text-right"
               aria-label="total workspace joined"
               @click="joined = true"
-            >{{ totalJoined }} Workspace(s) joined</button>
+            >
+              {{ totalJoined }} Workspace(s) joined
+            </button>
           </v-col>
           <v-col cols="12" md="4" class="text-md-right text-left px-0">
             <button
               class="button-normal menu-button"
               aria-label="new workspace"
               @click.stop="openCreateNewWorkspace = true"
-            >New workspace</button>
+            >
+              New workspace
+            </button>
           </v-col>
         </v-row>
       </v-col>
@@ -39,55 +47,68 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row class="workspaces__management">
-      <v-col cols="12" sm="10" md="8" class="mx-auto">
-        <transition v-if="!joined" name="slide-fade" mode="out-in">
-          <div>
-            <transition-group name="slide-fade" tag="section" class="pa-0">
-              <Workspace
-                v-for="workspace in workspaces"
-                :key="workspace.id"
-                :workspace="workspace"
-                @closeCreateNewWorkspace="closeCreateNewWorkspace"
-              />
-            </transition-group>
-            <v-row v-if="workspaces&&workspaces.length !== 0" justify="center">
-              <v-col cols="8">
-                <v-container class="max-width">
-                  <v-pagination v-model="page" class="my-4" :length="totalPage"></v-pagination>
-                </v-container>
-              </v-col>
-            </v-row>
-          </div>
-        </transition>
-        <transition v-else name="slide-fade" mode="out-in">
-          <div>
-            <transition-group name="slide-fade" tag="section" class="pa-0">
-              <Workspace
-                v-for="workspace in workspacesJoined"
-                :key="workspace.id"
-                :workspace="workspace.workspace"
-                :joined="joined"
-                @closeCreateNewWorkspace="closeCreateNewWorkspace"
-              />
-            </transition-group>
-            <v-row v-if="workspacesJoined && workspacesJoined.length !== 0" justify="center">
-              <v-col cols="8">
-                <v-container class="max-width">
-                  <v-pagination v-model="pageJoined" class="my-4" :length="totalPageJoined"></v-pagination>
-                </v-container>
-              </v-col>
-            </v-row>
-          </div>
-        </transition>
-      </v-col>
-    </v-row>
+
+    <v-col cols="12" sm="10" md="8" class="mx-auto">
+      <transition v-if="!joined" name="slide-fade" mode="out-in">
+        <div>
+          <transition-group name="slide-fade" tag="section" class="pa-0">
+            <Workspace
+              v-for="workspace in workspaces"
+              :key="workspace.id"
+              :workspace="workspace"
+              @closeCreateNewWorkspace="closeCreateNewWorkspace"
+            />
+          </transition-group>
+          <v-row v-if="workspaces && workspaces.length !== 0" justify="center">
+            <v-col cols="8">
+              <v-container class="max-width">
+                <v-pagination
+                  v-model="page"
+                  class="my-4"
+                  :length="totalPage"
+                ></v-pagination>
+              </v-container>
+            </v-col>
+          </v-row>
+        </div>
+      </transition>
+      <transition v-else name="slide-fade" mode="out-in">
+        <div>
+          <transition-group name="slide-fade" tag="section" class="pa-0">
+            <Workspace
+              v-for="workspace in workspacesJoined"
+              :key="workspace.id"
+              :workspace="workspace.workspace"
+              :joined="joined"
+              @closeCreateNewWorkspace="closeCreateNewWorkspace"
+            />
+          </transition-group>
+          <v-row
+            v-if="workspacesJoined && workspacesJoined.length !== 0"
+            justify="center"
+          >
+            <v-col cols="8">
+              <v-container class="max-width">
+                <v-pagination
+                  v-model="pageJoined"
+                  class="my-4"
+                  :length="totalPageJoined"
+                ></v-pagination>
+              </v-container>
+            </v-col>
+          </v-row>
+        </div>
+      </transition>
+    </v-col>
+
     <v-dialog
       v-model="openCreateNewWorkspace"
       max-width="850"
       :fullscreen="width < 600 ? true : false"
     >
-      <CreateNewWorkspaceModal @closeCreateNewWorkspace="closeCreateNewWorkspace" />
+      <CreateNewWorkspaceModal
+        @closeCreateNewWorkspace="closeCreateNewWorkspace"
+      />
     </v-dialog>
   </div>
 </template>
