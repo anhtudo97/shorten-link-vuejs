@@ -1,6 +1,6 @@
 <template>
-  <div class="py-0">
-    <div class="py-3 display-small-hidden border-b">
+  <div>
+    <div class=" display-small-hidden border-b py-3">
       <div class="header d-flex align-center mx-0 mx-sm-6 mx-lg-8 mx-xl-10">
         <nuxt-link to="/">
           <div class="header__logo">
@@ -61,23 +61,20 @@
         </client-only>
       </div>
     </div>
-    <div class="display-big-show border-b">
-      <v-row>
-        <v-col cols="12">
-          <v-row class="header d-flex align-center mx-2 mx-sm-7 py-0">
-            <nuxt-link to="/">
-              <div class="header__logo">
-                <img src="@/assets/logo_R.png" alt="logo" />
-              </div>
-            </nuxt-link>
-            <v-spacer></v-spacer>
-            <v-app-bar-nav-icon
-              @click.stop="$emit('openModal')"
-            ></v-app-bar-nav-icon>
-          </v-row>
-        </v-col>
+
+    <v-col class="display-big-show border-b" cols="12">
+      <v-row class="header align-center mx-2 mx-sm-7 py-0">
+        <nuxt-link to="/">
+          <div class="header__logo">
+            <img src="@/assets/logo_R.png" alt="logo" />
+          </div>
+        </nuxt-link>
+        <v-spacer></v-spacer>
+        <v-app-bar-nav-icon
+          @click.stop="$emit('openModal')"
+        ></v-app-bar-nav-icon>
       </v-row>
-    </div>
+    </v-col>
   </div>
 </template>
 

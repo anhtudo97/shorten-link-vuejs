@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <Workspaces />
-  </div>
+  <Workspaces />
 </template>
 
 <script>
