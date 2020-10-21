@@ -8,7 +8,10 @@
       </div>
       <div class="d-flex justify-space-between">
         <div></div>
-        <div class="header-dialog-icon pa-2" @click.stop="$emit('closeModalAddLinksDomain')">
+        <div
+          class="header-dialog-icon pa-2"
+          @click.stop="$emit('closeModalAddLinksDomain')"
+        >
           <img src="@/assets/svg/close.svg" alt="close" />
         </div>
       </div>
@@ -22,7 +25,9 @@
         class="button-normal add-button"
         aria-label="add more"
         @click="addDomainsToWorkspace"
-      >Add more</button>
+      >
+        Add more
+      </button>
     </v-row>
     <transition name="slide-fade" mode="in-out">
       <div v-if="lazyLoading">
@@ -50,7 +55,8 @@
           v-bind="attrs"
           aria-label="close"
           @click="showAlert400 = false"
-        >Close</v-btn>
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
   </v-list>
@@ -120,6 +126,7 @@ export default {
         const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
+          window.localStorage.clear();
         }
       }
     },
@@ -145,6 +152,7 @@ export default {
         const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
+          window.localStorage.clear();
         }
       }
     },
@@ -171,6 +179,7 @@ export default {
         const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
+          window.localStorage.clear();
         }
       }
     },

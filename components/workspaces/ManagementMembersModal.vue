@@ -176,6 +176,7 @@ export default {
         const { status, data } = error.response;
         if (status === 401) {
           this.$router.push('/login');
+          window.localStorage.clear();
           return;
         }
         this.messages = data.message;
@@ -211,6 +212,7 @@ export default {
         const { message } = data;
         if (status === 401) {
           this.$router.push('/login');
+          window.localStorage.clear();
           return;
         }
         this.messages = message;

@@ -191,15 +191,11 @@ export default {
             this.loading = false;
             this.destination = '';
           } catch (error) {
-            const { status, data } = error.response;
+            const { data } = error.response;
             this.message = data.message;
-            if (status === 401) this.$router.push('/login');
             this.showAlert400 = true;
-            setTimeout(() => {
-              this.showAlert400 = false;
-              this.loading = false;
-              this.destination = '';
-            }, 1500);
+            this.loading = false;
+            this.destination = '';
           }
         } else {
           this.message = 'Already shortened';
@@ -301,7 +297,7 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      // padding: 15px 0;
+      padding: 17px 0;
       width: 100%;
       border-radius: 4px;
       background-color: #3c64b1;
@@ -317,7 +313,6 @@ export default {
         color: #fff;
         text-align: center;
         font-weight: bold;
-        margin: 18px 0;
       }
       &:hover {
         background-color: #2a5bd7;
@@ -327,7 +322,7 @@ export default {
         line-height: 20px;
       }
       @media (max-width: 960px) {
-        padding: 10px 0;
+        padding: 15px 0;
         font-size: 12px;
       }
     }

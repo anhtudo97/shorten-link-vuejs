@@ -146,7 +146,10 @@ export default {
         }
       } catch (error) {
         const { status } = error.response;
-        if (status === 401) this.$router.push('/login');
+        if (status === 401) {
+          this.$router.push('/login');
+          window.localStorage.clear();
+        }
       }
     },
     handleResize() {

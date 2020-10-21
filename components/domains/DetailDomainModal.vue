@@ -17,7 +17,9 @@
           disabled
           class="domain-verify ml-3"
           aria-label="verified"
-        >Verified</button>
+        >
+          Verified
+        </button>
       </div>
       <div class="domain-created-at d-flex my-5 align-center">
         <img src="@/assets/svg/calendar.svg" alt="calendar" />
@@ -76,7 +78,14 @@
     <v-snackbar v-model="showAlert" top color="success">
       {{ message }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert=false">Close</v-btn>
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
   </v-list>
@@ -109,6 +118,7 @@ export default {
       const { status } = error.response;
       if (status === 401) {
         this.$router.push('/login');
+        window.localStorage.clear();
       }
     }
   },
@@ -121,7 +131,7 @@ export default {
     showAlert: false,
     loading: false,
     dnsVerified: false,
-    message: ''
+    message: '',
   }),
   created() {
     if (typeof localStorage !== 'undefined' && localStorage.token) {
@@ -135,7 +145,7 @@ export default {
         const resDeleteDomain = await deleteDomain(this.token, this.domain.id);
         const { status, message } = resDeleteDomain.data;
         if (status === 200) {
-          this.message = message
+          this.message = message;
           this.showAlert = true;
           setTimeout(() => {
             this.closeRemoveModal();
@@ -145,9 +155,10 @@ export default {
         }
       } catch (error) {
         const { status, data } = error.response;
-        this.message = data.message
+        this.message = data.message;
         if (status === 401) {
           this.$router.push('/login');
+          window.localStorage.clear();
         }
       }
     },

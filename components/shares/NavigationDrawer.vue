@@ -1,5 +1,5 @@
 <template>
-  <v-list class="navigation-drawer d-flex flex-column justify-center">
+  <v-list class="navigation-drawer d-flex flex-column justify-center mt-16">
     <div class="navigation-drawer__header">
       <v-row class="header d-flex align-center mx-0">
         <nuxt-link to="/">
@@ -151,7 +151,10 @@ export default {
         }
       } catch (error) {
         const { status } = error.response;
-        if (status === 401) this.$router.push('/login');
+        if (status === 401) {
+          this.$router.push('/login');
+          window.localStorage.clear();
+        }
       }
     },
     logout() {

@@ -139,7 +139,10 @@ export default {
         }
       } catch (error) {
         const { status } = error.response;
-        if (status === 401) this.$router.push('/login');
+        if (status === 401) {
+          this.$router.push('/login');
+          window.localStorage.clear();
+        }
       }
     },
     logout() {
@@ -171,6 +174,11 @@ export default {
       object-fit: cover;
       width: 60px;
       height: auto;
+    }
+    @media (max-width: 600px) {
+      img {
+        width: 50px;
+      }
     }
   }
   &__login {

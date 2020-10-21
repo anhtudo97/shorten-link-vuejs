@@ -4,7 +4,7 @@
       key="1"
       class="shortened justify-space-between align-center mx-0 mb-3"
     >
-      <v-col cols="12" md="8" lg="8" class="shortened__shortened-link">
+      <v-col cols="7" lg="8" class="shortened__shortened-link">
         <div class="d-flex flex-wrap justify-space-between">
           <div class="shortened-link align-self-center">
             <a :href="data.shortUrl" target="_blank">{{ shorten }}</a>
@@ -14,12 +14,7 @@
           </div>
         </div>
       </v-col>
-      <v-col
-        cols="12"
-        md="4"
-        lg="4"
-        class="shortened__shortened-service text-center"
-      >
+      <v-col cols="5" lg="4" class="shortened__shortened-service text-center">
         <button
           v-clipboard:copy="`http://${shorten}`"
           class="shortened-button"
