@@ -4,11 +4,16 @@
       class="dialog-create-workspace__header d-flex justify-space-between align-center py-3 border-b"
     >
       <div class="d-flex align-center">
-        <div class="header-title mr-3">{{ edit ? 'Update workspace' : 'Create a new workspace' }}</div>
+        <div class="header-title mr-3">
+          {{ edit ? 'Update workspace' : 'Create a new workspace' }}
+        </div>
       </div>
       <div class="d-flex justify-space-between">
         <div></div>
-        <div class="header-dialog-icon pa-2" @click.stop="$emit('closeCreateNewWorkspace')">
+        <div
+          class="header-dialog-icon pa-2"
+          @click.stop="$emit('closeCreateNewWorkspace')"
+        >
           <img src="@/assets/svg/close.svg" alt="close" />
         </div>
       </div>
@@ -37,26 +42,35 @@
             class="button-normal button-create"
             aria-label="action create new workspace"
             @click="callaction"
-          >{{ edit ? 'Update workspace' : 'Create workspace' }}</button>
+          >
+            {{ edit ? 'Update workspace' : 'Create workspace' }}
+          </button>
         </v-col>
       </v-row>
     </div>
     <v-snackbar v-model="showAlert" top color="success">
       {{
-      edit
-      ? 'Update workspace successfully'
-      : 'Create new workspace successfully'
+        edit
+          ? 'Update workspace successfully'
+          : 'Create new workspace successfully'
       }}
-      <template
-        v-slot:action="{ attrs }"
-      >
-        <v-btn color="white" text v-bind="attrs" aria-label="close" @click="showAlert = false">Close</v-btn>
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          aria-label="close"
+          @click="showAlert = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
-    <v-snackbar v-model="showAlert400" top color="error">
+    <v-snackbar v-model="showAlert400" top color="error" timeout="2000">
       Workspace is existed
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showAlert400 = false">Close</v-btn>
+        <v-btn color="white" text v-bind="attrs" @click="showAlert400 = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
   </v-list>
@@ -118,13 +132,11 @@ export default {
         const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
+          window.localStorage.clear();
           return;
         }
         this.showAlert400 = true;
-        setTimeout(() => {
-          this.showAlert400 = false;
-          this.loading = false;
-        }, 2000);
+        this.loading = false;
       } finally {
         this.workspaceName = '';
       }
@@ -148,7 +160,10 @@ export default {
         }
       } catch (error) {
         const { status } = error.response;
-        if (status === 401) this.$router.push('/login');
+        if (status === 401) {
+          this.$router.push('/login');
+          window.localStorage.clear();
+        }
         return;
       } finally {
         this.workspaceName = '';

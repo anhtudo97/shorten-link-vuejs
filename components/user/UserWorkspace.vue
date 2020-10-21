@@ -1,20 +1,32 @@
 <template>
   <v-row class="member-detail">
-    <v-col cols="12" sm="10" md="8" class="mx-auto" @click.stop="openUserDetailModal = true">
+    <v-col
+      cols="12"
+      sm="10"
+      md="8"
+      class="mx-auto"
+      @click.stop="openUserDetailModal = true"
+    >
       <v-row class="align-center border-radius-10 mx-0 py-3">
         <v-col cols="12" sm="8" md="8">
           <div class="d-flex justify-space-between">
             <div class="member text-overflow-hidden">{{ member.fullName }}</div>
-            <div :class="[colorStatus]" class="member text-overflow-hidden">{{ member.status }}</div>
+            <div :class="[colorStatus]" class="member text-overflow-hidden">
+              {{ member.status }}
+            </div>
           </div>
         </v-col>
         <v-col cols="12" sm="4" md="4" class="text-left text-sm-right relative">
-          <div class="added text-overflow-hidden absolute">{{ member.email }}</div>
+          <div class="added text-overflow-hidden absolute">
+            {{ member.email }}
+          </div>
           <button
             :disabled="loading"
             class="button-warning btn-remove absolute"
             @click="removeFromList"
-          >Remove</button>
+          >
+            Remove
+          </button>
         </v-col>
       </v-row>
     </v-col>
@@ -24,7 +36,10 @@
       max-width="700px"
       transition="dialog-transition"
     >
-      <DetailUserModal :user="member" @closeUserDetailModal="closeUserDetailModal" />
+      <DetailUserModal
+        :user="member"
+        @closeUserDetailModal="closeUserDetailModal"
+      />
     </v-dialog>
     <v-snackbar v-model="showAlert400" top color="error">
       {{ messages }}
@@ -35,7 +50,8 @@
           v-bind="attrs"
           aria-label="close"
           @click="showAlert400 = false"
-        >Close</v-btn>
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
   </v-row>
@@ -112,10 +128,11 @@ export default {
         }, 2000);
       } catch (error) {
         const { status } = error.response;
-        if (status === 401) this.$router.push('/login');
-        setTimeout(() => {
-          this.loading = false;
-        }, 2000);
+        if (status === 401) {
+          this.$router.push('/login');
+          window.localStorage.clear();
+        }
+        this.loading = false;
       }
     },
   },

@@ -233,7 +233,10 @@ export default {
         }
       } catch (error) {
         const { status } = error.response;
-        if (status === 401) this.$router.push('/login');
+        if (status === 401) {
+          this.$router.push('/login');
+          window.localStorage.clear();
+        }
       }
     }
   },
@@ -354,7 +357,10 @@ export default {
         this.title = title;
       } catch (error) {
         const { status } = error.response;
-        if (status === 401) this.$router.push('/login');
+        if (status === 401) {
+          this.$router.push('/login');
+          window.localStorage.clear();
+        }
       }
     },
     async getSlashTag(url) {
@@ -364,7 +370,10 @@ export default {
         this.slashTag = data;
       } catch (error) {
         const { status } = error.response;
-        if (status === 401) this.$router.push('/login');
+        if (status === 401) {
+          this.$router.push('/login');
+          window.localStorage.clear();
+        }
       }
     },
     async checkSlashTagValid(tag) {
@@ -376,7 +385,10 @@ export default {
         } catch (error) {
           const { status, data } = error.response;
           this.message = data.message;
-          if (status === 401) this.$router.push('/login');
+          if (status === 401) {
+            this.$router.push('/login');
+            window.localStorage.clear();
+          }
         }
       }
     },
@@ -450,7 +462,10 @@ export default {
         }
       } catch (error) {
         const { status } = error.response;
-        if (status === 401) this.$router.push('/login');
+        if (status === 401) {
+          this.$router.push('/login');
+          window.localStorage.clear();
+        }
       }
     },
     callAction() {
@@ -489,6 +504,7 @@ export default {
           const { status, data } = error.response;
           if (status === 401) {
             this.$router.push('/login');
+            window.localStorage.clear();
             return;
           }
           this.message = data.message;
@@ -530,6 +546,7 @@ export default {
         this.showAlert403 = true;
         if (status === 401) {
           this.$router.push('/login');
+          window.localStorage.clear();
         }
       }
     },

@@ -120,6 +120,7 @@ export default {
           const { data } = error.response;
           if (data.status === 401) {
             this.$router.push('/login');
+            window.localStorage.clear();
             return;
           }
           this.message = data.message;

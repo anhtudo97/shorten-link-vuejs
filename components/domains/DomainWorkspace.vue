@@ -1,23 +1,39 @@
 <template>
   <v-row class="domain-detail mb-5 mb-md-0">
-    <v-col cols="12" sm="10" md="8" class="mx-auto" @click.stop="models.isOpen = true">
+    <v-col
+      cols="12"
+      sm="10"
+      md="8"
+      class="mx-auto"
+      @click.stop="models.isOpen = true"
+    >
       <v-row class="align-center border-radius-10 mx-0 py-3">
         <v-col cols="12" sm="8" md="8" lg="9">
           <div class="d-flex justify-space-between">
             <div class="domain text-overflow-hidden">{{ domain.name }}</div>
             <div
-              :class="[domain.dnsVerified?'text-green': 'text-gray']"
+              :class="[domain.dnsVerified ? 'text-green' : 'text-gray']"
               class="domain text-overflow-hidden"
-            >{{ domain.dnsVerified ? 'Verified': 'Unverified' }}</div>
+            >
+              {{ domain.dnsVerified ? 'Verified' : 'Unverified' }}
+            </div>
           </div>
         </v-col>
-        <v-col cols="12" sm="4" md="4" lg="3" class="text-left text-sm-right relative">
+        <v-col
+          cols="12"
+          sm="4"
+          md="4"
+          lg="3"
+          class="text-left text-sm-right relative"
+        >
           <div class="added text-overflow-hidden absolute">{{ date }}</div>
           <button
             :disabled="loading"
             class="button-warning btn-remove absolute"
             @click="removeFromList"
-          >Remove</button>
+          >
+            Remove
+          </button>
         </v-col>
       </v-row>
     </v-col>
@@ -88,6 +104,7 @@ export default {
         const { status } = error.response;
         if (status === 401) {
           this.$router.push('/login');
+          window.localStorage.clear();
         }
       }
     },
