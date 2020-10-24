@@ -20,9 +20,7 @@
                 <img
                   loading="lazy"
                   class="img-favicon mr-3"
-                  :src="
-                    `https://www.google.com/s2/favicons?domain=${destination}`
-                  "
+                  :src="`https://www.google.com/s2/favicons?domain=${destination}`"
                   alt="favicon"
                 />
                 <a
@@ -34,7 +32,7 @@
               </div>
               <div class="d-flex dialog-link-service align-center">
                 <div
-                  v-clipboard:copy="`http://${shorten}`"
+                  v-clipboard:copy="`https://${shorten}`"
                   class="dialog-button-copy mr-3"
                   @click="showAlertCopy = true"
                 >

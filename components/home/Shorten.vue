@@ -16,7 +16,7 @@
       </v-col>
       <v-col cols="5" lg="4" class="shortened__shortened-service text-center">
         <button
-          v-clipboard:copy="`http://${shorten}`"
+          v-clipboard:copy="`https://${shorten}`"
           class="shortened-button"
           @click="showAlert = true"
         >
