@@ -250,7 +250,7 @@ export default {
       this.$emit('closeModalAddNewLink');
     },
     doCopy() {
-      this.$copyText(`http://${this.shorten}`).then(
+      this.$copyText(`https://${this.shorten}`).then(
         (this.showAlertCopy = true)
       );
     },
