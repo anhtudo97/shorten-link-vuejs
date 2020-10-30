@@ -29,3 +29,4 @@ dockerize:
   stage: package
   only:
     - master
+    - tags

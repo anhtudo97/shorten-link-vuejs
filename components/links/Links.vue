@@ -63,41 +63,34 @@
         </v-row>
       </v-col>
     </v-row>
-    <client-only>
-      <div v-if="$fetchState.pending" class="d-flex justify-center">
-        <v-progress-circular
-          indeterminate
-          color="primary"
-        ></v-progress-circular>
+
+    <v-row v-if="$fetchState.pending" justify="center" class="mx-0">
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+    </v-row>
+    <div v-else>
+      <transition-group name="slide-fade" mode="in-out" tag="section">
+        <div v-for="link in links" :key="link.id">
+          <Link
+            :id="link.id"
+            :link="link.destination"
+            :slashtag="link.slashtag"
+            :clicks="link.clicks"
+            :date="link.createdAt"
+            :domain="link.domain.name"
+            @refetchLinks="refetchLinks"
+            @closeModalAddNewLink="closeModalAddNewLink"
+          />
+        </div>
+      </transition-group>
+      <div v-if="links.length !== 0">
+        <v-pagination
+          v-model="page"
+          class="my-4"
+          :length="totalPage"
+        ></v-pagination>
       </div>
-      <div v-else class="link__management">
-        <transition-group name="slide-fade" mode="in-out" tag="section">
-          <div v-for="link in links" :key="link.id">
-            <Link
-              :id="link.id"
-              :link="link.destination"
-              :slashtag="link.slashtag"
-              :clicks="link.clicks"
-              :date="link.createdAt"
-              :domain="link.domain.name"
-              @refetchLinks="refetchLinks"
-              @closeModalAddNewLink="closeModalAddNewLink"
-            />
-          </div>
-        </transition-group>
-        <v-row v-if="links.length !== 0" justify="center">
-          <v-col cols="8">
-            <v-container class="max-width">
-              <v-pagination
-                v-model="page"
-                class="my-4"
-                :length="totalPage"
-              ></v-pagination>
-            </v-container>
-          </v-col>
-        </v-row>
-      </div>
-    </client-only>
+    </div>
+
     <v-dialog
       v-model="models.modal"
       class="link__dialog"
@@ -112,9 +105,9 @@
     <v-navigation-drawer
       v-model="drawer"
       absolute
-      right
+      left
       temporary
-      style="width:40%;"
+      style="width:60%;"
     >
       <FilterModal @closeModal="drawer = false" />
     </v-navigation-drawer>
@@ -383,11 +376,6 @@ export default {
     width: 100%;
     height: 1px;
     background-color: #c4c4c4;
-  }
-  &__management {
-    ul {
-      list-style: none;
-    }
   }
   &__dialog {
     position: fixed;
