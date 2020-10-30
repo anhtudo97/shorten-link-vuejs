@@ -297,7 +297,8 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 17px 0;
+      // padding: 0px 0;
+      height: 56px;
       width: 100%;
       border-radius: 4px;
       background-color: #3c64b1;
@@ -307,7 +308,7 @@ export default {
         margin-top: 3px;
         object-fit: cover;
         width: auto;
-        height: 50px;
+        height: 30px;
       }
       .btn-text {
         color: #fff;
