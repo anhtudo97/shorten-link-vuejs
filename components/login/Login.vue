@@ -6,6 +6,11 @@
           <v-alert type="success">Login successfully</v-alert>
         </div>
       </transition>
+      <transition name="fade" mode="in-out">
+        <div v-show="showAlertError">
+          <v-alert type="error">Email or password is incorrect</v-alert>
+        </div>
+      </transition>
     </div>
     <v-row id="login" no-gutters class="login overflow-hidden">
       <v-col
@@ -14,11 +19,6 @@
         lg="7"
         class="login__block mx-auto d-flex flex-column justify-center"
       >
-        <transition name="fade" mode="out-in">
-          <div v-show="showAlertError">
-            <v-alert type="error">Email or password is incorrect</v-alert>
-          </div>
-        </transition>
         <v-row>
           <v-col cols="12" sm="6" class="text-center text-sm-left login__left">
             <figure>
@@ -59,7 +59,9 @@
                 class="button-normal login-button mt-8 mt-sm-10 mr-4"
                 aria-label="Login"
                 @click.prevent="login"
-              >Login</button>
+              >
+                Login
+              </button>
               <div class="signup-tip mt-5">
                 Don’t have a Relinks account yet?
                 <nuxt-link to="/sign-up">

@@ -29,6 +29,7 @@
         "@nuxtjs/axios": "^5.12.2",
         "@nuxtjs/html-minifier": "^0.1.2",
         "@nuxtjs/vuetify": "^1.11.2",
+        "axios": "^0.21.0",
         "date-fns": "^2.15.0",
         "debounce": "^1.2.0",
         "form-data": "^3.0.0",

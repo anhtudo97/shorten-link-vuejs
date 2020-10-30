@@ -421,8 +421,14 @@ export default {
           const { domains } = resDomains.data.data;
           if (domains.length) {
             this.domains.push(...domains);
-            this.domain.name = this.domains[0].name;
-            this.domain.id = this.domains[0].id;
+            if (this.$cookies.get('userDomain')) {
+              const temp = this.$cookies.get('userDomain');
+              this.domain.name = temp.name;
+              this.domain.id = temp.id;
+            } else {
+              this.domain.name = this.domains[0].name;
+              this.domain.id = this.domains[0].id;
+            }
             $state.loaded();
           } else {
             $state.complete();
@@ -440,6 +446,10 @@ export default {
                 name,
                 id,
               };
+            } else if (this.$cookies.get('userWorkspace') !== null) {
+              const temp = this.$cookies.get('userWorkspace');
+              this.workspace.name = temp.name;
+              this.workspace.id = temp.id;
             } else {
               this.workspace.name = this.workspaces[0].name;
               this.workspace.id = this.workspaces[0].id;
@@ -488,6 +498,16 @@ export default {
             slashTag,
             title,
             workspace.id
+          );
+          this.$cookies.set(
+            'userDomain',
+            JSON.stringify(domain, null, 2),
+            60 * 60 * 24 * 30
+          );
+          this.$cookies.set(
+            'userWorkspace',
+            JSON.stringify(workspace, null, 2),
+            60 * 60 * 24 * 30
           );
           const { message, data } = resLink.data;
           this.message = message;

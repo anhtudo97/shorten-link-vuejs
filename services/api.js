@@ -102,7 +102,12 @@ export const getTitleUrl = (url) => {
 };
 
 export const getSlashTag = (url, domainId) => {
-  return api.get(`/links/generate?destination=f${url}&domainId=${domainId}`);
+  return api.get(`/links/generate`, {
+    params: {
+      destination: url,
+      domainId,
+    },
+  });
 };
 
 export const checkSlashTag = (slash, domainId) => {

@@ -11,7 +11,7 @@
         <v-col cols="12" md="4">
           <div class="d-flex justify-space-between align-center shortened-info">
             <div class="shortened-clicks">
-              {{ clicks }} {{ clicks > 1 ? 'click' : 'clicks' }}
+              {{ clicks }} {{ clicks > 1 ? 'clicks' : 'click' }}
             </div>
             <div>
               <div class="shortened-date">{{ createAt }}</div>
@@ -208,15 +208,18 @@ export default {
       const createdAt = Date.parse(this.date);
       const diffTime = Math.abs(today - createdAt);
       if (diffTime < 60) {
-        return `${Math.ceil(diffTime)} second(s) ago`;
+        const time = Math.ceil(diffTime);
+        return `${time} ${time > 1 ? 'seconds' : 'second'} ago`;
       }
       if (diffTime < 3600 * 1000) {
-        return `${Math.floor(diffTime / (60 * 1000))} min(s) ago`;
+        const diffmin = Math.floor(diffTime / (60 * 1000));
+        return `${diffmin} ${diffmin > 1 ? 'mins' : 'min'} ago`;
       } else if (diffTime < 1000 * 60 * 60 * 24) {
-        return `${Math.floor(diffTime / (3600 * 1000))} hour(s) ago`;
+        const diffday = Math.floor(diffTime / (3600 * 1000));
+        return `${diffday} ${diffday > 1 ? 'hours' : 'hour'} hour(s) ago`;
       } else {
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        return `${diffDays} day(s) ago`;
+        return `${diffDays} ${diffDays > 1 ? 'days' : 'day'} ago`;
       }
     },
   },
