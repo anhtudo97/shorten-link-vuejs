@@ -5,7 +5,9 @@
         <v-row class="align-center">
           <v-col cols="12" sm="8" lg="9">
             <div class="d-flex align-center flex-wrap">
-              <div class="menu-text my-3 pr-4 w-6">{{ total }} Link(s)</div>
+              <div class="menu-text my-3 pr-4 w-6">
+                {{ total }} {{ total > 1 ? 'Links' : 'Link' }}
+              </div>
               <div class="menu-selection my-md-3 mr-4 d-flex">
                 <v-menu offset-y rounded="true">
                   <template v-slot:activator="{ on, attrs }">

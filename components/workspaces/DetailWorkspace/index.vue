@@ -29,7 +29,7 @@
               aria-label="total workspace"
               @click="changeTab('Link')"
             >
-              {{ totalLink }} Link(s)
+              {{ totalLink }} {{ totalLink > 1 ? 'Links' : 'Links' }}
             </button>
             <button
               :class="[tabName === 'Domain' ? 'active' : '']"
@@ -37,7 +37,8 @@
               aria-label="total workspace joined"
               @click="changeTab('Domain')"
             >
-              {{ totalDomain }} Domain(s)
+              {{ totalDomain }}
+              {{ totalDomain > 1 ? 'Domains' : 'Domain' }}
             </button>
             <button
               :class="[tabName === 'Member' ? 'active' : '']"
@@ -45,7 +46,7 @@
               aria-label="total workspace joined"
               @click="changeTab('Member')"
             >
-              {{ totalMember }} Member(s)
+              {{ totalMember }} {{ totalMember > 1 ? 'Members' : 'Member' }}
             </button>
           </v-col>
         </v-row>

@@ -5,7 +5,9 @@
         <v-row class="align-center">
           <v-col cols="6" sm="7" md="8" lg="9">
             <div class="d-flex align-center">
-              <div class="domain-count pr-4">{{ total }} Domain(s)</div>
+              <div class="domain-count pr-4">
+                {{ total }} {{ total > 1 ? 'Domains' : 'Domain' }}
+              </div>
             </div>
           </v-col>
           <v-col cols="6" sm="5" md="4" lg="3" class="text-right">
@@ -13,7 +15,9 @@
               class="button-normal add-new-domain"
               aria-label="New Domain"
               @click.stop="openModalCreateNewDomain = true"
-            >New domain</button>
+            >
+              New domain
+            </button>
           </v-col>
         </v-row>
       </v-col>
@@ -38,13 +42,20 @@
       <div class="domain__management">
         <transition-group name="slide-fade" mode="out-in" tag="ul" class="pa-0">
           <li v-for="domain in domains" :key="domain.id">
-            <Domain :domain="domain" @closeModalCreateNewDomain="closeModalCreateNewDomain" />
+            <Domain
+              :domain="domain"
+              @closeModalCreateNewDomain="closeModalCreateNewDomain"
+            />
           </li>
         </transition-group>
         <v-row v-if="domains.length !== 0" justify="center">
           <v-col cols="8">
             <v-container class="max-width">
-              <v-pagination v-model="page" class="my-4" :length="totalPage"></v-pagination>
+              <v-pagination
+                v-model="page"
+                class="my-4"
+                :length="totalPage"
+              ></v-pagination>
             </v-container>
           </v-col>
         </v-row>

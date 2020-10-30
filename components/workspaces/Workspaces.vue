@@ -12,7 +12,7 @@
               aria-label="total workspace"
               @click="joined = false"
             >
-              {{ total }} Workspace(s)
+              {{ total }} {{ total > 1 ? 'Workspaces' : 'Workspace' }}
             </button>
             <button
               :class="[joined ? 'active' : '']"
@@ -20,7 +20,8 @@
               aria-label="total workspace joined"
               @click="joined = true"
             >
-              {{ totalJoined }} Workspace(s) joined
+              {{ totalJoined }}
+              {{ totalJoined > 1 ? 'Workspaces' : 'Workspace' }} joined
             </button>
           </v-col>
           <v-col cols="12" md="4" class="text-md-right text-left px-0">
