@@ -1,13 +1,15 @@
 <template>
   <div class="domain">
-    <div class="domain__diviner"></div>
     <v-row class="domain__sub-menu">
       <v-col cols="10" md="8" class="mx-auto py-0">
         <v-row class="d-flex align-center">
           <v-col cols="7" sm="9" lg="10" class="d-flex align-center">
             <div class="domains pr-4">Domain</div>
             <div class="d-flex align-center hover-btn">
-              <button class="plus-button" @click.stop="openAddLinkDomainModal = true"></button>
+              <button
+                class="plus-button"
+                @click.stop="openAddLinkDomainModal = true"
+              ></button>
               <div class="ml-4 add-more-domain">Add more domain</div>
             </div>
           </v-col>
@@ -24,7 +26,11 @@
     <v-row v-if="domains.length !== 0" justify="center">
       <v-col cols="8">
         <v-container class="max-width">
-          <v-pagination v-model="page" class="my-4" :length="totalPage"></v-pagination>
+          <v-pagination
+            v-model="page"
+            class="my-4"
+            :length="totalPage"
+          ></v-pagination>
         </v-container>
       </v-col>
     </v-row>
