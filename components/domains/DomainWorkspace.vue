@@ -153,7 +153,7 @@ export default {
     .btn-remove {
       position: absolute;
       top: 15%;
-      left: 40%;
+      left: 30px;
     }
   }
   &:hover {
@@ -172,11 +172,6 @@ export default {
     .added {
       font-size: 15px;
     }
-    .text-left {
-      .btn-remove {
-        left: 30%;
-      }
-    }
   }
   @media (max-width: 960px) {
     .domain {
@@ -186,11 +181,6 @@ export default {
     .added {
       font-size: 14px;
     }
-    .text-left {
-      .btn-remove {
-        left: 20%;
-      }
-    }
   }
   @media (max-width: 600px) {
     .domain {
@@ -199,11 +189,6 @@ export default {
     }
     .added {
       font-size: 12px;
-    }
-    .text-left {
-      .btn-remove {
-        left: 10%;
-      }
     }
   }
 }
