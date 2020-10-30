@@ -1,7 +1,7 @@
 <template>
-  <v-row class="link-detail px-3">
+  <div class="link-detail px-3">
     <v-col cols="12" sm="10" md="8" class="mx-auto">
-      <v-row class="align-center border-radius-10 ma-0 py-3">
+      <v-row class="align-center border-radius-10 py-3">
         <v-col cols="12" md="8" @click.stop="models.isOpen = true">
           <div ref="shorten" class="shortened-link text-overflow-hidden">
             {{ shorten }}
@@ -148,7 +148,7 @@
         >
       </template>
     </v-snackbar>
-  </v-row>
+  </div>
 </template>
 
 <script>
