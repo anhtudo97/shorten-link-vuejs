@@ -2,7 +2,7 @@
   <v-list class="dialog-create-new-link">
     <div class="d-flex justify-space-between px-4">
       <div></div>
-      <div class="dialog-icon" @click="$emit('closeModalAddNewLink')">
+      <div class="dialog-icon" @click="$emit('close-modal-add-new-link')">
         <img class="ma-2" src="@/assets/svg/close.svg" alt="close" />
       </div>
     </div>
@@ -25,16 +25,16 @@
               <v-col cols="12" md="6" class="py-0">
                 <div class="modal-mask__sub-title">Branded domain</div>
                 <v-select
-                  v-model="domain.id"
+                  v-model="domainId"
                   class="dialog-domain"
                   :items="tempDomains"
                   item-text="name"
                   item-value="id"
                   dense
                   outlined
-                  :label="domain.name"
                   :disabled="loading"
                   item-disabled="isUse"
+                  :loading="loadingDomains"
                   single-line
                 >
                   <template v-slot:item="data">
@@ -75,11 +75,10 @@
               <v-col cols="12" md="6" class="py-0">
                 <div class="modal-mask__sub-title">Workspace belong to</div>
                 <v-select
-                  v-model="workspace.id"
+                  v-model="workspaceId"
                   class="dialog-workspace"
                   :items="tempWorkspaces"
                   item-text="name"
-                  :label="workspace.name"
                   item-value="id"
                   dense
                   outlined
@@ -252,6 +251,7 @@ export default {
     pageWorkspacesJoined: 1,
     token: '',
     loading: false,
+    loadingDomains: false,
     showAlert: false,
     showAlert403: false,
     valid: false,
@@ -260,11 +260,7 @@ export default {
     destinationUrl: '',
     title: '',
     slashTag: '',
-    domain: {
-      name: 'Domain',
-      id: '',
-    },
-    workspace: { name: 'Workspace', id: '' },
+    workspaceId: '',
     domainId: '',
     message: '',
     // detail link
@@ -309,6 +305,9 @@ export default {
         this.checkSlashTagValid(newVal);
       }
     },
+    workspaceId(newVal, oldVal) {
+      this.loadDomains();
+    },
   },
   created() {
     if (typeof localStorage !== 'undefined' && localStorage.token) {
@@ -343,7 +342,7 @@ export default {
         str = 'http://' + str;
         this.destinationUrl = str;
       }
-      if (this.valid && !this.edit && this.domain.id !== '') {
+      if (this.valid && !this.edit && this.domainId !== '') {
         this.loading = true;
         await Promise.all([this.getTitle(str), this.getSlashTag(str)]);
         this.loading = false;
@@ -365,7 +364,7 @@ export default {
     },
     async getSlashTag(url) {
       try {
-        const resSlashTag = await getSlashTag(url, this.domain.id);
+        const resSlashTag = await getSlashTag(url, this.domainId);
         const { data } = resSlashTag.data;
         this.slashTag = data;
       } catch (error) {
@@ -377,9 +376,9 @@ export default {
       }
     },
     async checkSlashTagValid(tag) {
-      if (this.domain.id !== '') {
+      if (this.domainId !== '') {
         try {
-          const resSlashTag = await checkSlashTag(tag, this.domain.id);
+          const resSlashTag = await checkSlashTag(tag, this.domainId);
           const { data } = resSlashTag.data;
           this.checkSlash = data.exists;
         } catch (error) {
@@ -389,6 +388,28 @@ export default {
             this.$router.push('/login');
             window.localStorage.clear();
           }
+        }
+      }
+    },
+    async loadDomains() {
+      this.domains = [];
+      const { workspaceId, token } = this;
+      try {
+        this.loadingDomains = true;
+        const res = await getDomainsWorkspace(token, workspaceId, 1, true);
+        const { domains = [], totalPage = 1 } = res.data.data;
+        this.domains = domains;
+        for (let i = 2; i <= totalPage; i++) {
+          const res = await getDomainsWorkspace(token, workspaceId, i, true);
+          const { domains = [] } = res.data.data;
+          this.domains = this.domains.concat(domains);
+        }
+        this.loadingDomains = false;
+      } catch (error) {
+        const { status } = error.response;
+        if (status === 401) {
+          this.$router.push('/login');
+          window.localStorage.clear();
         }
       }
     },
@@ -422,12 +443,9 @@ export default {
           if (domains.length) {
             this.domains.push(...domains);
             if (this.$cookies.get('userDomain')) {
-              const temp = this.$cookies.get('userDomain');
-              this.domain.name = temp.name;
-              this.domain.id = temp.id;
+              this.domainId = this.$cookies.get('userDomain');
             } else {
-              this.domain.name = this.domains[0].name;
-              this.domain.id = this.domains[0].id;
+              this.domainId = this.domains[0].id;
             }
             $state.loaded();
           } else {
@@ -447,12 +465,9 @@ export default {
                 id,
               };
             } else if (this.$cookies.get('userWorkspace') !== null) {
-              const temp = this.$cookies.get('userWorkspace');
-              this.workspace.name = temp.name;
-              this.workspace.id = temp.id;
+              this.workspaceId = this.$cookies.get('userWorkspace');
             } else {
-              this.workspace.name = this.workspaces[0].name;
-              this.workspace.id = this.workspaces[0].id;
+              this.workspaceId = this.workspaces[0].id;
             }
             $state.loaded();
           } else {
@@ -487,28 +502,20 @@ export default {
     },
     async createNewLink() {
       this.loading = true;
-      const { destinationUrl, domain, workspace, title, slashTag } = this;
+      const { destinationUrl, domainId, workspaceId, title, slashTag } = this;
       await this.checkSlashTagValid(slashTag);
       if (!this.checkSlash && destinationUrl !== '') {
         try {
           const resLink = await createNewLink(
             this.token,
             destinationUrl,
-            domain.id,
+            domainId,
             slashTag,
             title,
-            workspace.id
+            workspaceId
           );
-          this.$cookies.set(
-            'userDomain',
-            JSON.stringify(domain, null, 2),
-            60 * 60 * 24 * 30
-          );
-          this.$cookies.set(
-            'userWorkspace',
-            JSON.stringify(workspace, null, 2),
-            60 * 60 * 24 * 30
-          );
+          this.$cookies.set('userDomain', domainId, 60 * 60 * 24 * 30);
+          this.$cookies.set('userWorkspace', workspaceId, 60 * 60 * 24 * 30);
           const { message, data } = resLink.data;
           this.message = message;
           this.showAlert = true;
