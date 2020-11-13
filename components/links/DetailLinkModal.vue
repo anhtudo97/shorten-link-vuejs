@@ -6,7 +6,7 @@
           <div></div>
           <div
             class="modal-detail-link__dialog-icon pa-2"
-            @click="$emit('closeModalDetailLink')"
+            @click="$emit('close-modal-detail-link')"
           >
             <img src="@/assets/svg/close.svg" alt="close" />
           </div>
@@ -20,7 +20,9 @@
                 <img
                   loading="lazy"
                   class="img-favicon mr-3"
-                  :src="`https://www.google.com/s2/favicons?domain=${destination}`"
+                  :src="
+                    `https://www.google.com/s2/favicons?domain=${destination}`
+                  "
                   alt="favicon"
                 />
                 <a
@@ -104,7 +106,7 @@
           <CreateNewLink
             :id="id"
             :edit="true"
-            @closeModalAddNewLink="closeModalAddNewLink"
+            @close-modal-add-new-link="closeModalAddNewLink"
           />
         </v-dialog>
         <v-dialog v-model="isRemoveModal" persistent width="500">
@@ -265,7 +267,7 @@ export default {
           this.showAlert = true;
           setTimeout(() => {
             this.closeRemoveModal();
-            this.$emit('closeModalDetailLink');
+            this.$emit('close-modal-detail-link');
             this.showAlert = false;
             this.loading = false;
           }, 1000);

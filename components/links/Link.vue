@@ -93,7 +93,7 @@
         :id="id"
         :slashtag="slashtag"
         @refetchLinks="$emit('refetch-links')"
-        @closeModalDetailLink="closeModalDetailLink"
+        @close-modal-detail-link="closeModalDetailLink"
       />
     </v-dialog>
     <v-dialog
@@ -106,7 +106,7 @@
         :id="id"
         :edit="true"
         @refetchLinks="$emit('refetch-links')"
-        @closeModalAddNewLink="closeModalEditNewLink"
+        @close-modal-add-new-link="closeModalEditNewLink"
       />
     </v-dialog>
     <v-dialog v-model="isRemoveModal" persistent width="500">
@@ -238,7 +238,7 @@ export default {
   methods: {
     closeModalDetailLink() {
       this.models.isOpen = false;
-      this.$emit('closeModalAddNewLink');
+      this.$emit('close-modal-add-new-link');
     },
     closeRemoveModal() {
       this.isRemoveModal = false;
@@ -250,7 +250,7 @@ export default {
     },
     closeModalEditNewLink() {
       this.modalEditLink = false;
-      this.$emit('closeModalAddNewLink');
+      this.$emit('close-modal-add-new-link');
     },
     doCopy() {
       this.$copyText(`https://${this.shorten}`).then(
@@ -266,7 +266,7 @@ export default {
           this.showAlert = true;
           setTimeout(() => {
             this.closeRemoveModal();
-            this.$emit('closeModalAddNewLink');
+            this.$emit('close-modal-add-new-link');
             this.showAlert = false;
             this.loading = false;
           }, 1000);

@@ -79,7 +79,7 @@
       max-width="900"
       :fullscreen="width < 600 ? true : false"
     >
-      <CreateNewLink @closeModalAddNewLink="closeModalAddNewLink" />
+      <CreateNewLink @close-modal-add-new-link="closeModalAddNewLink" />
     </v-dialog>
     <v-navigation-drawer
       v-model="drawer"
