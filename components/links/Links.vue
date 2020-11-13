@@ -80,7 +80,7 @@
             :date="link.createdAt"
             :domain="link.domain.name"
             @refetchLinks="refetchLinks"
-            @closeModalAddNewLink="closeModalAddNewLink"
+            @close-modal-add-new-link="closeModalAddNewLink"
           />
         </div>
       </transition-group>
@@ -101,7 +101,7 @@
     >
       <CreateNewLink
         @refetchLinks="refetchLinks"
-        @closeModalAddNewLink="closeModalAddNewLink"
+        @close-modal-add-new-link="closeModalAddNewLink"
       />
     </v-dialog>
     <v-navigation-drawer

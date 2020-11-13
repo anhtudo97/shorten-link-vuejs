@@ -150,7 +150,7 @@
       <DetailLink
         :id="detailId"
         :slashtag="detailSlashtag"
-        @closeModalDetailLink="closeModalDetailLink"
+        @close-modal-detail-link="closeModalDetailLink"
       />
     </v-dialog>
     <client-only>
@@ -191,7 +191,6 @@
 <script>
 import { debounce } from 'debounce';
 import {
-  getDomains,
   getWorkspaces,
   getTitleUrl,
   getSlashTag,
@@ -313,6 +312,9 @@ export default {
     if (typeof localStorage !== 'undefined' && localStorage.token) {
       this.token = localStorage.token;
     }
+    if (this.$route.params.id) {
+      this.workspaceId = this.$route.params.id;
+    }
   },
   beforeMount() {
     window.addEventListener('resize', this.handleResize);
@@ -404,6 +406,16 @@ export default {
           const { domains = [] } = res.data.data;
           this.domains = this.domains.concat(domains);
         }
+        if (!this.domainId) {
+          const cookieDomainId = this.$cookies.get('userDomain');
+          this.domainId = this.domains[0].id;
+          if (
+            cookieDomainId &&
+            this.domains.some((dm) => dm.id === cookieDomainId)
+          ) {
+            this.domainId = cookieDomainId;
+          }
+        }
         this.loadingDomains = false;
       } catch (error) {
         const { status } = error.response;
@@ -414,44 +426,17 @@ export default {
       }
     },
     async infiniteScroll($state) {
-      const { token, pageDomains, pageWorkspaces } = this;
+      const { token, pageWorkspaces } = this;
       try {
-        let resDomains = null;
-        if (this.$route.params.id) {
-          resDomains = await getDomainsWorkspace(
-            token,
-            this.$route.params.id,
-            pageDomains,
-            true
-          );
-        } else {
-          resDomains = await getDomains(token, pageDomains, true);
-        }
         const resWorkspaces = await getWorkspaces(token, pageWorkspaces);
         const resWorkspacesJoined = await getWorkspacesJoined(
           token,
           pageWorkspaces
         );
 
-        const statusDomains = resDomains.data.status;
         const statusWorkspaces = resWorkspaces.data.status;
         const statusWorkspacesJoined = resWorkspacesJoined.data.status;
 
-        if (statusDomains === 200) {
-          this.pageDomains += 1;
-          const { domains } = resDomains.data.data;
-          if (domains.length) {
-            this.domains.push(...domains);
-            if (this.$cookies.get('userDomain')) {
-              this.domainId = this.$cookies.get('userDomain');
-            } else {
-              this.domainId = this.domains[0].id;
-            }
-            $state.loaded();
-          } else {
-            $state.complete();
-          }
-        }
         if (statusWorkspaces === 200) {
           this.pageWorkspaces += 1;
           const { workspaces } = resWorkspaces.data.data;
@@ -523,7 +508,7 @@ export default {
           this.valid = false;
           this.detailId = data.id;
           this.detailSlashtag = data.slashtag;
-          this.$emit('closeModalAddNewLink');
+          this.$emit('close-modal-add-new-link');
           this.$emit('refetchLinks');
           this.loading = false;
           this.openModalDetailLink = true;
