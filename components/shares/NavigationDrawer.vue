@@ -112,11 +112,6 @@ export default {
         link: '/sign-up',
       },
       {
-        id: 6,
-        name: 'Contact us',
-        link: '/contact',
-      },
-      {
         id: 8,
         name: 'Log out',
         link: '/',
