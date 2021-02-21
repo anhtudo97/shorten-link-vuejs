@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "env": {
+    "ON_VERCEL": "true"
+  },
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+        "src": "nuxt.config.js",
+        "use": "@nuxtjs/vercel-builder"
+    }
+  ],
+  "routes": [
+    {  "src": "/api/(.*)", "dest": "api/server.js" },
+    { "src": "/api", "dest": "api/server.js" },
+    { "src": "/(.*)", "dest": "$1" }
+  ]
+}

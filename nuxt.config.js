@@ -1,3 +1,4 @@
+const isServerlessEnvironment = process.env.ON_VERCEL==="true"
 /* eslint-disable nuxt/no-cjs-in-config */
 module.exports = {
   /*
@@ -115,7 +116,7 @@ module.exports = {
   router: {
     linkExactActiveClass: 'exact-active-link',
   },
-  serverMiddleware: ['~/api/server.js'],
+  serverMiddleware: isServerlessEnvironment ? [] : ['~/api/server.js'],
   axios: {
     baseURL: '139.180.213.253',
     proxy: true,

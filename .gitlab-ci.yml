@@ -1,11 +1,6 @@
-image: node:12-alpine
-
 stages:
-  - test
-  - package
-
-before_script:
-  - export PATH=$HOME/.yarn/bin:$PATH
+  - lint
+  - deploy
 
 cache:
   key:
@@ -15,18 +10,48 @@ cache:
     - node_modules/
     - $HOME/.yarn
 
-build:
-  stage: test
+lint:
+  image: node:12
+  stage: lint
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   script:
     - yarn install
-    - yarn build
+    - yarn lint
 
-include:
-  - project: internal/ci
-    file: dockerize.yaml
+deploy-staging:
+  stage: deploy
+  image: node:12
 
-dockerize:
-  stage: package
+  variables:
+    PREVIEW_URL: $CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG.$VERCEL_SCOPE.vercel.app
+
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+  environment:
+    name: vercel/$CI_COMMIT_REF_NAME
+    url: https://$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG.$VERCEL_SCOPE.vercel.app
+
+  script:
+    - npm i -g vercel
+    - echo $(vercel --name $CI_PROJECT_NAME --confirm -t $VERCEL_TOKEN) > .deployment
+    - vercel alias set $(cat .deployment) $PREVIEW_URL -t $VERCEL_TOKEN
+  after_script:
+    - vercel logs $(cat .deployment) -t $VERCEL_TOKEN
+
+
+deploy-production:
+  stage: deploy
+  image: node:12
   only:
     - master
-    - tags
+  environment:
+    name: vercel/production
+    url: $VERCEL_PROD_URL
+  script:
+    - npm i -g vercel
+    - vercel --name $CI_PROJECT_NAME --confirm --prod -t $VERCEL_TOKEN
+  after_script:
+    - vercel logs $VERCEL_PROD_URL -t $VERCEL_TOKEN
